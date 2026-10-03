@@ -64,7 +64,9 @@
   \begin{center}{\heiti\fontsize{14pt}{40pt}\selectfont #1\par}\end{center}}
 \newcommand{\ReportSection}[1]{\Needspace{4\baselineskip}\par\vspace{0.35\baselineskip}{\heiti #1}\par}
 \newcommand{\ReportSubsection}[1]{\Needspace{3\baselineskip}\par\vspace{0.2\baselineskip}{\bfseries #1}\par}
+\newif\ifreportimages
 \newcommand{\ReportRecord}{%
   \clearpage\thispagestyle{record}
-  \vspace*{0.6cm}（请将教师签字的实验数据记录单完整拍照粘贴至此处。）
+  \vspace*{0.6cm}%
+  \ifreportimages\else（请将教师签字的实验数据记录单完整拍照粘贴至此处。）\fi
 }

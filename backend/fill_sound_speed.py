@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Mapping, Sequence
 
 
-TEMPLATE = Path(__file__).resolve().parents[1] / "声速测定.tex"
+TEMPLATE = Path(__file__).resolve().parents[1] / "tex" / "templates" / "speed-of-sound.tex"
 BEGIN = "% ===== 数据输入区开始 ====="
 END = "% ===== 数据输入区结束 ====="
 IMAGE_MARKER = "% ===== 原始数据图片插入区 ====="
@@ -98,6 +98,8 @@ def fill_report(
 
     lines = [f"\\SetField{{{key}}}{{{_tex_text(value)}}}" for key, value in sorted(values.items())
              if key not in plot_fields]
+    if image_files:
+        lines.append(r"\reportimagestrue")
     lines.extend(f"\\SetField{{math_{key}}}{{{math_value}}}"
                  for key, value in sorted(values.items()) if key not in plot_fields
                  if (math_value := _tex_math_number(value)) is not None)
@@ -115,8 +117,13 @@ def fill_report(
     for index, filename in enumerate(image_files, start=1):
         if not re.fullmatch(r"[A-Za-z0-9_.-]+", filename) or filename in (".", ".."):
             raise ValueError("图片文件名无效")
+        page_start = ""
+        if index > 1:
+            page_start = "\\clearpage\n\\thispagestyle{record}\n"
+            if r"\input{physics_report_base.tex}" not in source:
+                page_start += "\\bindingline[3.03]\n"
         pages.append(
-            "\\clearpage\n\\thispagestyle{record}\n\\bindingline[3.03]\n"
+            page_start +
             "\\begin{center}\n"
             f"{{\\heiti 原始数据记录（第 {index} 张）\\par}}\n"
             "\\vspace{0.5cm}\n"

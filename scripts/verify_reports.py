@@ -112,8 +112,7 @@ def main():
             assert Decimal(fields["period_disk"]) == Decimal("1.2")
             assert Decimal(fields["period_cylinder"]) == Decimal("1.5")
             assert Decimal(fields["slider_period_5"]) == Decimal("3.04")
-        template = (ROOT / "声速测定.tex" if experiment_id == "speed-of-sound"
-                    else ROOT / "tex" / "templates" / f"{experiment_id}.tex")
+        template = ROOT / "tex" / "templates" / f"{experiment_id}.tex"
         result = fill_report(fields, output / f"{experiment_id}.tex", template,
                              experiment_title=module.TITLE)
         assert result.exists()

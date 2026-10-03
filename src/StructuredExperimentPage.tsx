@@ -142,7 +142,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
       </section>
       <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">原始数据记录图片（选填）</h2>
-        <p className="mb-2 text-sm text-muted-foreground">最多 5 张，每张不超过 8 MiB；图片按选择顺序附在报告末尾。</p>
+        <p className="mb-2 text-sm text-muted-foreground">最多 5 张，每张不超过 8 MiB；首张图片填入原始数据记录页，多张图片依次分页。</p>
         <Input type="file" accept="image/png,image/jpeg,image/gif,image/tiff,image/webp,image/heic,image/heif,image/avif,.heic,.heif" multiple
           aria-label="上传原始数据记录图片" onChange={(event) => {
             const selected = Array.from(event.currentTarget.files ?? [])

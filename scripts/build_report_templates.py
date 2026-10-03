@@ -83,9 +83,11 @@ BASE = r"""% 《物理实验报告模板.tex》的共同版式；所有实验模
   \begin{center}{\heiti\fontsize{14pt}{40pt}\selectfont #1\par}\end{center}}
 \newcommand{\ReportSection}[1]{\Needspace{4\baselineskip}\par\vspace{0.35\baselineskip}{\heiti #1}\par}
 \newcommand{\ReportSubsection}[1]{\Needspace{3\baselineskip}\par\vspace{0.2\baselineskip}{\bfseries #1}\par}
+\newif\ifreportimages
 \newcommand{\ReportRecord}{%
   \clearpage\thispagestyle{record}
-  \vspace*{0.6cm}（请将教师签字的实验数据记录单完整拍照粘贴至此处。）
+  \vspace*{0.6cm}%
+  \ifreportimages\else（请将教师签字的实验数据记录单完整拍照粘贴至此处。）\fi
 }
 """
 
@@ -465,9 +467,8 @@ def main() -> None:
             bundle.write(ARCHIVE / "tongji_logo.jpeg", "tongji_logo.jpeg")
             for figure in sorted((ARCHIVE / "figures").glob("*.png")):
                 bundle.write(figure, f"figures/{figure.name}")
-    speed_source = ROOT / "声速测定.tex"
+    speed_source = ARCHIVE / "speed-of-sound.tex"
     name = "speed-of-sound.tex"
-    shutil.copyfile(speed_source, ARCHIVE / name)
     shutil.copyfile(speed_source, ZIPPED / name)
     with zipfile.ZipFile(ZIPPED / "speed-of-sound.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         bundle.write(speed_source, name)

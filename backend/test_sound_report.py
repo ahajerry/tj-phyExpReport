@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
-from .fill_sound_speed import COVER_PATTERN, FIELD_PATTERN, TEMPLATE
+from .fill_sound_speed import COVER_PATTERN, FIELD_PATTERN, PLOT_PATTERN, TEMPLATE
 from .experiment_registry import validate_report
 
 try:
@@ -75,12 +75,39 @@ class SoundReportTests(unittest.TestCase):
     def test_student_id_and_image_pages_fill_template(self):
         from .fill_sound_speed import fill_report
         with tempfile.TemporaryDirectory() as directory:
-            tex = fill_report(report_fields(sample_payload()), Path(directory) / "report.tex", image_files=["original_01.jpg"])
+            tex = fill_report(report_fields(sample_payload()), Path(directory) / "report.tex",
+                              image_files=["original_01.jpg", "original_02.jpg"])
             content = tex.read_text(encoding="utf-8")
             self.assertIn(r"\SetField{student_id}{20260001}", content)
             self.assertNotIn(r"\SetField{partner}", content)
+            self.assertIn(r"\reportimagestrue", content)
             self.assertIn(r"\includegraphics[width=\textwidth,height=19cm,keepaspectratio]{original_01.jpg}", content)
+            self.assertRegex(content, r"\\end\{center\}\s+\\clearpage\s+\\thispagestyle\{record\}")
+            self.assertNotIn("\\clearpage\n\\thispagestyle{record}\n\\bindingline[3.03]\n"
+                             "\\begin{center}\n{\\heiti 原始数据记录（第 1 张）", content)
             self.assertNotIn("原始数据图片插入区", content)
+
+    def test_all_templates_use_record_page_for_first_uploaded_image(self):
+        from .fill_sound_speed import fill_report
+        templates = Path(__file__).resolve().parents[1] / "tex" / "templates"
+        with tempfile.TemporaryDirectory() as directory:
+            for template in sorted(templates.glob("*.tex")):
+                if template.name == "physics_report_base.tex":
+                    continue
+                with self.subTest(template=template.name):
+                    fields = {key: " (1,2)" for key in PLOT_PATTERN.findall(
+                        template.read_text(encoding="utf-8"))}
+                    empty = fill_report(fields, Path(directory) / "empty.tex", template)
+                    uploaded = fill_report(fields, Path(directory) / "uploaded.tex", template,
+                                           image_files=["original_01.jpg"])
+                    empty_source = empty.read_text(encoding="utf-8")
+                    uploaded_source = uploaded.read_text(encoding="utf-8")
+                    self.assertNotIn(r"\reportimagestrue", empty_source)
+                    self.assertIn(r"\reportimagestrue", uploaded_source)
+                    self.assertIn(r"\thispagestyle{record}" if template.name == "speed-of-sound.tex"
+                                  else r"\ReportRecord", uploaded_source)
+                    self.assertNotIn("\\clearpage\n\\thispagestyle{record}\n\\begin{center}",
+                                     uploaded_source)
 
     def test_scientific_number_gets_math_field(self):
         from .fill_sound_speed import fill_report

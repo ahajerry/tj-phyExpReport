@@ -24,6 +24,7 @@
   \underline{\makebox[#1][c]{%
     \ifcsname expdata@#2\endcsname\csname expdata@#2\endcsname\else\strut\fi}}}
 \newcommand{\MathField}[2][1.7cm]{\mbox{\Field[#1]{#2}}}
+\newif\ifreportimages
 
 % ===== 数据输入区开始 =====
 \SetField{experiment}{声速测定}
@@ -276,7 +277,7 @@ E=\frac{|v-v_{\mathrm{th}}|}{v_{\mathrm{th}}}\times100\%
 \thispagestyle{record}
 \bindingline[3.03]
 \vspace*{0.6cm}
-（请将教师签字的实验原始数据记录单完整拍照并粘贴于此；上传图片后，图片会接续排在后页。）
+\ifreportimages\else（请将教师签字的实验原始数据记录单完整拍照并粘贴于此。）\fi
 
 % ===== 原始数据图片插入区 =====
 

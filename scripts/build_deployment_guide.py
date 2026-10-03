@@ -104,7 +104,7 @@ story = [
         ["backend/experiment_registry.py", "根据 experimentId 选择实验模块。"],
         ["backend/speed_of_sound_exp.py", "声速实验的校验、物理计算与 LaTeX 编译。"],
         ["backend/report_images.py", "校验原图并转换临时 JPEG；不改动归档原图。"],
-        ["声速测定.tex", "完整声速报告模板；上传图片插入末尾原始记录页。"],
+        ["tex/templates/speed-of-sound.tex", "完整声速报告模板；上传图片填入末尾原始记录页。"],
     ], [62 * mm, 106 * mm]),
     Spacer(1, 5 * mm),
     p("目前七个实验均已注册报告模块；部署包必须包含 tex/templates 下的七份模板、公共版式与全部插图。", "sub"),

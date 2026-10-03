@@ -16,11 +16,11 @@ TOP_LEVEL = (
     "src", "backend", "public", "scripts", "tex/templates", "package.json",
     "package-lock.json", "index.html", "vite.config.ts", "tsconfig.json",
     "tsconfig.app.json", "tsconfig.node.json", "eslint.config.js",
-    "components.json", "formula.tex", "声速测定.tex",
+    "components.json",
     "tongji_logo.jpeg", "README.md", "CHANGELOG.md",
 )
 REQUIRED = (
-    "backend/main.py", "backend/structured_report.py", "声速测定.tex",
+    "backend/main.py", "backend/structured_report.py",
     "tongji_logo.jpeg", "tex/templates/physics_report_base.tex",
     "tex/templates/tongji_logo.jpeg",
     *(f"tex/templates/{experiment_id}.tex" for experiment_id in EXPERIMENT_IDS),
