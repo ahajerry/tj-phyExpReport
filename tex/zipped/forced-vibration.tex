@@ -1,0 +1,118 @@
+\input{physics_report_base.tex}
+% ===== 数据输入区开始 =====
+\SetField{experiment}{用波尔共振仪研究物体受迫振动}
+% 后端以 \SetField{字段名}{值} 填入数据；缺省值保持空白。
+% 母模板封面字段：\Field{experiment} \Field{student} \Field{student_id} \Field{group} \Field{date}
+% ===== 数据输入区结束 =====
+\begin{document}\fontsize{10.5pt}{20pt}\selectfont
+\ReportCover{用波尔共振仪研究物体受迫振动}
+\ReportSection{实验目的}
+1. 观察自由振动、阻尼振动与受迫振动的区别，求自由周期和阻尼系数。\par
+2. 改变驱动周期，记录稳定振幅和相位差，绘制由本次读数得到的幅频、相频曲线。\par
+3. 比较峰值位置与固有频率，并分析阻尼和测量步长对共振曲线的影响。\par
+\ReportSection{实验原理}
+阻尼受迫振动可写为 $\ddot\theta+2\beta\dot\theta+\omega_0^2\theta=M\cos\omega t$。自由振动给出 $\omega_0\approx\frac{2\pi}{T_0}$；阻尼峰值按 $\theta_k\propto\exp(-\beta kT_d)$ 逐渐衰减。稳态振幅与相位满足
+\[\theta_m=\frac{M}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}},\qquad
+\tan\varphi=\frac{2\beta\omega}{\omega_0^2-\omega^2}.\]
+阻尼越大，振幅峰值通常越低、曲线越宽；相位随频率穿过共振区时迅速改变。下图展示理论趋势，后文的散点和连线则由本次输入数据生成。
+\begin{center}\includegraphics[width=10.5cm]{figures/forced-reference-curves.png}\par
+{\small 幅频与相频曲线的理论趋势示意图。}\end{center}
+\ReportSection{实验内容}
+\ReportSubsection{自由与阻尼振动}
+1. 调平仪器、选择阻尼档位，拨动转盘使其自由振动；在不同初始角下记录十组周期，检查周期是否基本稳定。\par
+2. 记录连续十个阻尼峰值与单周期，使用相隔五个峰值的幅度比估计衰减系数。\par
+\ReportSubsection{受迫振动}
+3. 接通驱动装置，改变驱动周期并等待瞬态衰减；在十五个设置点记录驱动周期、稳定振幅及相位差。共振附近缩小调节步长。\par
+4. 将横轴统一为 $\frac{\omega}{\omega_0}=\frac{T_0}{T}$，分别绘制幅频和相频图；用实测最大振幅对应的驱动周期报告共振位置。
+\ReportSection{实验仪器}
+波尔共振仪（转盘、阻尼器和驱动电机）、角度盘、数字计时器与光电门。各组周期、振幅和相位读数必须按同一驱动设置对应。
+\ReportSection{数据记录处理}
+自由振动：
+\begin{center}\small\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{|c|c|c|}\hline
+序号 & 角度/° & 周期/s\\\hline
+1 & \Field[10mm]{free_angle_01} & \Field[10mm]{free_period_01}\\\hline
+2 & \Field[10mm]{free_angle_02} & \Field[10mm]{free_period_02}\\\hline
+3 & \Field[10mm]{free_angle_03} & \Field[10mm]{free_period_03}\\\hline
+4 & \Field[10mm]{free_angle_04} & \Field[10mm]{free_period_04}\\\hline
+5 & \Field[10mm]{free_angle_05} & \Field[10mm]{free_period_05}\\\hline
+6 & \Field[10mm]{free_angle_06} & \Field[10mm]{free_period_06}\\\hline
+7 & \Field[10mm]{free_angle_07} & \Field[10mm]{free_period_07}\\\hline
+8 & \Field[10mm]{free_angle_08} & \Field[10mm]{free_period_08}\\\hline
+9 & \Field[10mm]{free_angle_09} & \Field[10mm]{free_period_09}\\\hline
+10 & \Field[10mm]{free_angle_10} & \Field[10mm]{free_period_10}\\\hline
+\end{tabular}
+\end{center}
+\ReportSection{阻尼振动与受迫振动}
+\noindent 阻尼档位 $\Field{damping_setting}$；阻尼振动单周期 $T_d=\Field{damped_period_s}$ s。
+\begin{center}\small\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{|c|c|}\hline
+峰值序号 & 振幅/°\\\hline
+1 & \Field[10mm]{damped_peak_01}\\\hline
+2 & \Field[10mm]{damped_peak_02}\\\hline
+3 & \Field[10mm]{damped_peak_03}\\\hline
+4 & \Field[10mm]{damped_peak_04}\\\hline
+5 & \Field[10mm]{damped_peak_05}\\\hline
+6 & \Field[10mm]{damped_peak_06}\\\hline
+7 & \Field[10mm]{damped_peak_07}\\\hline
+8 & \Field[10mm]{damped_peak_08}\\\hline
+9 & \Field[10mm]{damped_peak_09}\\\hline
+10 & \Field[10mm]{damped_peak_10}\\\hline
+\end{tabular}
+\end{center}
+\noindent 受迫振动：
+\begin{center}\small\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{|c|c|c|c|c|}\hline
+序号 & $T$/s & 振幅/° & 相位差/° & $\omega/\omega_0$\\\hline
+1 & \Field[10mm]{drive_period_01} & \Field[10mm]{amplitude_01} & \Field[10mm]{phase_01} & \Field[10mm]{frequency_ratio_01}\\\hline
+2 & \Field[10mm]{drive_period_02} & \Field[10mm]{amplitude_02} & \Field[10mm]{phase_02} & \Field[10mm]{frequency_ratio_02}\\\hline
+3 & \Field[10mm]{drive_period_03} & \Field[10mm]{amplitude_03} & \Field[10mm]{phase_03} & \Field[10mm]{frequency_ratio_03}\\\hline
+4 & \Field[10mm]{drive_period_04} & \Field[10mm]{amplitude_04} & \Field[10mm]{phase_04} & \Field[10mm]{frequency_ratio_04}\\\hline
+5 & \Field[10mm]{drive_period_05} & \Field[10mm]{amplitude_05} & \Field[10mm]{phase_05} & \Field[10mm]{frequency_ratio_05}\\\hline
+6 & \Field[10mm]{drive_period_06} & \Field[10mm]{amplitude_06} & \Field[10mm]{phase_06} & \Field[10mm]{frequency_ratio_06}\\\hline
+7 & \Field[10mm]{drive_period_07} & \Field[10mm]{amplitude_07} & \Field[10mm]{phase_07} & \Field[10mm]{frequency_ratio_07}\\\hline
+8 & \Field[10mm]{drive_period_08} & \Field[10mm]{amplitude_08} & \Field[10mm]{phase_08} & \Field[10mm]{frequency_ratio_08}\\\hline
+9 & \Field[10mm]{drive_period_09} & \Field[10mm]{amplitude_09} & \Field[10mm]{phase_09} & \Field[10mm]{frequency_ratio_09}\\\hline
+10 & \Field[10mm]{drive_period_10} & \Field[10mm]{amplitude_10} & \Field[10mm]{phase_10} & \Field[10mm]{frequency_ratio_10}\\\hline
+11 & \Field[10mm]{drive_period_11} & \Field[10mm]{amplitude_11} & \Field[10mm]{phase_11} & \Field[10mm]{frequency_ratio_11}\\\hline
+12 & \Field[10mm]{drive_period_12} & \Field[10mm]{amplitude_12} & \Field[10mm]{phase_12} & \Field[10mm]{frequency_ratio_12}\\\hline
+13 & \Field[10mm]{drive_period_13} & \Field[10mm]{amplitude_13} & \Field[10mm]{phase_13} & \Field[10mm]{frequency_ratio_13}\\\hline
+14 & \Field[10mm]{drive_period_14} & \Field[10mm]{amplitude_14} & \Field[10mm]{phase_14} & \Field[10mm]{frequency_ratio_14}\\\hline
+15 & \Field[10mm]{drive_period_15} & \Field[10mm]{amplitude_15} & \Field[10mm]{phase_15} & \Field[10mm]{frequency_ratio_15}\\\hline
+\end{tabular}
+\end{center}
+\[\begin{aligned}
+\bar T_0&=(\MathField{free_period_mean_s}\pm\MathField{free_period_u_s})\,\mathrm{s},\\
+\omega_0&=(\MathField{natural_omega_rad_s}\pm\MathField{natural_omega_u_rad_s})\,\mathrm{rad/s},\\
+\beta&=(\MathField{damping_beta_s_inv}\pm\MathField{damping_beta_u_s_inv})\,\mathrm{s^{-1}}.
+\end{aligned}\]
+\noindent 上述不确定度仅反映重复自由周期与五组阻尼峰值比的统计分散，不包含单次驱动设定的仪器误差。
+\noindent 最大幅值 $\Field{peak_amplitude_deg}$°，对应驱动周期 $\Field{resonance_period_s}$ s。
+
+\ReportSection{阻尼衰减与受迫振动曲线}
+下列图形使用本次输入数据，横轴 $\frac{\omega}{\omega_0}=\frac{T_0}{T}$；连线只帮助观察趋势，不代表额外测量点。阻尼峰值图用于核对振幅总体衰减。
+\begin{center}\begin{tikzpicture}
+\begin{axis}[width=.82\textwidth,height=5.8cm,xlabel={峰值序号},ylabel={阻尼峰值/$^\circ$},grid=both]
+\addplot+[mark=*,blue] coordinates {\PlotCoordinates{damped_graph_points}};
+\end{axis}\end{tikzpicture}\par
+\begin{tikzpicture}
+\begin{axis}[width=.82\textwidth,height=5.8cm,xlabel={$\frac{\omega}{\omega_0}$},ylabel={稳定振幅/$^\circ$},grid=both]
+\addplot+[mark=*,blue] coordinates {\PlotCoordinates{amplitude_graph_points}};
+\end{axis}\end{tikzpicture}\par
+\begin{tikzpicture}
+\begin{axis}[width=.82\textwidth,height=5.8cm,xlabel={$\frac{\omega}{\omega_0}$},ylabel={相位差/$^\circ$},grid=both]
+\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{phase_graph_points}};
+\end{axis}\end{tikzpicture}\end{center}
+\ReportSection{讨论与分析}
+\ReportSubsection{曲线判读}
+幅频图应在固有频率附近出现峰值，相频图应有连续过渡。理论示意曲线展示了不同阻尼的趋势，本报告数据图只对应输入的一个阻尼档位。若最大值落在采样端点或曲线跳跃，应补测相关区间。\par
+\ReportSubsection{主要误差}
+驱动周期设置误差、光电门触发延迟、等待稳态时间不足及相位零点偏移都会改变曲线形状。阻尼峰值若没有随时间总体衰减，应先核对峰值顺序。\par
+\ReportSubsection{思考题}
+为何共振区要缩小步长？振幅和相位变化最快，大步长可能错过峰值。为何每次改变驱动周期后要等待？瞬态项尚未衰减时，读到的振幅并非稳态响应。
+\ReportSection{实验结论}
+自由周期平均值为 $(\MathField{free_period_mean_s}\pm\MathField{free_period_u_s})\,\mathrm s$，阻尼系数估计为 $(\MathField{damping_beta_s_inv}\pm\MathField{damping_beta_u_s_inv})\,\mathrm{s^{-1}}$。本次测量的最大稳定振幅 $\MathField{peak_amplitude_deg}^{\circ}$ 出现在驱动周期 $\MathField{resonance_period_s}\,\mathrm s$ 附近；最终应以数据图判断共振区与相位变化。
+
+\ReportRecord
+% ===== 原始数据图片插入区 =====
+\end{document}

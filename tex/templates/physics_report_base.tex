@@ -1,0 +1,70 @@
+% 《物理实验报告模板.tex》的共同版式；所有实验模板均载入本文件。
+\documentclass[UTF8,a4paper,10pt,fontset=fandol]{ctexart}
+\usepackage[left=3.175cm,right=3.175cm,top=2.54cm,bottom=2.54cm]{geometry}
+\usepackage{graphicx,tikz,pgfplots,needspace,adjustbox,booktabs,fancyhdr,lastpage,amsmath,amssymb,array,tabularx,longtable}
+\pgfplotsset{compat=1.18}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\setlength{\headheight}{18pt}
+\linespread{1}
+\newcommand{\SetField}[2]{\expandafter\def\csname reportfield@#1\endcsname{#2}}
+\makeatletter
+\newcommand{\Field}[2][1.35cm]{%
+  \ifcsname reportfield@#2\endcsname
+    \expandafter\ifx\csname reportfield@#2\endcsname\@empty
+      \underline{\makebox[#1]{\strut}}%
+    \else\csname reportfield@#2\endcsname\fi
+  \else\underline{\makebox[#1]{\strut}}\fi}
+\makeatother
+\newcommand{\MathField}[2][1.35cm]{%
+  \ifcsname reportfield@math_#2\endcsname
+    \csname reportfield@math_#2\endcsname
+  \else\text{\Field[#1]{#2}}\fi}
+\newcommand{\coverfield}[2]{%
+  \noindent{\heiti\fontsize{18pt}{48pt}\selectfont
+  \makebox[3.3cm][l]{#1}\underline{\makebox[8.8cm][c]{\Field[0pt]{#2}}}\par}}
+\newcommand{\bindingline}[1][2.85]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \foreach \i in {0,...,38}{%
+      \pgfmathsetmacro{\bindingy}{-#1-0.52*\i}%
+      \ifnum\i=13\relax
+        \node[inner sep=0pt] at ([xshift=1.05cm,yshift=\bindingy cm]current page.north west) {\songti\fontsize{10.5pt}{10.5pt}\selectfont 装};
+      \else\ifnum\i=19\relax
+        \node[inner sep=0pt] at ([xshift=1.05cm,yshift=\bindingy cm]current page.north west) {\songti\fontsize{10.5pt}{10.5pt}\selectfont 订};
+      \else\ifnum\i=25\relax
+        \node[inner sep=0pt] at ([xshift=1.05cm,yshift=\bindingy cm]current page.north west) {\songti\fontsize{10.5pt}{10.5pt}\selectfont 线};
+      \else
+        \pgfmathsetmacro{\bindingtop}{\bindingy+0.20}%
+        \pgfmathsetmacro{\bindingbottom}{\bindingy-0.20}%
+        \draw[line width=0.35pt,dash pattern=on 1.2pt off 1.8pt]
+          ([xshift=1.05cm,yshift=\bindingtop cm]current page.north west)
+          -- ([xshift=1.05cm,yshift=\bindingbottom cm]current page.north west);
+      \fi\fi\fi}
+  \end{tikzpicture}%
+}
+% 装订线印在每一页正文和原始数据页，续页也沿用母模板样式。
+\newif\ifreportbinding
+\AddToHook{shipout/foreground}{\ifreportbinding\bindingline\fi}
+\fancypagestyle{report}{\fancyhf{}\fancyfoot[C]{第\thepage 页\quad 共\pageref{LastPage}页}\renewcommand{\headrulewidth}{0.4pt}}
+\fancypagestyle{record}{\fancyhf{}\fancyhead[C]{原始数据记录单}\fancyfoot[C]{第\thepage 页\quad 共\pageref{LastPage}页}\renewcommand{\headrulewidth}{0.4pt}}
+\newcommand{\ReportCover}[1]{%
+  \thispagestyle{empty}\vspace*{1.0cm}
+  \begin{center}
+    \includegraphics[width=8.184cm]{tongji_logo.jpeg}\par
+    {\bfseries\fontsize{18pt}{24pt}\selectfont TONGJI UNIVERSITY\par}
+    \vspace{1.5cm}{\heiti\fontsize{36pt}{44pt}\selectfont 物理实验报告\par}
+  \end{center}
+  \vspace{1.5cm}
+  \coverfield{实验名称}{experiment}
+  \coverfield{学生姓名}{student}
+  \coverfield{学\hspace{1em}号}{student_id}
+  \coverfield{组\hspace{1em}号}{group}
+  \coverfield{实验日期}{date}
+  \clearpage\reportbindingtrue\pagestyle{report}
+  \begin{center}{\heiti\fontsize{14pt}{40pt}\selectfont #1\par}\end{center}}
+\newcommand{\ReportSection}[1]{\Needspace{4\baselineskip}\par\vspace{0.35\baselineskip}{\heiti #1}\par}
+\newcommand{\ReportSubsection}[1]{\Needspace{3\baselineskip}\par\vspace{0.2\baselineskip}{\bfseries #1}\par}
+\newcommand{\ReportRecord}{%
+  \clearpage\thispagestyle{record}
+  \vspace*{0.6cm}（请将教师签字的实验数据记录单完整拍照粘贴至此处。）
+}

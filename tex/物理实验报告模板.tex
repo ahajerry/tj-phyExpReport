@@ -1,0 +1,132 @@
+% 根据《物理实验报告模板.docx》整理的 LaTeX 源码。
+% 中文排版使用 XeLaTeX。
+% 请将 tongji_logo.jpeg 与本文件放在同一目录。
+\documentclass[UTF8,a4paper,10pt,fontset=fandol]{ctexart}
+\usepackage[left=3.175cm,right=3.175cm,top=2.54cm,bottom=2.54cm]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\headheight}{18pt}
+\linespread{1}
+\pagestyle{empty}
+
+% 封面填写横线。
+\newcommand{\coverfield}[1]{%
+  \noindent{\heiti\fontsize{18pt}{48pt}\selectfont
+  \makebox[3.3cm][l]{#1}\rule[-0.25em]{8.8cm}{0.45pt}\par}%
+}
+
+% 装订线依照 Word 模板的 39 个逐行字符排布。
+% 第 14、20、26 个字符分别为“装”“订”“线”，字间各有五个“┊”。
+\newcommand{\bindingline}[1][2.85]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \foreach \i in {0,...,38}{%
+      \pgfmathsetmacro{\bindingy}{-#1-0.52*\i}%
+      \ifnum\i=13\relax
+        \node[inner sep=0pt] at
+          ([xshift=1.05cm,yshift=\bindingy cm]current page.north west)
+          {\songti\fontsize{10.5pt}{10.5pt}\selectfont 装};
+      \else\ifnum\i=19\relax
+        \node[inner sep=0pt] at
+          ([xshift=1.05cm,yshift=\bindingy cm]current page.north west)
+          {\songti\fontsize{10.5pt}{10.5pt}\selectfont 订};
+      \else\ifnum\i=25\relax
+        \node[inner sep=0pt] at
+          ([xshift=1.05cm,yshift=\bindingy cm]current page.north west)
+          {\songti\fontsize{10.5pt}{10.5pt}\selectfont 线};
+      \else
+        \pgfmathsetmacro{\bindingtop}{\bindingy+0.20}%
+        \pgfmathsetmacro{\bindingbottom}{\bindingy-0.20}%
+        \draw[line width=0.35pt,dash pattern=on 1.2pt off 1.8pt]
+          ([xshift=1.05cm,yshift=\bindingtop cm]current page.north west)
+          -- ([xshift=1.05cm,yshift=\bindingbottom cm]current page.north west);
+      \fi\fi\fi
+    }
+  \end{tikzpicture}%
+}
+
+\fancypagestyle{report}{%
+  \fancyhf{}
+  \fancyhead[C]{}
+  \fancyfoot[C]{第\thepage 页\quad 共\pageref{LastPage}页}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{record}{%
+  \fancyhf{}
+  \fancyhead[C]{原始数据记录单}
+  \fancyfoot[C]{第\thepage 页\quad 共\pageref{LastPage}页}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\begin{document}
+\fontsize{10.5pt}{20pt}\selectfont
+
+% 第 1 页：封面
+\thispagestyle{empty}
+\vspace*{1.0cm}
+\begin{center}
+  \includegraphics[width=8.184cm]{tongji_logo.jpeg}\par
+  {\bfseries\fontsize{18pt}{24pt}\selectfont TONGJI UNIVERSITY\par}
+  \vspace{1.5cm}
+  {\heiti\fontsize{36pt}{44pt}\selectfont 物理实验报告\par}
+\end{center}
+
+\vspace{1.5cm}
+\coverfield{实验名称}
+\coverfield{学生姓名}
+\coverfield{学\hspace{1em}号}
+\coverfield{组\hspace{1em}号}
+\coverfield{实验日期}
+
+\clearpage
+
+% 第 2 页：实验报告正文
+\thispagestyle{report}
+\bindingline
+\begin{center}
+  {\heiti\fontsize{14pt}{40pt}\selectfont 实验名称\par}
+\end{center}
+
+\begingroup
+\setlength{\parindent}{0pt}
+\fontsize{10.5pt}{20pt}\selectfont
+{\heiti 实验目的}\par
+\vspace{3\baselineskip}
+
+{\heiti 实验原理}\par
+（请对实验原理做简要概述，需要包含必要的原理图、公式等，不超过300字。）\par
+\vspace{2\baselineskip}
+
+{\heiti 实验内容}\par
+\vspace{3\baselineskip}
+
+{\heiti 实验仪器}\par
+\vspace{3\baselineskip}
+
+{\heiti 数据记录处理}\par
+\vspace{3\baselineskip}
+
+{\heiti 讨论与分析}\par
+\vspace{4\baselineskip}
+
+{\heiti 实验结论}\par
+\endgroup
+
+\clearpage
+
+% 第 3 页：原始数据记录单
+\thispagestyle{record}
+\bindingline[3.03]
+\vspace*{0.6cm}
+（请将教师签字的实验数据记录单完整拍照粘贴至此处。）
+
+% 如需插入照片，可把下行取消注释，并将文件名替换为实际照片：
+% \begin{center}\includegraphics[width=\textwidth,height=19cm,keepaspectratio]{原始数据记录单.jpg}\end{center}
+
+\end{document}
