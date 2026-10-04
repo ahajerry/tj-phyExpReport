@@ -1,0 +1,124 @@
+"""Six-page oscilloscope report body; format comes from physics_report_base.tex."""
+
+
+def body(f, tab):
+    voltage_rows = [[str(i), name, f(f"voltage_scale_{i:02d}"), f(f"voltage_divisions_{i:02d}"),
+                     f(f"voltage_pp_{i:02d}")] for i, name in enumerate(
+                     ("正锯齿波", "反锯齿波", "脉冲波", "半波", "正弦波", "方波", "三角波"), 1)]
+    time_rows = [[str(i), name, f(f"time_scale_{i:02d}"), f(f"period_divisions_{i:02d}"),
+                  f(f"period_ms_{i:02d}"), f(f"frequency_khz_{i:02d}")]
+                 for i, name in enumerate(("正锯齿波", "反锯齿波", "脉冲波", "半波", "正弦波", "方波", "三角波"), 1)]
+    lissajous_rows = [[str(i), f(f"reference_frequency_{i:02d}"), f(f"ny_{i:02d}"), f(f"nx_{i:02d}"),
+                      f(f"frequency_ratio_{i:02d}"), f(f"lissajous_frequency_{i:02d}")]
+                     for i in range(1, 6)]
+    return r"""\ReportSection{实验目的}
+1. 了解阴极射线示波器的结构、电偏转、扫描和触发同步原理。\par
+2. 掌握示波器校准及峰峰值、周期、频率的测量方法。\par
+3. 观察不同波形，利用李萨如图形测量正弦信号频率。
+\ReportSection{实验仪器}
+ST-16 型单踪示波器、SG1001 型简易信号发生器、UTG7025B 型函数信号发生器及同轴电缆。
+\ReportSection{实验原理}
+\ReportSubsection{电子束偏转与波形显示}
+电子枪发射的电子经加速、聚焦后轰击荧光屏。两组互相垂直的偏转板控制亮点的横、纵位移。
+在小偏转近似下，位移与偏转电压成正比：$y=D_yU_y$、$x=D_xU_x$。
+Y 轴输入待测信号，X 轴输入与时间成正比的锯齿扫描电压，就把电压随时间的变化展开成波形。
+触发电路让每次扫描从待测信号的同一相位开始，从而稳定显示周期性波形。
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\small},>=stealth]
+\node[draw,minimum width=2.2cm,minimum height=.8cm] (v) at (0,1.4) {垂直放大};
+\node[draw,minimum width=2.2cm,minimum height=.8cm] (tr) at (0,0) {触发同步};
+\node[draw,minimum width=2.2cm,minimum height=.8cm] (sw) at (3,0) {扫描发生器};
+\node[draw,minimum width=2.2cm,minimum height=.8cm] (h) at (6,0) {水平放大};
+\node[draw,minimum width=2.2cm,minimum height=.8cm] (crt) at (6,1.4) {示波管};
+\draw[->] (-2.4,1.4) node[left]{Y 输入} -- (v);
+\draw[->] (v) -- (crt); \draw[->] (v) -- (tr);
+\draw[->] (tr) -- (sw); \draw[->] (sw) -- (h); \draw[->] (h) -- (crt);
+\end{tikzpicture}\par {\small 示波器扫描与触发的简化结构。}
+\end{center}
+\ReportSubsection{电压、周期与频率}
+峰峰值 $U_{\rm pp}$ 由纵向跨度 $N_U$ 与电压档位 $S_y$ 相乘得到；周期由横向跨度 $N_T$ 与时基档位 $S_x$ 相乘得到：
+\[U_{\rm pp}=K S_yN_U,\qquad T=S_xN_T,\qquad f=\frac1T.\]
+$K$ 为探头衰减倍数，同轴直连时 $K=1$；$S_y$ 用 V/div，$S_x$ 用 ms/div，故 $T$ 用 ms，$f$ 用 kHz。
+峰峰值并非峰值或有效值；仅对正弦信号有 $U_{\rm rms}=U_{\rm pp}/(2\sqrt2)$。
+
+\clearpage
+\ReportSection{实验内容与操作}
+\ReportSubsection{预备调节与校准}
+接通电源并预热，调节适中辉度、聚焦及 X/Y 位移，避免亮点长时间停留在同一位置。
+Y 输入使用合适耦合；观察交流波形可选 AC，测直流必须选 DC。
+校准时使用 X1 探头连接内置标准方波（$0.5\,\mathrm{V_{pp}}$、$1\,\mathrm{kHz}$）。
+将垂直档设为 $0.1\,\mathrm{V/div}$、时基设为 $0.1\,\mathrm{ms/div}$，预期峰峰跨度为 5 div、周期跨度为 10 div。
+必要时调节灵敏度微调，校准后测量期间保持不变。\par
+本表记录实际校准档位与跨度，分别计算电压和频率的有符号相对偏差。
+校准结果供核查，不自动当作比例修正应用到后续读数。
+\begin{center}\small\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|c|c|}\hline
+项目 & 纵向电压 & 横向时间\\\hline
+档位 & \Field{cal_voltage_scale} V/div & \Field{cal_time_scale} ms/div\\\hline
+跨度 & \Field{cal_voltage_divisions} div & \Field{cal_period_divisions} div\\\hline
+测量值 & \Field{cal_voltage} V & \Field{cal_period} ms\\\hline
+频率 & \multicolumn{2}{c|}{\Field{cal_frequency} kHz}\\\hline
+相对偏差 & \Field{cal_voltage_error}\%（电压） & \Field{cal_frequency_error}\%（频率）\\\hline
+\end{tabular}\end{center}
+\ReportSubsection{七种信号波形测量}
+将 SG1001 输出接示波器 Y 输入，按顺序选择正锯齿、反锯齿、脉冲、半波、正弦、方波、三角波。
+调节电压档位、时基及 LEVEL，使波形稳定且跨度尽量大，记录峰峰跨度和一个完整周期的跨度。
+多周期测量时，应先把总跨度除以周期数，再填入单周期跨度。
+\ReportSubsection{李萨如图形测频}
+把已知频率 $f_x$ 的正弦信号接 X 输入，待测正弦信号接 Y 输入，切换到外接 X 或 X--Y 模式。
+保持 Y 信号频率不变，改变 X 信号频率，取得五组稳定的简单闭合图形。
+分别计数图形与假想水平线、垂直线的切点数，记为 $n_x$、$n_y$，不要把普通交点或曲线自交点当作切点。
+记录图形草图或拍照，与切点计数一同保存在原始记录中。
+\ReportSubsection{注意事项}
+避免频繁开关机；测量前校准，档位切换轻缓；示波器与信号源公共地连接一致。
+大幅度信号先衰减，测量前确认探头倍数；示波器内有高压，禁止自行打开外壳。
+
+\clearpage
+\ReportSection{数据记录与处理：波形测量}
+探头倍数 $K=\Field{probe_factor}$；同轴直连取 1。本报告七组数据使用同一探头倍数。
+表格顺序与 SG1001 的七种波形一致；脉冲与半波的周期取相邻重复结构的间隔。
+\ReportSubsection{电压峰峰值}
+\[U_{\rm pp}=K S_yN_U.\]
+""" + tab(["序号", "波形", "$S_y$/(V/div)", "$N_U$/div", r"$U_{\rm pp}$/V"], voltage_rows, fit=True) + r"""
+\ReportSubsection{周期与频率}
+\[T=S_xN_T,\qquad f\,(\mathrm{kHz})=\frac{1}{T\,(\mathrm{ms})}.\]
+""" + tab(["序号", "波形", "$S_x$/(ms/div)", "$N_T$/div", "$T$/ms", "$f$/kHz"], time_rows, fit=True) + r"""
+\ReportSubsection{读数与误差说明}
+读取峰、谷时选取稳定轮廓，读取周期时选取相邻的同相位点。方波和脉冲的边沿有一定宽度，应保持同一读数标准。
+时基和垂直微调若离开校准位置，档位标称值不能直接用于测量。
+本实验未输入仪器误差限，电压与周期表仅给出由读数得到的结果；不能把显示小数位数当作仪器准确度。
+
+\clearpage
+\ReportSection{数据记录与处理：李萨如图形}
+频率比由切点数确定：
+\[\frac{f_y}{f_x}=\frac{n_x}{n_y},\qquad f_y=\frac{n_x}{n_y}f_x.\]
+\begin{center}
+\begin{tikzpicture}
+\foreach \p/\q/\offset/\label in {1/1/0/{1:1},1/2/3.2/{1:2},2/3/6.4/{2:3},3/4/9.6/{3:4}} {
+\begin{scope}[xshift=\offset cm]
+\draw[gray] (-1.25,-1) rectangle (1.25,1);
+\draw[blue,thin,samples=241,smooth,domain=0:360,variable=\t]
+plot ({1.1*sin(\q*\t+30)},{.85*sin(\p*\t)});
+\node[font=\small] at (0,-1.35) {$f_y:f_x=\label$};
+\end{scope}}
+\end{tikzpicture}\par
+{\small 理想频率比示意图（相位差取示意值），并非实测波形。}
+\end{center}
+""" + tab(["组次", "$f_x$/kHz", "$n_y$", "$n_x$", "$f_y:f_x$", "$f_y$/kHz"], lissajous_rows, fit=True) + r"""
+\[\bar f_y=\frac15\sum_{i=1}^5f_{y,i},\quad
+u_A(\bar f_y)=\sqrt{\frac{\sum_{i=1}^5(f_{y,i}-\bar f_y)^2}{5(5-1)}}.\]
+\noindent 李萨如法：$\bar f_y=(\MathField{lissajous_mean_khz}\pm\MathField{lissajous_u_khz})\,\mathrm{kHz}$。
+这里只估计重复测频的 A 类标准不确定度，未计入参考频率准确度。
+\par 正弦波周期法：$f_T=\MathField{sine_frequency_khz}\,\mathrm{kHz}$；
+两法相对差 $|\bar f_y-f_T|/f_T=\Field{method_difference_percent}\%$。
+平均与比较要求五组记录和第 5 行正弦波测量使用同一个、频率未改变的待测信号。
+\ReportSection{讨论与分析（思考题）}
+1. 只见竖直亮线，通常是 X 扫描未开启或未接入合适扫描信号。应检查时基、X 输入选择及水平放大，调节触发源、电平和档位，使波形展开并稳定。\par
+2. 测直流时用 DC 耦合，先确定零电压基线，再接入待测电压；电压为基线位移乘垂直档位及探头倍数，正负由偏转方向确定。\par
+3. 普通触发扫描难以持续稳定显示非周期信号，因为重复扫描不能保持同一相位；瞬态捕获需要单次扫描或存储示波器。\par
+4. 李萨如图形转动或变化表明频率比未稳定或相位缓慢漂移。微调信号频率、检查连接并保持信号源稳定，可得到便于计数的闭合图形。
+\ReportSection{实验结论}
+通过校准和档位读数得到七种波形的峰峰值、周期及频率。
+李萨如法平均频率为 $\MathField{lissajous_mean_khz}\,\mathrm{kHz}$，与周期法的相对差为 \Field{method_difference_percent}\%。
+评价两法一致性时应结合切点计数、读数分辨率和参考频率准确度；上述相对差本身不是准确度判定标准。
+"""

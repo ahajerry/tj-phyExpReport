@@ -1,6 +1,7 @@
 """Detailed, source-grounded narrative and data-driven plot blocks for reports."""
 
 CONTENT = {
+    "阴极射线示波器": {},  # 精简说明和分页由 oscilloscope_template.py 维护。
     "空气比热容比的测定": {
         "实验目的": r"""1. 理解气体的定压、定容比热容及比热容比的物理意义，并认识绝热过程的近似条件。\par
 2. 使用振动法测定空气比热容比，掌握小球直径、质量、周期、气压和容积的测量。\par

@@ -17,7 +17,7 @@ export const experimentGroups: ExperimentGroup[] = [
     ],
   },
   { title: "热学实验", items: [{ id: "heat-capacity-ratio", title: "空气比热容比的测定" }] },
-  { title: "电磁学实验", items: [{ id: "oscilloscope", title: "示波器的使用" }] },
+  { title: "电磁学实验", items: [{ id: "oscilloscope", title: "阴极射线示波器" }] },
   { title: "声学实验", items: [{ id: "speed-of-sound", title: "声速测定" }] },
   { title: "光学实验", items: [{ id: "focal-length", title: "透镜焦距的测量" }] },
   { title: "近代物理实验", items: [{ id: "millikan", title: "密立根油滴实验" }] },

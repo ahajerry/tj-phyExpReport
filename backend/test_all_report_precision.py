@@ -8,6 +8,7 @@ from .experiment_registry import validate_report
 
 
 PAIRS = {
+    "oscilloscope": [("lissajous_mean_khz", "lissajous_u_khz")],
     "heat-capacity-ratio": [("gamma_result", "gamma_uncertainty")],
     "millikan": [(f"electron_charge_{method}", f"electron_charge_{method}_u")
                  for method in ("reverse", "graph", "ls")],

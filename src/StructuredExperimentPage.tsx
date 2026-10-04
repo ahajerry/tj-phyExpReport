@@ -16,6 +16,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   const [images, setImages] = useState<File[]>([])
   const [table, setTable] = useState<File | null>(null)
   const tableType = experiment.id === "millikan" ? "csv" : experiment.id === "moment-of-inertia" ? "xlsx" : null
+  const maxImages = experiment.id === "oscilloscope" ? 2 : 5
   const [importText, setImportText] = useState("")
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
@@ -96,7 +97,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   }
 
   const prompt = buildImportPrompt(experiment.title, experiment.measurements.map((item) => ({
-    id: item.id, showName: `${item.label}（${item.count} 个）`, unit: item.unit,
+    id: item.id, showName: `${item.label}（${item.count} 个${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
   })))
 
   return (
@@ -112,8 +113,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
             <div className="grid gap-2 sm:grid-cols-2">
               {data[item.id].map((value, index) => (
                 <label key={index} className="flex items-center gap-2 text-sm">
-                  <span className="w-7 text-right text-muted-foreground">{index + 1}</span>
-                  <Input type="number" step="any" inputMode="decimal" aria-label={`${item.label}第 ${index + 1} 次`}
+                  <span className={`${item.rowLabels ? "w-20 shrink-0" : "w-7"} text-right text-muted-foreground`}>{item.rowLabels?.[index] ?? index + 1}</span>
+                  <Input type="number" step="any" inputMode="decimal" aria-label={`${item.label}${item.rowLabels?.[index] ?? `第 ${index + 1} 次`}`}
                     value={value} onChange={(event) => changeReading(item.id, index, event.target.value)} />
                 </label>
               ))}
@@ -165,13 +166,13 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         {table && <p className="mt-2 text-sm text-muted-foreground">已选择：{table.name}</p>}
       </section> : <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">原始数据记录图片（选填）</h2>
-        <p className="mb-2 text-sm text-muted-foreground">最多 5 张，每张不超过 8 MiB；首张图片填入原始数据记录页，多张图片依次分页。</p>
+        <p className="mb-2 text-sm text-muted-foreground">最多 {maxImages} 张，每张不超过 8 MiB；首张图片填入原始数据记录页，多张图片依次分页。{experiment.id === "oscilloscope" && "示波器完整报告保持在 6–7 页。"}</p>
         <Input type="file" accept="image/png,image/jpeg,image/gif,image/tiff,image/webp,image/heic,image/heif,image/avif,.heic,.heif" multiple
           aria-label="上传原始数据记录图片" onChange={(event) => {
             const selected = Array.from(event.currentTarget.files ?? [])
-            if (selected.length > 5 || selected.some((file) => file.size > 8 * 1024 * 1024) ||
+            if (selected.length > maxImages || selected.some((file) => file.size > 8 * 1024 * 1024) ||
               selected.reduce((total, file) => total + file.size, 0) > 25 * 1024 * 1024) {
-              setError("最多上传 5 张图片，每张不超过 8 MiB，总计不超过 25 MiB")
+              setError(`最多上传 ${maxImages} 张图片，每张不超过 8 MiB，总计不超过 25 MiB`)
               setImages([])
               event.currentTarget.value = ""
             } else setImages(selected)

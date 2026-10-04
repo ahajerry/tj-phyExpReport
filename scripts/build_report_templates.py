@@ -1,4 +1,4 @@
-"""Build the seven report templates from the shared Tongji report layout.
+"""Build the report templates from the shared Tongji report layout.
 
 The source documents stay in tex/official and tex/original. Generated editable
 templates are archived in tex/templates and also packaged in tex/zipped.
@@ -11,6 +11,7 @@ import shutil
 import zipfile
 
 from report_content import CONTENT, PLOTS
+from oscilloscope_template import body as oscilloscope_body
 
 ROOT = Path(__file__).resolve().parents[1]
 TEX = ROOT / "tex"
@@ -448,6 +449,7 @@ TEMPLATES = {
     "young-modulus": young,
     "forced-vibration": resonance,
     "focal-length": lens,
+    "oscilloscope": lambda: build("阴极射线示波器", oscilloscope_body(f, tab)),
 }
 
 

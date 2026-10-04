@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output" / "phyExpCal-upload.tar.gz"
 EXPERIMENT_IDS = (
     "speed-of-sound", "heat-capacity-ratio", "millikan",
-    "moment-of-inertia", "young-modulus", "forced-vibration", "focal-length",
+    "moment-of-inertia", "young-modulus", "forced-vibration", "focal-length", "oscilloscope",
 )
 TOP_LEVEL = (
     "src", "backend", "public", "scripts", "tex/templates", "package.json",
@@ -60,7 +60,7 @@ def main() -> None:
     missing = set(REQUIRED) - members
     if missing:
         raise RuntimeError("部署包缺少资源：" + "、".join(sorted(missing)))
-    print(f"{OUTPUT}：{len(files)} 个文件，{OUTPUT.stat().st_size} 字节；七份模板和插图齐全")
+    print(f"{OUTPUT}：{len(files)} 个文件，{OUTPUT.stat().st_size} 字节；{len(EXPERIMENT_IDS)} 份模板和插图齐全")
 
 
 if __name__ == "__main__":

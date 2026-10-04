@@ -25,6 +25,15 @@ def strings(values):
 
 
 samples = {
+    "oscilloscope": {
+        "data": {"voltage_scale": ["0.5"] * 7,
+                 "voltage_divisions": ["6.0", "6.0", "4.0", "3.0", "6.0", "5.0", "6.0"],
+                 "time_scale": ["0.5"] * 7, "period_divisions": ["4.0"] * 7,
+                 "reference_frequency": ["0.5", "1.0", "0.75", "0.666", "0.625"],
+                 "nx": ["1", "1", "2", "3", "4"], "ny": ["1", "2", "3", "4", "5"]},
+        "parameters": {"probe_factor": "1", "cal_voltage_scale": "0.1", "cal_voltage_divisions": "5.0",
+                       "cal_time_scale": "0.1", "cal_period_divisions": "10.0"},
+    },
     "speed-of-sound": {
         "data": {key: strings([round(20+i*4.3, 1) for i in range(20)]) for key in ("resonance", "phase")},
         "parameters": {

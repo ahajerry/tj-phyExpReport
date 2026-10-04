@@ -1,4 +1,4 @@
-export type MeasurementSpec = { id: string; label: string; unit: string; count: number }
+export type MeasurementSpec = { id: string; label: string; unit: string; count: number; rowLabels?: string[] }
 export type ParameterSpec = { id: string; label: string; unit: string; initial?: string; min?: number; minExclusive?: number }
 export type StructuredExperiment = {
   id: string
@@ -10,6 +10,29 @@ export type StructuredExperiment = {
 }
 
 export const structuredExperiments: StructuredExperiment[] = [
+  {
+    id: "oscilloscope", title: "阴极射线示波器",
+    note: "七种波形按所列顺序输入档位和跨度，时间档位用 ms/div。李萨如法输入五组参考频率和切点数：nx 为水平线切点数，ny 为垂直线切点数。五组与正弦波周期测量应使用频率不变的同一待测信号。标准校准方波为 0.5 Vpp、1 kHz，校准时探头用 X1。完整报告为 6–7 页，可附最多两张原始记录图片。",
+    measurements: [
+      ...[
+        { id: "voltage_scale", label: "波形电压档位 Sy", unit: "V/div" },
+        { id: "voltage_divisions", label: "峰峰值纵向跨度 NU", unit: "div" },
+        { id: "time_scale", label: "波形时基档位 Sx", unit: "ms/div" },
+        { id: "period_divisions", label: "单周期横向跨度 NT", unit: "div" },
+      ].map((item) => ({ ...item, count: 7,
+        rowLabels: ["正锯齿波", "反锯齿波", "脉冲波", "半波", "正弦波", "方波", "三角波"] })),
+      { id: "reference_frequency", label: "李萨如法 X 参考频率 fx", unit: "kHz", count: 5 },
+      { id: "nx", label: "水平线切点数 nx", unit: "个", count: 5 },
+      { id: "ny", label: "垂直线切点数 ny", unit: "个", count: 5 },
+    ],
+    parameters: [
+      { id: "probe_factor", label: "七种波形测量的探头倍数 K（直连取 1）", unit: "倍", initial: "1", minExclusive: 0 },
+      { id: "cal_voltage_scale", label: "校准电压档位", unit: "V/div", initial: "0.1", minExclusive: 0 },
+      { id: "cal_voltage_divisions", label: "校准方波峰峰跨度", unit: "div", minExclusive: 0 },
+      { id: "cal_time_scale", label: "校准时基档位", unit: "ms/div", initial: "0.1", minExclusive: 0 },
+      { id: "cal_period_divisions", label: "校准方波单周期跨度", unit: "div", minExclusive: 0 },
+    ],
+  },
   {
     id: "speed-of-sound", title: "声速测定",
     note: "共振干涉法与相位比较法各输入 20 个位置读数；频率及误差按 kHz、位置及游标卡尺误差按 mm 输入。报告计算逐差波长、声速、不确定度、理论声速和百分差。",

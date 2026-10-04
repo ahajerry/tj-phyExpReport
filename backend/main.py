@@ -195,6 +195,8 @@ class ReportHandler(BaseHTTPRequestHandler):
                        }}}
         elif isinstance(payload, dict) and payload.get("experimentId") in ("millikan", "moment-of-inertia"):
             raise ValueError("请上传该实验的原始数据表")
+        if isinstance(payload, dict) and payload.get("experimentId") == "oscilloscope" and len(images) > 2:
+            raise ValueError("示波器报告最多附两张原始记录图片，以保持完整报告为 6–7 页")
         return payload, images
 
 

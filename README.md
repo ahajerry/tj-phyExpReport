@@ -80,24 +80,24 @@ git commit -m "Record current development state"
 
 报告提交后，后端逐个编译，并在页面显示排队数、编译进度和 PDF 下载入口。
 
-目前支持生成七种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距。密立根油滴上传 CSV 原始记录（每颗连续四行，支持 UTF-8/GB18030，3–10 颗），扭摆转动惯量上传与提供样例相同版式的 XLSX；后端读取读数、单位与仪器参数，将原始表附入报告。其余实验页面按对应数据表输入读数，仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
+目前支持生成八种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距、阴极射线示波器。密立根油滴上传 CSV 原始记录（每颗连续四行，支持 UTF-8/GB18030，3–10 颗），扭摆转动惯量上传与提供样例相同版式的 XLSX；后端读取读数、单位与仪器参数，将原始表附入报告。其余实验页面按对应数据表输入读数，仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
 
-七份统一版式的可编辑模板位于 `tex/templates/`；公共版式 `physics_report_base.tex` 源自 `tex/物理实验报告模板.tex`，封面和原始数据页沿用同济实验报告结构。每份独立压缩包及 `.tex` 副本位于 `tex/zipped/`。原有的 `specific_heat_ratio.zip`、`torsion_inertia.zip`、`young_modulus.zip` 保留为参考资料，最终归档仅保留每个实验一份模板。`tex/official/` 和 `tex/original/` 保留原资料。重新生成模板可运行 `python scripts/build_report_templates.py`；检验字段和示例 PDF 可运行 `python scripts/verify_reports.py --render`。示例 PDF 写入 `output/report-review/`。
+八份统一版式的可编辑模板位于 `tex/templates/`；公共版式 `physics_report_base.tex` 源自 `tex/物理实验报告模板.tex`，封面和原始数据页沿用同济实验报告结构。每份独立压缩包及 `.tex` 副本位于 `tex/zipped/`。原有的 `specific_heat_ratio.zip`、`torsion_inertia.zip`、`young_modulus.zip` 保留为参考资料，最终归档仅保留每个实验一份模板。`tex/official/` 和 `tex/original/` 保留原资料。重新生成模板可运行 `python scripts/build_report_templates.py`；检验字段和示例 PDF 可运行 `python scripts/verify_reports.py --render`。示例 PDF 写入 `output/report-review/`。
 
-打包脚本会核对并打包七份模板、`physics_report_base.tex`、同济标志和模板插图；部署后应检查 `tex/templates/millikan.tex` 等文件确实位于服务工作目录。编译临时文件写在 `.report-data/work/`，模板目录只需可读。
+打包脚本会核对并打包八份模板、`physics_report_base.tex`、同济标志和模板插图；部署后应检查 `tex/templates/millikan.tex` 等文件确实位于服务工作目录。编译临时文件写在 `.report-data/work/`，模板目录只需可读。
 
-计算过程保留原精度；输出成品数据时，不确定度默认保留一位有效数字，首个非零数字为 1 或 2 时保留两位。按“四舍六入五凑偶”一次修约：舍弃部分小于 5 则舍去，大于 5（含 5 后还有非零位）则进位，恰好为 5 时让保留的末位成为偶数。对应的测量结果修约到不确定度末位所在的数位，保留必要的末尾零。前端结果与七种实验 PDF 使用同一规则，原始读数不改动。扭摆、波尔共振和透镜报告新增的标准不确定度只包含重复测量的统计贡献；没有输入的仪器误差不被推测。可运行 `npm run test:precision` 验证前端规则。
+计算过程保留原精度；输出成品数据时，不确定度默认保留一位有效数字，首个非零数字为 1 或 2 时保留两位。按“四舍六入五凑偶”一次修约：舍弃部分小于 5 则舍去，大于 5（含 5 后还有非零位）则进位，恰好为 5 时让保留的末位成为偶数。对应的测量结果修约到不确定度末位所在的数位，保留必要的末尾零。前端结果与八种实验 PDF 使用同一规则，原始读数不改动。扭摆、波尔共振和透镜报告新增的标准不确定度只包含重复测量的统计贡献；没有输入的仪器误差不被推测。可运行 `npm run test:precision` 验证前端规则。
 
 任务与 PDF 存放在 `.report-data/`，重启后未完成的任务会重新排队。浏览器通过 HttpOnly Cookie 保留匿名访客身份；返回网站后从“我的报告”查看任务并下载。每个访客按北京时间每天最多提交 50 份报告，失败的任务也计入提交次数。该限制以浏览器 Cookie 为准，清除 Cookie 或换浏览器会获得新身份；如需防止此类绕过，需要增加账号登录。生产 HTTPS 模式下 Cookie 默认启用 `Secure`。
 
 除密立根油滴和扭摆法外的报告可以附带最多 5 张原始数据图片，每张不超过 8 MiB，请求体上限 30 MiB。图片按任务编号存放在 `.report-data/original-images/<任务编号>/`，并依上传顺序追加到 PDF 原始数据记录页后。未上传图片时，原始数据记录页保留空白提示。支持 PNG、JPEG、GIF、TIFF、WebP、HEIC、AVIF；HEIC 需要 `pillow-heif`。密立根油滴和扭摆法的数据表上限为 2 MiB，报告的原始数据记录页展示解析后的表格。
 部署到服务器时，需为 `.report-data/` 使用持久化磁盘，才能在服务器迁移或容器重建后保留报告与原始图片。
 
-七种报告页面统一由 `src/structured-experiments.ts` 配置、`src/StructuredExperimentPage.tsx` 渲染，读数和仪器参数保存在浏览器 localStorage，刷新后可恢复。声速页面首次打开时会把旧版 Cookie 中的读数、参数和封面信息带入新表单；长度、密度演示计算页面仍使用 Cookie。实验页面提供 JSON 导入区，识别提示词与字段名按各自实验配置生成。导入前会校验字段和读数数量，成功后一次性替换当前实验的输入。
+八种报告页面统一由 `src/structured-experiments.ts` 配置、`src/StructuredExperimentPage.tsx` 渲染，读数和仪器参数保存在浏览器 localStorage，刷新后可恢复。声速页面首次打开时会把旧版 Cookie 中的读数、参数和封面信息带入新表单；长度、密度演示计算页面仍使用 Cookie。实验页面提供 JSON 导入区，识别提示词与字段名按各自实验配置生成。导入前会校验字段和读数数量，成功后一次性替换当前实验的输入。
 
 前端发给 `POST /api/reports/jobs` 的 JSON 与 `experiments` 配置中的实验 id 和物理量 id 对齐。`GET /api/reports/session` 返回当前访客的任务和今日额度；`GET /api/reports/jobs/{id}` 查询任务；`GET /api/reports/jobs/{id}/download` 下载已完成的 PDF：
 
-后端的 `main.py` 负责 HTTP 和 Cookie，`report_queue.py` 负责持久化队列、限额和归档，`experiment_registry.py` 按 `experimentId` 选择实验模块。`speed_of_sound_exp.py` 及其余六个 `*_exp.py` 模块提供 `report_fields(payload)` 与 `render_report(payload, progress, image_dir)`；公共校验与编译逻辑位于 `structured_report.py`，新增实验计算位于 `report_calculations.py`。
+后端的 `main.py` 负责 HTTP 和 Cookie，`report_queue.py` 负责持久化队列、限额和归档，`experiment_registry.py` 按 `experimentId` 选择实验模块。`speed_of_sound_exp.py` 及其余七个 `*_exp.py` 模块提供 `report_fields(payload)` 与 `render_report(payload, progress, image_dir)`；公共校验与编译逻辑位于 `structured_report.py`，新增实验计算位于 `report_calculations.py`。
 
 ```json
 {
@@ -115,3 +115,5 @@ git commit -m "Record current development state"
 ```
 
 测量值用字符串传输，以保留 `30.40` 的末尾零。带图片时使用 `multipart/form-data`，将上述 JSON 放入 `payload` 字段，将图片放入 `images` 字段，并设置 `X-Report-Request: 1` 请求头。
+
+示波器报告新增校准、七种波形测量和五组李萨如测频表。电压档位用 V/div，时基用 ms/div，频率用 kHz；nx 表示水平线切点数，ny 表示垂直线切点数。完整报告为 6–7 页，因此该实验最多附两张原始记录图片。教材十一页截图保存在 tex/original/oscilloscope/，独立模板包在 tex/zipped/oscilloscope.zip。

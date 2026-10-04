@@ -5,7 +5,7 @@ from __future__ import annotations
 try:
     from . import (speed_of_sound_exp, heat_capacity_ratio_exp, millikan_exp,
                    moment_of_inertia_exp, young_modulus_exp,
-                   forced_vibration_exp, focal_length_exp)
+                   forced_vibration_exp, focal_length_exp, oscilloscope_exp)
 except ImportError:
     import speed_of_sound_exp
     import heat_capacity_ratio_exp
@@ -14,13 +14,14 @@ except ImportError:
     import young_modulus_exp
     import forced_vibration_exp
     import focal_length_exp
+    import oscilloscope_exp
 
 
 EXPERIMENTS = {
     module.EXPERIMENT_ID: module for module in (
         speed_of_sound_exp, heat_capacity_ratio_exp, millikan_exp,
         moment_of_inertia_exp, young_modulus_exp,
-        forced_vibration_exp, focal_length_exp,
+        forced_vibration_exp, focal_length_exp, oscilloscope_exp,
     )
 }
 
