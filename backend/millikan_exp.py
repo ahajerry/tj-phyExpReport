@@ -21,4 +21,5 @@ def report_fields(payload):
 
 
 def render_report(payload, progress, image_dir):
-    return render(report_fields(payload), EXPERIMENT_ID, TITLE, progress, image_dir)
+    return render(report_fields(payload), EXPERIMENT_ID, TITLE, progress, image_dir,
+                  source_tables=payload.get("sourceTables"))

@@ -14,6 +14,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   const [parameters, setParameters] = useState(initial.parameters)
   const [reportInfo, setReportInfo] = useState(initial.reportInfo)
   const [images, setImages] = useState<File[]>([])
+  const [table, setTable] = useState<File | null>(null)
+  const tableType = experiment.id === "millikan" ? "csv" : experiment.id === "moment-of-inertia" ? "xlsx" : null
   const [importText, setImportText] = useState("")
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
@@ -47,13 +49,17 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   async function generate() {
     setError("")
-    for (const item of experiment.measurements) {
+    if (tableType && !table) {
+      setError(`请上传 ${tableType.toUpperCase()} 原始数据表`)
+      return
+    }
+    for (const item of tableType ? [] : experiment.measurements) {
       if (data[item.id].some((value) => !value.trim() || !Number.isFinite(Number(value)))) {
         setError(`${item.label}需要 ${item.count} 个有效数字`)
         return
       }
     }
-    for (const item of experiment.parameters) {
+    for (const item of tableType ? [] : experiment.parameters) {
       if (!parameters[item.id]?.trim() || !Number.isFinite(Number(parameters[item.id]))) {
         setError(`请填写${item.label}`)
         return
@@ -68,10 +74,11 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     try {
       const payload = { experimentId: experiment.id, data, parameters, reportInfo }
       let response: Response
-      if (images.length) {
+      if (images.length || table) {
         const form = new FormData()
         form.append("payload", JSON.stringify(payload))
         images.forEach((file) => form.append("images", file))
+        if (table) form.append("table", table)
         response = await fetch("/api/reports/jobs", { method: "POST", headers: { "X-Report-Request": "1" }, body: form })
       } else {
         response = await fetch("/api/reports/jobs", {
@@ -98,7 +105,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         <h1 className="text-2xl font-semibold">{experiment.title}</h1>
         <p className="text-muted-foreground">{experiment.note}</p>
       </header>
-      <section className="grid gap-4 lg:grid-cols-2">
+      {!tableType && <section className="grid gap-4 lg:grid-cols-2">
         {experiment.measurements.map((item) => (
           <div key={item.id} className="rounded-xl border bg-white p-4">
             <h2 className="mb-3 font-semibold">{item.label} <span className="text-sm font-normal text-muted-foreground">({item.unit})</span></h2>
@@ -113,8 +120,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
             </div>
           </div>
         ))}
-      </section>
-      {experiment.parameters.length > 0 && (
+      </section>}
+      {!tableType && experiment.parameters.length > 0 && (
         <section className="rounded-xl border bg-white p-4">
           <h2 className="mb-3 font-semibold">仪器及计算参数</h2>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -140,7 +147,23 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           ))}
         </div>
       </section>
-      <section className="rounded-xl border bg-white p-4">
+      {tableType ? <section className="rounded-xl border bg-white p-4">
+        <h2 className="mb-2 font-semibold">上传原始数据表（必填）</h2>
+        <p className="mb-2 text-sm text-muted-foreground">{tableType === "csv" ? "上传与提供的密里根油滴 CSV 相同格式的记录，每颗油滴连续 4 行，共 3 至 10 颗。支持 UTF-8 和 GB18030。" : "上传与提供的扭摆实验 XLSX 相同版式的数据表，系统读取质量、尺寸、计时和滑块数据。"} 文件上限 2 MiB；数据会填入报告并附在原始记录页。</p>
+        <Input type="file" accept={tableType === "csv" ? ".csv,text/csv" : ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+          aria-label={`上传${tableType.toUpperCase()}原始数据表`} onChange={(event) => {
+            const selected = event.currentTarget.files?.[0] ?? null
+            if (selected && (!selected.name.toLowerCase().endsWith(`.${tableType}`) || selected.size > 2 * 1024 * 1024)) {
+              setError(`请选择不超过 2 MiB 的 ${tableType.toUpperCase()} 文件`)
+              setTable(null)
+              event.currentTarget.value = ""
+            } else {
+              setTable(selected)
+              setError("")
+            }
+          }} />
+        {table && <p className="mt-2 text-sm text-muted-foreground">已选择：{table.name}</p>}
+      </section> : <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">原始数据记录图片（选填）</h2>
         <p className="mb-2 text-sm text-muted-foreground">最多 5 张，每张不超过 8 MiB；首张图片填入原始数据记录页，多张图片依次分页。</p>
         <Input type="file" accept="image/png,image/jpeg,image/gif,image/tiff,image/webp,image/heic,image/heif,image/avif,.heic,.heif" multiple
@@ -153,15 +176,15 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
               event.currentTarget.value = ""
             } else setImages(selected)
           }} />
-      </section>
-      <section className="rounded-xl border bg-white p-4">
+      </section>}
+      {!tableType && <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">从 JSON 导入读数</h2>
         <details className="mb-2 text-sm"><summary className="cursor-pointer text-blue-700">查看识别提示词</summary>
           <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-slate-50 p-3">{prompt}</pre></details>
         <Textarea aria-label="实验数据 JSON" rows={5} value={importText} onChange={(event) => setImportText(event.target.value)} />
         <Button className="mt-2" variant="outline" onClick={importReadings} disabled={!importText.trim()}>导入读数</Button>
         {message && <p role="status" className="mt-2 text-sm text-green-700">{message}</p>}
-      </section>
+      </section>}
       <section className="rounded-xl border bg-white p-4">
         <Button onClick={generate} disabled={generating}>{generating ? "正在提交任务…" : "生成实验报告"}</Button>
         {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}

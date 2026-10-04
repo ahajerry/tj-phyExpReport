@@ -68,6 +68,7 @@ def fill_report(
     template_path: str | Path = TEMPLATE,
     image_files: Sequence[str] = (),
     experiment_title: str = "声速测定",
+    source_tables: Sequence[dict] | None = None,
 ) -> Path:
     """生成填好数据的 .tex；缺省或 None 的字段继续显示为空白横线。"""
     template = Path(template_path).resolve()
@@ -98,7 +99,7 @@ def fill_report(
 
     lines = [f"\\SetField{{{key}}}{{{_tex_text(value)}}}" for key, value in sorted(values.items())
              if key not in plot_fields]
-    if image_files:
+    if image_files or source_tables:
         lines.append(r"\reportimagestrue")
     lines.extend(f"\\SetField{{math_{key}}}{{{math_value}}}"
                  for key, value in sorted(values.items()) if key not in plot_fields
@@ -114,6 +115,30 @@ def fill_report(
     if filled.count(IMAGE_MARKER) != 1:
         raise ValueError("模板中缺少唯一的原始数据图片插入区标记")
     pages = []
+    if source_tables:
+        if not isinstance(source_tables, list) or len(source_tables) > 3:
+            raise ValueError("原始数据表数量无效")
+        for table in source_tables:
+            if not isinstance(table, dict):
+                raise ValueError("原始数据表格式无效")
+            headers, rows = table.get("headers"), table.get("rows")
+            title = table.get("title")
+            if (not isinstance(title, str) or not isinstance(headers, list) or
+                not 2 <= len(headers) <= 8 or not isinstance(rows, list) or len(rows) > 60 or
+                any(not isinstance(row, list) or len(row) != len(headers) for row in rows)):
+                raise ValueError("原始数据表格式无效")
+            if any(not isinstance(cell, str) or len(cell) > 80 for cell in [*headers, *(c for row in rows for c in row)]):
+                raise ValueError("原始数据表内容过长")
+            # Account for tabular's padding on both sides of every column.
+            width = round((14.3 - 0.45 * len(headers)) / len(headers), 2)
+            cells = "|" + f"p{{{width}cm}}|" * len(headers)
+            head = " & ".join(_tex_text(cell) for cell in headers) + r"\\\hline"
+            body = "\n".join(" & ".join(_tex_text(cell) for cell in row) + r"\\\hline" for row in rows)
+            pages.append("\n".join((r"\par\medskip\noindent{\heiti " + _tex_text(title) + r"}\par",
+                                    r"{\footnotesize\renewcommand{\arraystretch}{1.15}",
+                                    rf"\begin{{longtable}}{{{cells}}}\hline",
+                                    head, r"\endfirsthead\hline", head, r"\endhead",
+                                    body, r"\end{longtable}}")))
     for index, filename in enumerate(image_files, start=1):
         if not re.fullmatch(r"[A-Za-z0-9_.-]+", filename) or filename in (".", ".."):
             raise ValueError("图片文件名无效")

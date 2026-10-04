@@ -10,10 +10,10 @@ import subprocess
 import uuid
 
 try:
-    from .fill_sound_speed import fill_report
+    from .fill_sound_speed import fill_report, FIELD_PATTERN, PLOT_PATTERN, COVER_PATTERN
     from .report_images import prepare_report_images
 except ImportError:
-    from fill_sound_speed import fill_report
+    from fill_sound_speed import fill_report, FIELD_PATTERN, PLOT_PATTERN, COVER_PATTERN
     from report_images import prepare_report_images
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -78,17 +78,23 @@ def parse_report(
         values = data[key]
         if not isinstance(values, list) or len(values) != count:
             raise ValueError(f"{key} 需要 {count} 个读数")
-        parsed = [number(value, f"{key} 第 {index} 个读数") for index, value in enumerate(values, 1)]
+        optional_tail = experiment_id == "millikan" and key in ("voltage", "time_1", "time_2", "time_3", "time_4")
+        parsed = [number(value, f"{key} 第 {index} 个读数") for index, value in enumerate(values, 1)
+                  if not (optional_tail and value == "")]
+        if optional_tail and (len(parsed) < 3 or values != values[:len(parsed)] + [""] * (count - len(parsed))):
+            raise ValueError("油滴数据必须至少 3 组，空白只能位于末尾")
         numbers[key] = parsed
         for index, value in enumerate(values, 1):
-            fields[pattern.format(i=index)] = str(value).strip()
+            if value != "":
+                fields[pattern.format(i=index)] = str(value).strip()
     params = {key: number(value, key) for key, value in parameters.items()}
     fields.update({key: str(parameters[key]).strip() for key in parameter_names})
     return fields, numbers, params
 
 
 def render(fields: dict[str, str], experiment_id: str, title: str,
-           progress=lambda _value, _stage: None, image_dir: Path | None = None) -> bytes:
+           progress=lambda _value, _stage: None, image_dir: Path | None = None,
+           source_tables=None) -> bytes:
     template = TEMPLATE_DIR / f"{experiment_id}.tex"
     progress(10, "正在检查编译环境")
     files = (template, TEMPLATE_DIR / "physics_report_base.tex",
@@ -106,6 +112,10 @@ def render(fields: dict[str, str], experiment_id: str, title: str,
     if missing:
         raise RuntimeError("部署缺少报告模板资源：" + "、".join(missing)
                            + "。请重新打包并部署 tex/templates/。")
+    source = template.read_text(encoding="utf-8")
+    allowed = set(FIELD_PATTERN.findall(source)) | set(PLOT_PATTERN.findall(source)) | set(COVER_PATTERN.findall(source))
+    allowed.update(("experiment", "student", "student_id", "group", "date"))
+    fields = {key: value for key, value in fields.items() if key in allowed}
     if shutil.which("xelatex") is None:
         raise RuntimeError("未找到 XeLaTeX，请先将其加入 PATH")
     WORK_DIR.mkdir(parents=True, exist_ok=True)
@@ -115,7 +125,8 @@ def render(fields: dict[str, str], experiment_id: str, title: str,
         images = prepare_report_images(image_dir, workdir)
         progress(25, "正在整理原始数据图片")
         tex_file = fill_report(fields, workdir / "report.tex", template,
-                               image_files=images, experiment_title=title)
+                               image_files=images, experiment_title=title,
+                               source_tables=source_tables)
         shutil.copyfile(TEMPLATE_DIR / "physics_report_base.tex", workdir / "physics_report_base.tex")
         shutil.copyfile(TEMPLATE_DIR / "tongji_logo.jpeg", workdir / "tongji_logo.jpeg")
         shutil.copytree(TEMPLATE_DIR / "figures", workdir / "figures")

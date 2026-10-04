@@ -80,7 +80,7 @@ git commit -m "Record current development state"
 
 报告提交后，后端逐个编译，并在页面显示排队数、编译进度和 PDF 下载入口。
 
-目前支持生成七种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距。各实验页面按对应数据表输入读数；仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
+目前支持生成七种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距。密立根油滴上传 CSV 原始记录（每颗连续四行，支持 UTF-8/GB18030，3–10 颗），扭摆转动惯量上传与提供样例相同版式的 XLSX；后端读取读数、单位与仪器参数，将原始表附入报告。其余实验页面按对应数据表输入读数，仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
 
 七份统一版式的可编辑模板位于 `tex/templates/`；公共版式 `physics_report_base.tex` 源自 `tex/物理实验报告模板.tex`，封面和原始数据页沿用同济实验报告结构。每份独立压缩包及 `.tex` 副本位于 `tex/zipped/`。原有的 `specific_heat_ratio.zip`、`torsion_inertia.zip`、`young_modulus.zip` 保留为参考资料，最终归档仅保留每个实验一份模板。`tex/official/` 和 `tex/original/` 保留原资料。重新生成模板可运行 `python scripts/build_report_templates.py`；检验字段和示例 PDF 可运行 `python scripts/verify_reports.py --render`。示例 PDF 写入 `output/report-review/`。
 
@@ -90,7 +90,7 @@ git commit -m "Record current development state"
 
 任务与 PDF 存放在 `.report-data/`，重启后未完成的任务会重新排队。浏览器通过 HttpOnly Cookie 保留匿名访客身份；返回网站后从“我的报告”查看任务并下载。每个访客按北京时间每天最多提交 50 份报告，失败的任务也计入提交次数。该限制以浏览器 Cookie 为准，清除 Cookie 或换浏览器会获得新身份；如需防止此类绕过，需要增加账号登录。生产 HTTPS 模式下 Cookie 默认启用 `Secure`。
 
-所有报告可以附带最多 5 张原始数据图片，每张不超过 8 MiB，请求体上限 30 MiB。图片按任务编号存放在 `.report-data/original-images/<任务编号>/`，并依上传顺序追加到 PDF 原始数据记录页后。未上传图片时，原始数据记录页保留空白提示。支持 PNG、JPEG、GIF、TIFF、WebP、HEIC、AVIF；HEIC 需要 `pillow-heif`。
+除密立根油滴和扭摆法外的报告可以附带最多 5 张原始数据图片，每张不超过 8 MiB，请求体上限 30 MiB。图片按任务编号存放在 `.report-data/original-images/<任务编号>/`，并依上传顺序追加到 PDF 原始数据记录页后。未上传图片时，原始数据记录页保留空白提示。支持 PNG、JPEG、GIF、TIFF、WebP、HEIC、AVIF；HEIC 需要 `pillow-heif`。密立根油滴和扭摆法的数据表上限为 2 MiB，报告的原始数据记录页展示解析后的表格。
 部署到服务器时，需为 `.report-data/` 使用持久化磁盘，才能在服务器迁移或容器重建后保留报告与原始图片。
 
 七种报告页面统一由 `src/structured-experiments.ts` 配置、`src/StructuredExperimentPage.tsx` 渲染，读数和仪器参数保存在浏览器 localStorage，刷新后可恢复。声速页面首次打开时会把旧版 Cookie 中的读数、参数和封面信息带入新表单；长度、密度演示计算页面仍使用 Cookie。实验页面提供 JSON 导入区，识别提示词与字段名按各自实验配置生成。导入前会校验字段和读数数量，成功后一次性替换当前实验的输入。

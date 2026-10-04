@@ -19,11 +19,13 @@ try:
     from .experiment_registry import render_report, validate_report
     from .report_queue import ReportQueue, QuotaExceeded
     from .report_images import validate_image_bytes
+    from .table_uploads import parse_table
 except ImportError:  # 兼容 python backend/main.py 的启动方式
     from backend_revision import backend_revision
     from experiment_registry import render_report, validate_report
     from report_queue import ReportQueue, QuotaExceeded
     from report_images import validate_image_bytes
+    from table_uploads import parse_table
 
 
 MAX_REQUEST_BYTES = 64 * 1024
@@ -144,7 +146,10 @@ class ReportHandler(BaseHTTPRequestHandler):
             raise ValueError("请求体为空或过大")
         body = self.rfile.read(length)
         if media_type == "application/json":
-            return json.loads(body.decode("utf-8"), parse_float=Decimal), []
+            payload = json.loads(body.decode("utf-8"), parse_float=Decimal)
+            if isinstance(payload, dict) and payload.get("experimentId") in ("millikan", "moment-of-inertia"):
+                raise ValueError("请上传该实验的原始数据表")
+            return payload, []
         if media_type != "multipart/form-data":
             raise ValueError("请使用 JSON 或 multipart/form-data 提交")
         message = BytesParser(policy=policy.default).parsebytes(
@@ -154,6 +159,7 @@ class ReportHandler(BaseHTTPRequestHandler):
             raise ValueError("上传表单格式错误")
         payload = None
         images: list[tuple[str, bytes]] = []
+        table = None
         for part in message.iter_parts():
             name = part.get_param("name", header="content-disposition")
             content = part.get_payload(decode=True)
@@ -173,10 +179,22 @@ class ReportHandler(BaseHTTPRequestHandler):
                 original = (part.get_filename() or "image").replace("\\", "/").split("/")[-1]
                 stem = re.sub(r"[^\w.-]", "_", original.rsplit(".", 1)[0])[:60].strip(".") or "image"
                 images.append((f"{len(images) + 1:02d}_{stem}.{extension}", content))
+            elif name == "table" and table is None:
+                table = (part.get_filename() or "", content)
             else:
                 raise ValueError("上传表单包含无效或重复字段")
         if payload is None:
             raise ValueError("缺少报告数据")
+        if table is not None:
+            if not isinstance(payload, dict) or not isinstance(payload.get("reportInfo", {}), dict):
+                raise ValueError("报告数据必须是对象")
+            imported = parse_table(payload.get("experimentId"), *table)
+            payload = {**payload, **imported,
+                       "reportInfo": {**imported.get("reportInfo", {}), **{
+                           key: value for key, value in payload.get("reportInfo", {}).items() if value
+                       }}}
+        elif isinstance(payload, dict) and payload.get("experimentId") in ("millikan", "moment-of-inertia"):
+            raise ValueError("请上传该实验的原始数据表")
         return payload, images
 
 

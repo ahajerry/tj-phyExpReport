@@ -90,9 +90,12 @@ def heat(fields, data, p):
 
 def millikan(fields, data, p):
     del p
+    count = len(data["voltage"])
+    if any(len(data[f"time_{j}"]) != count for j in range(1, 5)):
+        raise ValueError("各颗油滴的四次时间与电压数量必须一致")
     charges: list[Decimal] = []
     counts: list[int] = []
-    for i in range(10):
+    for i in range(count):
         voltage = positive(data["voltage"][i], f"第 {i+1} 滴平衡电压")
         times = [positive(data[f"time_{j}"][i], f"第 {i+1} 滴第 {j} 次时间") for j in range(1, 5)]
         t = mean(times)
@@ -101,7 +104,9 @@ def millikan(fields, data, p):
         charges.append(charge)
         counts.append(n)
         put(fields, **{f"time_mean_{i+1:02d}": t, f"charge_{i+1:02d}": charge,
-                       f"electron_count_{i+1:02d}": n})
+                       f"electron_count_{i+1:02d}": n,
+                       f"charge_per_e_{i+1:02d}": charge / n / Decimal("1e-19"),
+                       f"charge_scaled_{i+1:02d}": charge / Decimal("1e-19")})
     reverse_samples = [q / n for q, n in zip(charges, counts)]
     reverse = mean(reverse_samples)
     least_squares = sum(Decimal(n) * q for q, n in zip(charges, counts)) / sum(n*n for n in counts)
@@ -147,10 +152,17 @@ def torsion(fields, data, p):
     for key in ("disk", "cylinder", "tube", "ball", "rod"):
         times = [positive(x, f"{key} 计时") for x in data[f"time_{key}"]]
         cycles = 20 if key == "disk" else 10
+        for index, value in enumerate(times, 1):
+            fields[f"period_{key}_{index:02d}"] = str(value / cycles)
         periods[key] = mean(times) / cycles
         period_u[key] = sem(times) / cycles
         finish_pair(fields, f"period_{key}", f"period_{key}_u", periods[key], period_u[key])
     mass = {key: positive(p[f"mass_{key}_g"], f"{key} 质量") / 1000 for key in ("cylinder", "tube", "ball", "rod")}
+    for key, value in mass.items():
+        fields[f"mass_{key}_kg"] = fmt(value)
+    for key in ("diameter_cylinder_mm", "diameter_tube_outer_mm", "diameter_tube_inner_mm",
+                "diameter_ball_mm", "length_rod_mm"):
+        fields[key.replace("_mm", "_cm")] = fmt(p[key] / 10)
     cylinder_d = positive(p["diameter_cylinder_mm"], "圆柱直径") / 1000
     tube_o = positive(p["diameter_tube_outer_mm"], "圆筒外径") / 1000
     tube_i = positive(p["diameter_tube_inner_mm"], "圆筒内径") / 1000
@@ -189,9 +201,11 @@ def torsion(fields, data, p):
         measured_u = inertia_u(periods[key], period_u[key], standard=key == "cylinder")
         result = finish_pair(fields, f"experiment_{key}", f"experiment_{key}_u", measured, measured_u)
         fields[f"theory_{key}"] = format_report_at_place(expected, result.place)
-        fields[f"error_{key}"] = finish_percent(abs(measured-expected)/expected*100, measured_u/expected)
+        fields[f"error_{key}"] = ("0" if measured == expected else
+                                   finish_percent(abs(measured-expected)/expected*100, measured_u/expected))
     slider_mass = positive(p["slider_mass_g"], "滑块质量") / 1000
     slider_self = nonnegative(p["slider_self_inertia"], "滑块自身惯量")
+    fields["slider_pair_inertia"] = fmt(2 * slider_self)
     slider_points = []
     slider_theory_points = []
     for x in (5, 10, 15, 20):
@@ -206,6 +220,7 @@ def torsion(fields, data, p):
         finish_pair(fields, f"slider_period_{x}", f"slider_period_{x}_u", period, period_uncertainty)
         result = finish_pair(fields, f"slider_experiment_{x}", f"slider_experiment_{x}_u", measured, measured_u)
         fields[f"slider_theory_{x}"] = format_report_at_place(expected, result.place)
+        fields[f"slider_error_{x}"] = finish_percent(abs(measured-expected)/expected*100, measured_u/expected)
     fields["slider_graph_points"] = coordinates(slider_points)
     fields["slider_graph_theory_points"] = coordinates(slider_theory_points)
 

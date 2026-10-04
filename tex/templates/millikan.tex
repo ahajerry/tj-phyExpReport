@@ -22,55 +22,43 @@ $U_i$ 是平衡电压，$\bar t_i$ 是同一油滴在固定路程内四次自由
 1. 检查油滴盒清洁、照明、显微镜调焦和极板电压零点；喷入少量油雾，选取孤立且运动缓慢的油滴。\par
 2. 标定目镜中的固定下降距离。关闭电场，待油滴运动稳定后计时；同一滴重复四次，若轨迹偏离或油滴消失，应重新选滴。\par
 \ReportSubsection{平衡与重复测量}
-3. 逐渐增大电压，使油滴尽可能悬浮，记录平衡电压。对十颗油滴重复下降计时与电压测量。\par
+3. 逐渐增大电压，使油滴尽可能悬浮，记录平衡电压。对多颗油滴重复下降计时与电压测量。\par
 4. 分别计算 $q_i$、整数 $n_i$ 和 $\frac{q_i}{n_i}$；绘制散点与拟合直线，比较反向验证值、图解斜率和最小二乘结果。
 \ReportSection{实验仪器}
 密立根油滴仪（油滴盒、电极板、照明及显微镜）、喷油器、计时器和直流高压电源。极板间距、空气黏度与修正常数已包含在仪器给定的计算常数中。
 \ReportSection{数据记录处理}
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
+\ReportSubsection{实验数据表}
+\begin{center}\small\renewcommand{\arraystretch}{1.28}
 \begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{|c|c|c|c|c|c|}\hline
-$i$ & $U$/V & $t_1$/s & $t_2$/s & $t_3$/s & $t_4$/s\\\hline
-1 & \Field[10mm]{voltage_01} & \Field[10mm]{time_01_1} & \Field[10mm]{time_01_2} & \Field[10mm]{time_01_3} & \Field[10mm]{time_01_4}\\\hline
-2 & \Field[10mm]{voltage_02} & \Field[10mm]{time_02_1} & \Field[10mm]{time_02_2} & \Field[10mm]{time_02_3} & \Field[10mm]{time_02_4}\\\hline
-3 & \Field[10mm]{voltage_03} & \Field[10mm]{time_03_1} & \Field[10mm]{time_03_2} & \Field[10mm]{time_03_3} & \Field[10mm]{time_03_4}\\\hline
-4 & \Field[10mm]{voltage_04} & \Field[10mm]{time_04_1} & \Field[10mm]{time_04_2} & \Field[10mm]{time_04_3} & \Field[10mm]{time_04_4}\\\hline
-5 & \Field[10mm]{voltage_05} & \Field[10mm]{time_05_1} & \Field[10mm]{time_05_2} & \Field[10mm]{time_05_3} & \Field[10mm]{time_05_4}\\\hline
-6 & \Field[10mm]{voltage_06} & \Field[10mm]{time_06_1} & \Field[10mm]{time_06_2} & \Field[10mm]{time_06_3} & \Field[10mm]{time_06_4}\\\hline
-7 & \Field[10mm]{voltage_07} & \Field[10mm]{time_07_1} & \Field[10mm]{time_07_2} & \Field[10mm]{time_07_3} & \Field[10mm]{time_07_4}\\\hline
-8 & \Field[10mm]{voltage_08} & \Field[10mm]{time_08_1} & \Field[10mm]{time_08_2} & \Field[10mm]{time_08_3} & \Field[10mm]{time_08_4}\\\hline
-9 & \Field[10mm]{voltage_09} & \Field[10mm]{time_09_1} & \Field[10mm]{time_09_2} & \Field[10mm]{time_09_3} & \Field[10mm]{time_09_4}\\\hline
-10 & \Field[10mm]{voltage_10} & \Field[10mm]{time_10_1} & \Field[10mm]{time_10_2} & \Field[10mm]{time_10_3} & \Field[10mm]{time_10_4}\\\hline
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}\hline
+测量次数 $i$ & 电压 $U$/V & $t_1$/s & $t_2$/s & $t_3$/s & $t_4$/s & $\bar t$/s & $q_i/10^{-19}$ C & 取整 $n_i$ & $e_i/10^{-19}$ C\\\hline
+1 & \Field[7mm]{voltage_01} & \Field[7mm]{time_01_1} & \Field[7mm]{time_01_2} & \Field[7mm]{time_01_3} & \Field[7mm]{time_01_4} & \Field[7mm]{time_mean_01} & \Field[7mm]{charge_scaled_01} & \Field[7mm]{electron_count_01} & \Field[7mm]{charge_per_e_01}\\\hline
+2 & \Field[7mm]{voltage_02} & \Field[7mm]{time_02_1} & \Field[7mm]{time_02_2} & \Field[7mm]{time_02_3} & \Field[7mm]{time_02_4} & \Field[7mm]{time_mean_02} & \Field[7mm]{charge_scaled_02} & \Field[7mm]{electron_count_02} & \Field[7mm]{charge_per_e_02}\\\hline
+3 & \Field[7mm]{voltage_03} & \Field[7mm]{time_03_1} & \Field[7mm]{time_03_2} & \Field[7mm]{time_03_3} & \Field[7mm]{time_03_4} & \Field[7mm]{time_mean_03} & \Field[7mm]{charge_scaled_03} & \Field[7mm]{electron_count_03} & \Field[7mm]{charge_per_e_03}\\\hline
+4 & \Field[7mm]{voltage_04} & \Field[7mm]{time_04_1} & \Field[7mm]{time_04_2} & \Field[7mm]{time_04_3} & \Field[7mm]{time_04_4} & \Field[7mm]{time_mean_04} & \Field[7mm]{charge_scaled_04} & \Field[7mm]{electron_count_04} & \Field[7mm]{charge_per_e_04}\\\hline
+5 & \Field[7mm]{voltage_05} & \Field[7mm]{time_05_1} & \Field[7mm]{time_05_2} & \Field[7mm]{time_05_3} & \Field[7mm]{time_05_4} & \Field[7mm]{time_mean_05} & \Field[7mm]{charge_scaled_05} & \Field[7mm]{electron_count_05} & \Field[7mm]{charge_per_e_05}\\\hline
+6 & \Field[7mm]{voltage_06} & \Field[7mm]{time_06_1} & \Field[7mm]{time_06_2} & \Field[7mm]{time_06_3} & \Field[7mm]{time_06_4} & \Field[7mm]{time_mean_06} & \Field[7mm]{charge_scaled_06} & \Field[7mm]{electron_count_06} & \Field[7mm]{charge_per_e_06}\\\hline
+7 & \Field[7mm]{voltage_07} & \Field[7mm]{time_07_1} & \Field[7mm]{time_07_2} & \Field[7mm]{time_07_3} & \Field[7mm]{time_07_4} & \Field[7mm]{time_mean_07} & \Field[7mm]{charge_scaled_07} & \Field[7mm]{electron_count_07} & \Field[7mm]{charge_per_e_07}\\\hline
+8 & \Field[7mm]{voltage_08} & \Field[7mm]{time_08_1} & \Field[7mm]{time_08_2} & \Field[7mm]{time_08_3} & \Field[7mm]{time_08_4} & \Field[7mm]{time_mean_08} & \Field[7mm]{charge_scaled_08} & \Field[7mm]{electron_count_08} & \Field[7mm]{charge_per_e_08}\\\hline
+9 & \Field[7mm]{voltage_09} & \Field[7mm]{time_09_1} & \Field[7mm]{time_09_2} & \Field[7mm]{time_09_3} & \Field[7mm]{time_09_4} & \Field[7mm]{time_mean_09} & \Field[7mm]{charge_scaled_09} & \Field[7mm]{electron_count_09} & \Field[7mm]{charge_per_e_09}\\\hline
+10 & \Field[7mm]{voltage_10} & \Field[7mm]{time_10_1} & \Field[7mm]{time_10_2} & \Field[7mm]{time_10_3} & \Field[7mm]{time_10_4} & \Field[7mm]{time_mean_10} & \Field[7mm]{charge_scaled_10} & \Field[7mm]{electron_count_10} & \Field[7mm]{charge_per_e_10}\\\hline
 \end{tabular}
-\end{adjustbox}
-\end{center}
-\noindent 由四次下降时间求均值并计算电荷量：
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|c|c|c|c|}\hline
-$i$ & $\bar t$/s & $q$/C & $n$\\\hline
-1 & \Field[10mm]{time_mean_01} & $\MathField{charge_01}$ & \Field[10mm]{electron_count_01}\\\hline
-2 & \Field[10mm]{time_mean_02} & $\MathField{charge_02}$ & \Field[10mm]{electron_count_02}\\\hline
-3 & \Field[10mm]{time_mean_03} & $\MathField{charge_03}$ & \Field[10mm]{electron_count_03}\\\hline
-4 & \Field[10mm]{time_mean_04} & $\MathField{charge_04}$ & \Field[10mm]{electron_count_04}\\\hline
-5 & \Field[10mm]{time_mean_05} & $\MathField{charge_05}$ & \Field[10mm]{electron_count_05}\\\hline
-6 & \Field[10mm]{time_mean_06} & $\MathField{charge_06}$ & \Field[10mm]{electron_count_06}\\\hline
-7 & \Field[10mm]{time_mean_07} & $\MathField{charge_07}$ & \Field[10mm]{electron_count_07}\\\hline
-8 & \Field[10mm]{time_mean_08} & $\MathField{charge_08}$ & \Field[10mm]{electron_count_08}\\\hline
-9 & \Field[10mm]{time_mean_09} & $\MathField{charge_09}$ & \Field[10mm]{electron_count_09}\\\hline
-10 & \Field[10mm]{time_mean_10} & $\MathField{charge_10}$ & \Field[10mm]{electron_count_10}\\\hline
-\end{tabular}
-\end{center}
-\ReportSection{数据处理方法}
-\noindent 反向验证法：$e_{\rm rev}=\MathField{electron_charge_reverse}\,\mathrm C$，
-$u_e=\MathField{electron_charge_reverse_u}\,\mathrm C$，百分差 $\Field{reverse_error_percent}\%$。
-\par\noindent 图解法：由 $q_i$--$n_i$ 图拟合斜率，
-$e_{\rm graph}=(\MathField{electron_charge_graph}\pm\MathField{electron_charge_graph_u})\,\mathrm C$。
-\par\noindent 最小二乘法：过原点拟合 $e=\frac{\sum_i n_iq_i}{\sum_i n_i^2}$，
-$e_{\rm ls}=\MathField{electron_charge_ls}\,\mathrm C$，
-$u_e=\MathField{electron_charge_ls_u}\,\mathrm C$，百分差 $\Field{ls_error_percent}\%$。
-
+\end{adjustbox}\end{center}
+\ReportSubsection{方法一：反向验证法}
+\noindent 每滴 $e_i=q_i/n_i$。电子电荷量平均值
+$\bar e=\MathField{electron_charge_reverse}\,\mathrm C$；
+不确定度 $u_e=\MathField{electron_charge_reverse_u}\,\mathrm C$；
+与公认值的百分差 $E=\Field{reverse_error_percent}\%$。
+\ReportSubsection{方法二：图解法}
+\noindent 作 $q_i$—$n_i$ 图，直线斜率对应电子电荷量：
+$e=(\MathField{electron_charge_graph}\pm\MathField{electron_charge_graph_u})\,\mathrm C$。
+\ReportSubsection{方法三：最小二乘法}
+\noindent 过原点拟合 $e=\dfrac{\sum_i n_iq_i}{\sum_i n_i^2}$，
+最优值 $e=\MathField{electron_charge_ls}\,\mathrm C$；
+不确定度 $u_e=\MathField{electron_charge_ls_u}\,\mathrm C$；
+百分差 $E=\Field{ls_error_percent}\%$。
 \ReportSection{图解法：电荷量与整数倍数}
-以 $n_i$ 为横轴、$\frac{q_i}{10^{-19}\,\mathrm C}$ 为纵轴，将十颗油滴的计算值逐点绘出。直线为带截距的线性拟合 $q=en+b$，其斜率对应图解法元电荷估计；该曲线由本次输入的电压和下降时间实时计算。
+以 $n_i$ 为横轴、$\frac{q_i}{10^{-19}\,\mathrm C}$ 为纵轴，将已上传油滴的计算值逐点绘出。直线为带截距的线性拟合 $q=en+b$，其斜率对应图解法元电荷估计；该曲线由本次输入的电压和下降时间实时计算。
 \begin{center}\begin{tikzpicture}
 \begin{axis}[width=.88\textwidth,height=7cm,xlabel={$n_i$},ylabel={$\frac{q_i}{10^{-19}\,\mathrm C}$},grid=both,legend pos=north west]
 \addplot+[only marks,mark=*,mark size=2pt] coordinates {\PlotCoordinates{charge_graph_points}};
@@ -88,7 +76,7 @@ $u_e=\MathField{electron_charge_ls_u}\,\mathrm C$，百分差 $\Field{ls_error_p
 \ReportSubsection{思考题}
 为何测量多颗油滴？单颗油滴只能给出一个电荷估计，无法可靠检验整数倍规律。为何先记录自由下降时间再调节平衡电压？下降速度用于估计油滴尺寸和有效重力，平衡电压再确定所带电荷量。
 \ReportSection{实验结论}
-本次实验以十颗油滴检验电荷量子化。反向验证得到 $e_{\rm rev}=(\MathField{electron_charge_reverse}\pm\MathField{electron_charge_reverse_u})\,\mathrm C$，图解拟合斜率为 $e_{\rm graph}=(\MathField{electron_charge_graph}\pm\MathField{electron_charge_graph_u})\,\mathrm C$，过原点最小二乘结果为 $e_{\rm ls}=(\MathField{electron_charge_ls}\pm\MathField{electron_charge_ls_u})\,\mathrm C$。三种结果应结合散点分布与不确定度比较。
+本次实验以多颗油滴检验电荷量子化。反向验证得到 $e_{\rm rev}=(\MathField{electron_charge_reverse}\pm\MathField{electron_charge_reverse_u})\,\mathrm C$，图解拟合斜率为 $e_{\rm graph}=(\MathField{electron_charge_graph}\pm\MathField{electron_charge_graph_u})\,\mathrm C$，过原点最小二乘结果为 $e_{\rm ls}=(\MathField{electron_charge_ls}\pm\MathField{electron_charge_ls_u})\,\mathrm C$。三种结果应结合散点分布与不确定度比较。
 
 \ReportRecord
 % ===== 原始数据图片插入区 =====

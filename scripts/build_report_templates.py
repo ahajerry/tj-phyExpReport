@@ -458,8 +458,13 @@ def main() -> None:
     shutil.copyfile(ROOT / "tongji_logo.jpeg", ARCHIVE / "tongji_logo.jpeg")
     for experiment_id, factory in TEMPLATES.items():
         name = f"{experiment_id}.tex"
-        source = factory()
-        (ARCHIVE / name).write_text(source, encoding="utf-8")
+        # These tracked templates follow the official DOCX table layouts.
+        # Preserve their extended explanations and figures when packaging.
+        if experiment_id in ("millikan", "moment-of-inertia"):
+            source = (ARCHIVE / name).read_text(encoding="utf-8")
+        else:
+            source = factory()
+            (ARCHIVE / name).write_text(source, encoding="utf-8")
         (ZIPPED / name).write_text(source, encoding="utf-8")
         with zipfile.ZipFile(ZIPPED / f"{experiment_id}.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
             bundle.write(ARCHIVE / name, name)

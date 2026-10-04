@@ -52,7 +52,7 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "millikan", title: "密立根油滴实验",
-    note: "每一行对应一颗油滴；输入平衡电压和四次固定路程的下降时间。计算式采用教材给定的仪器常数。",
+    note: "上传油滴仪 CSV 原始记录；每颗油滴连续四行，系统读取平衡电压和四次下降时间。计算式采用教材给定的仪器常数。",
     measurements: [
       { id: "voltage", label: "平衡电压", unit: "V", count: 10 },
       ...[1, 2, 3, 4].map((n) => ({ id: `time_${n}`, label: `第 ${n} 次下降时间`, unit: "s", count: 10 })),
@@ -60,7 +60,7 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "moment-of-inertia", title: "用扭摆法测定物体转动惯量",
-    note: "空盘计时 20 周期，其他物体计时 10 周期，滑块计时 5 周期；每种状态重复三次。滑块位置按质心到转轴距离输入。",
+    note: "上传扭摆实验 XLSX 数据表；空盘计时 20 周期，其他物体 10 周期，滑块 5 周期，每种状态重复三次。注意手动填好组号。",
     measurements: [
       ...(["disk", "cylinder", "tube", "ball", "rod"] as const).map((key, i) => ({
         id: `time_${key}`, label: ["载物圆盘", "实心圆柱", "空心圆筒", "木球", "金属细杆"][i], unit: key === "disk" ? "s / 20 周期" : "s / 10 周期", count: 3,
