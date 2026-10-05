@@ -183,9 +183,9 @@ $\Field{pressure_error_kpa}$ kPa、$\Field{volume_error_l}$ L。
 
 def millikan() -> str:
     raw_rows = [[str(i), f(f"voltage_{i:02d}"), *[f(f"time_{i:02d}_{j}") for j in range(1, 5)]]
-                for i in range(1, 11)]
+                for i in range(1, 9)]
     result_rows = [[str(i), f(f"time_mean_{i:02d}"), mf(f"charge_{i:02d}"),
-                    f(f"electron_count_{i:02d}")] for i in range(1, 11)]
+                    f(f"electron_count_{i:02d}")] for i in range(1, 9)]
     return build("密立根油滴实验", r"""\ReportSection{实验目的}
 测量油滴电荷量，验证电荷量子化，并用反向验证、图解和最小二乘法估计元电荷。
 \ReportSection{实验原理}

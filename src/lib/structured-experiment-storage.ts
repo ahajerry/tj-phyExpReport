@@ -32,6 +32,13 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
     const raw = localStorage.getItem(`phyexp_report_${experiment.id}`)
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SavedExperimentValues>
+      // Previous oscilloscope forms stored seven waveforms in a different order.
+      if (experiment.id === "oscilloscope" && parsed.data?.voltage_scale?.length === 7) {
+        for (const key of ["voltage_scale", "voltage_divisions", "time_scale", "period_divisions"]) {
+          const values = parsed.data[key]
+          parsed.data[key] = [5, 4, 6, 3].map((index) => values?.[index] ?? "")
+        }
+      }
       return {
         data: Object.fromEntries(experiment.measurements.map((item) => [
           item.id, Array.from({ length: item.count }, (_, index) => parsed.data?.[item.id]?.[index] ?? fallback.data[item.id][index]),

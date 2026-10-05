@@ -48,3 +48,18 @@ assert.equal(restored.data.resonance[0], '99.99')
 assert.equal(restored.parameters.res_frequency, '40.0')
 assert.equal(restored.reportInfo.student, '张三')
 console.log('声速旧 Cookie 迁移与本地数据优先级测试通过')
+
+const scope = structuredExperimentById.get('oscilloscope')
+const oldRows = ['saw', 'reverse', 'pulse', 'half', 'sine', 'square', 'triangle']
+saved.set('phyexp_report_oscilloscope', JSON.stringify({
+  data: Object.fromEntries(['voltage_scale', 'voltage_divisions', 'time_scale', 'period_divisions'].map((key) => [key, oldRows])),
+  parameters: { probe_factor: '10', cal_voltage_scale: '0.1' },
+}))
+const migratedScope = readSavedExperimentValues(scope)
+for (const key of ['voltage_scale', 'voltage_divisions', 'time_scale', 'period_divisions']) {
+  assert.deepEqual(migratedScope.data[key], ['square', 'sine', 'triangle', 'half'])
+}
+assert.deepEqual(migratedScope.parameters, { probe_factor: '10' })
+saved.set('phyexp_report_oscilloscope', JSON.stringify(migratedScope))
+assert.deepEqual(readSavedExperimentValues(scope), migratedScope)
+console.log('示波器旧版波形顺序迁移与重复读取测试通过')

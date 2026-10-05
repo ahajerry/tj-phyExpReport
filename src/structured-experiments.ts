@@ -12,25 +12,21 @@ export type StructuredExperiment = {
 export const structuredExperiments: StructuredExperiment[] = [
   {
     id: "oscilloscope", title: "阴极射线示波器",
-    note: "七种波形按所列顺序输入档位和跨度，时间档位用 ms/div。李萨如法输入五组参考频率和切点数：nx 为水平线切点数，ny 为垂直线切点数。五组与正弦波周期测量应使用频率不变的同一待测信号。标准校准方波为 0.5 Vpp、1 kHz，校准时探头用 X1。完整报告为 6–7 页，可附最多两张原始记录图片。",
+    note: "按原始记录表输入方波、正弦波、三角波、半波四种波形的电压档位、纵向跨度、时基档位和周期跨度；峰峰值（V）、周期（ms）和频率（Hz）自动计算。李萨如法输入四组 fx（kHz）、ny、nx，按 fy = nx/ny × fx 计算。四组与正弦波周期测量应使用频率不变的同一待测信号。可附最多两张原始记录图片。",
     measurements: [
       ...[
         { id: "voltage_scale", label: "波形电压档位 Sy", unit: "V/div" },
         { id: "voltage_divisions", label: "峰峰值纵向跨度 NU", unit: "div" },
         { id: "time_scale", label: "波形时基档位 Sx", unit: "ms/div" },
         { id: "period_divisions", label: "单周期横向跨度 NT", unit: "div" },
-      ].map((item) => ({ ...item, count: 7,
-        rowLabels: ["正锯齿波", "反锯齿波", "脉冲波", "半波", "正弦波", "方波", "三角波"] })),
-      { id: "reference_frequency", label: "李萨如法 X 参考频率 fx", unit: "kHz", count: 5 },
-      { id: "nx", label: "水平线切点数 nx", unit: "个", count: 5 },
-      { id: "ny", label: "垂直线切点数 ny", unit: "个", count: 5 },
+      ].map((item) => ({ ...item, count: 4,
+        rowLabels: ["方波", "正弦波", "三角波", "半波"] })),
+      { id: "reference_frequency", label: "李萨如法 X 参考频率 fx", unit: "kHz", count: 4 },
+      { id: "ny", label: "垂直线切点数 ny", unit: "个", count: 4 },
+      { id: "nx", label: "水平线切点数 nx", unit: "个", count: 4 },
     ],
     parameters: [
-      { id: "probe_factor", label: "七种波形测量的探头倍数 K（直连取 1）", unit: "倍", initial: "1", minExclusive: 0 },
-      { id: "cal_voltage_scale", label: "校准电压档位", unit: "V/div", initial: "0.1", minExclusive: 0 },
-      { id: "cal_voltage_divisions", label: "校准方波峰峰跨度", unit: "div", minExclusive: 0 },
-      { id: "cal_time_scale", label: "校准时基档位", unit: "ms/div", initial: "0.1", minExclusive: 0 },
-      { id: "cal_period_divisions", label: "校准方波单周期跨度", unit: "div", minExclusive: 0 },
+      { id: "probe_factor", label: "波形测量的探头倍数 K（直连取 1）", unit: "倍", initial: "1", minExclusive: 0 },
     ],
   },
   {
@@ -77,8 +73,8 @@ export const structuredExperiments: StructuredExperiment[] = [
     id: "millikan", title: "密立根油滴实验",
     note: "上传油滴仪 CSV 原始记录；每颗油滴连续四行，系统读取平衡电压和四次下降时间。计算式采用教材给定的仪器常数。",
     measurements: [
-      { id: "voltage", label: "平衡电压", unit: "V", count: 10 },
-      ...[1, 2, 3, 4].map((n) => ({ id: `time_${n}`, label: `第 ${n} 次下降时间`, unit: "s", count: 10 })),
+      { id: "voltage", label: "平衡电压", unit: "V", count: 8 },
+      ...[1, 2, 3, 4].map((n) => ({ id: `time_${n}`, label: `第 ${n} 次下降时间`, unit: "s", count: 8 })),
     ], parameters: [],
   },
   {

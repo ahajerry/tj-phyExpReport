@@ -80,7 +80,7 @@ git commit -m "Record current development state"
 
 报告提交后，后端逐个编译，并在页面显示排队数、编译进度和 PDF 下载入口。
 
-目前支持生成八种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距、阴极射线示波器。密立根油滴上传 CSV 原始记录（每颗连续四行，支持 UTF-8/GB18030，3–10 颗），扭摆转动惯量上传与提供样例相同版式的 XLSX；后端读取读数、单位与仪器参数，将原始表附入报告。其余实验页面按对应数据表输入读数，仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
+目前支持生成八种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距、阴极射线示波器。密立根油滴上传 CSV 原始记录（每颗连续四行，支持 UTF-8/GB18030，3–8 颗），扭摆转动惯量上传与提供样例相同版式的 XLSX；后端读取读数、单位与仪器参数，将原始表附入报告。其余实验页面按对应数据表输入读数，仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
 
 八份统一版式的可编辑模板位于 `tex/templates/`；公共版式 `physics_report_base.tex` 源自 `tex/物理实验报告模板.tex`，封面和原始数据页沿用同济实验报告结构。每份独立压缩包及 `.tex` 副本位于 `tex/zipped/`。原有的 `specific_heat_ratio.zip`、`torsion_inertia.zip`、`young_modulus.zip` 保留为参考资料，最终归档仅保留每个实验一份模板。`tex/official/` 和 `tex/original/` 保留原资料。重新生成模板可运行 `python scripts/build_report_templates.py`；检验字段和示例 PDF 可运行 `python scripts/verify_reports.py --render`。示例 PDF 写入 `output/report-review/`。
 
@@ -116,4 +116,4 @@ git commit -m "Record current development state"
 
 测量值用字符串传输，以保留 `30.40` 的末尾零。带图片时使用 `multipart/form-data`，将上述 JSON 放入 `payload` 字段，将图片放入 `images` 字段，并设置 `X-Report-Request: 1` 请求头。
 
-示波器报告新增校准、七种波形测量和五组李萨如测频表。电压档位用 V/div，时基用 ms/div，频率用 kHz；nx 表示水平线切点数，ny 表示垂直线切点数。完整报告为 6–7 页，因此该实验最多附两张原始记录图片。教材十一页截图保存在 tex/original/oscilloscope/，独立模板包在 tex/zipped/oscilloscope.zip。
+示波器报告按原始记录表输入方波、正弦波、三角波、半波四种波形及四组李萨如测频数据。电压档位用 V/div，时基用 ms/div；波形峰峰值、周期和频率自动计算，频率用 Hz，李萨如法参考频率和计算频率用 kHz；nx 表示水平线切点数，ny 表示垂直线切点数。完整报告为 6–7 页，因此该实验最多附两张原始记录图片。教材十一页截图保存在 tex/original/oscilloscope/，独立模板包在 tex/zipped/oscilloscope.zip。

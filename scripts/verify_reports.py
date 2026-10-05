@@ -26,13 +26,13 @@ def strings(values):
 
 samples = {
     "oscilloscope": {
-        "data": {"voltage_scale": ["0.5"] * 7,
-                 "voltage_divisions": ["6.0", "6.0", "4.0", "3.0", "6.0", "5.0", "6.0"],
-                 "time_scale": ["0.5"] * 7, "period_divisions": ["4.0"] * 7,
-                 "reference_frequency": ["0.5", "1.0", "0.75", "0.666", "0.625"],
-                 "nx": ["1", "1", "2", "3", "4"], "ny": ["1", "2", "3", "4", "5"]},
-        "parameters": {"probe_factor": "1", "cal_voltage_scale": "0.1", "cal_voltage_divisions": "5.0",
-                       "cal_time_scale": "0.1", "cal_period_divisions": "10.0"},
+        "data": {"voltage_scale": ["0.5", "0.2", "0.2", "0.2"],
+                 "voltage_divisions": ["5.5", "5.4", "6.6", "3.6"],
+                 "time_scale": ["0.10", "0.01", "0.01", "0.10"],
+                 "period_divisions": ["5.8", "6.2", "7.2", "5.2"],
+                 "reference_frequency": ["16.232", "8.116", "5.4105", "10.821"],
+                 "nx": ["1", "2", "3", "3"], "ny": ["1", "1", "1", "2"]},
+        "parameters": {"probe_factor": "1"},
     },
     "speed-of-sound": {
         "data": {key: strings([round(20+i*4.3, 1) for i in range(20)]) for key in ("resonance", "phase")},
@@ -50,8 +50,8 @@ samples = {
                        "period_error_s": "0.01", "pressure_error_kpa": "0.1", "volume_error_l": "0.01"},
     },
     "millikan": {
-        "data": {"voltage": strings([300 + i*20 for i in range(10)]),
-                 **{f"time_{j}": strings([round(8+i/3+j/10, 2) for i in range(10)]) for j in range(1, 5)}},
+        "data": {"voltage": strings([300 + i*20 for i in range(8)]),
+                 **{f"time_{j}": strings([round(8+i/3+j/10, 2) for i in range(8)]) for j in range(1, 5)}},
         "parameters": {},
     },
     "moment-of-inertia": {

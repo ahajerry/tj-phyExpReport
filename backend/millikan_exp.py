@@ -8,8 +8,8 @@ except ImportError:
 
 EXPERIMENT_ID = "millikan"
 TITLE = "密立根油滴实验"
-DATA_SPEC = {"voltage": (10, "voltage_{i:02d}"), **{
-    f"time_{j}": (10, f"time_{{i:02d}}_{j}") for j in range(1, 5)
+DATA_SPEC = {"voltage": (8, "voltage_{i:02d}"), **{
+    f"time_{j}": (8, f"time_{{i:02d}}_{j}") for j in range(1, 5)
 }}
 PARAMETERS = ()
 

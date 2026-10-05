@@ -346,13 +346,13 @@ function HomePage() {
           本网站使用cookie确认身份，无需注册账户，
           使用同一设备的同一浏览器时可查看原有数据和报告排队进度。<br />
           目前使用的服务器为1M带宽，可能无法支撑大量访问。<br />
-          当前版本：v261002（测试）<br />
+          当前版本：v261005（测试）<br />
           测试期间数据和图片可能保存到服务器便于调试和后续开发。<br />
           本项目预计上传github开源。
         </p>
         <p className="mb-4 text-sm text-muted-foreground">
           ChatGPT负责了一半以上的开发工作。<br />
-          欢迎加入QQ群探讨大雾实验的奥秘:1127752706
+          欢迎加入QQ群探讨大雾实验的奥秘:1127752706<br />
           感谢支持本项目的所有人！
         </p>
         <img src="/qq_group.jpg" alt="qq群" className="w-64 h-80 rounded-lg object-cover" />
@@ -683,7 +683,7 @@ function ReportPage() {
                   <progress value={current.progress} max={100} className="h-3 w-full accent-blue-600" aria-label="报告生成进度" />
                   <p className="text-xs text-muted-foreground">
                     进度按模板填充与两次编译阶段更新。（插入图片和tikz绘图等导致latex需要多次编译）
-                    目测单份报告编译时长在1min以上
+                    目测单份报告编译时长在30s~60s.
                   </p>
                 </div>
               )}

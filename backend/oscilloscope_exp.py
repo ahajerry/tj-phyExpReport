@@ -1,5 +1,4 @@
-"""阴极射线示波器：校准、七种波形测量和李萨如测频。"""
-from decimal import Decimal
+"""阴极射线示波器：四种波形测量和四组李萨如测频。"""
 from math import gcd
 
 try:
@@ -11,14 +10,13 @@ except ImportError:
 
 EXPERIMENT_ID = "oscilloscope"
 TITLE = "阴极射线示波器"
-WAVEFORMS = ("正锯齿波", "反锯齿波", "脉冲波", "半波", "正弦波", "方波", "三角波")
+WAVEFORMS = ("方波", "正弦波", "三角波", "半波")
 DATA_SPEC = {
-    **{key: (7, key + "_{i:02d}") for key in
+    **{key: (4, key + "_{i:02d}") for key in
        ("voltage_scale", "voltage_divisions", "time_scale", "period_divisions")},
-    **{key: (5, key + "_{i:02d}") for key in ("reference_frequency", "nx", "ny")},
+    **{key: (4, key + "_{i:02d}") for key in ("reference_frequency", "nx", "ny")},
 }
-PARAMETERS = ("probe_factor", "cal_voltage_scale", "cal_voltage_divisions",
-              "cal_time_scale", "cal_period_divisions")
+PARAMETERS = ("probe_factor",)
 
 
 def report_fields(payload):
@@ -30,12 +28,6 @@ def report_fields(payload):
                 raise ValueError(f"{key} 切点数必须为 1–100 的正整数")
     for key, value in params.items():
         positive(value, key)
-    cal_voltage = params["cal_voltage_scale"] * params["cal_voltage_divisions"]
-    cal_period = params["cal_time_scale"] * params["cal_period_divisions"]
-    fields.update(cal_voltage=fmt(cal_voltage), cal_period=fmt(cal_period),
-                  cal_frequency=fmt(1 / cal_period),
-                  cal_voltage_error=fmt((cal_voltage / Decimal("0.5") - 1) * 100),
-                  cal_frequency_error=fmt((1 / cal_period - 1) * 100))
     waveform_frequencies = []
     for index in range(1, len(WAVEFORMS) + 1):
         i = index - 1
@@ -45,7 +37,7 @@ def report_fields(payload):
         waveform_frequencies.append(frequency)
         fields.update({f"voltage_pp_{index:02d}": fmt(voltage),
                        f"period_ms_{index:02d}": fmt(period),
-                       f"frequency_khz_{index:02d}": fmt(frequency)})
+                       f"frequency_hz_{index:02d}": fmt(frequency * 1000)})
     frequencies = []
     for index, (fx, nx, ny) in enumerate(zip(data["reference_frequency"], data["nx"], data["ny"]), 1):
         fy = fx * nx / ny
@@ -55,8 +47,9 @@ def report_fields(payload):
         fields[f"frequency_ratio_{index:02d}"] = f"{int(nx) // divisor}:{int(ny) // divisor}"
     center = mean(frequencies)
     finish_pair(fields, "lissajous_mean_khz", "lissajous_u_khz", center, sem(frequencies))
-    fields["sine_frequency_khz"] = fmt(waveform_frequencies[4])
-    fields["method_difference_percent"] = fmt(abs(center - waveform_frequencies[4]) / waveform_frequencies[4] * 100)
+    sine_frequency = waveform_frequencies[WAVEFORMS.index("正弦波")]
+    fields["sine_frequency_khz"] = fmt(sine_frequency)
+    fields["method_difference_percent"] = fmt(abs(center - sine_frequency) / sine_frequency * 100)
     return fields
 
 

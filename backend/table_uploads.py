@@ -52,8 +52,8 @@ def _millikan(content: bytes) -> dict:
     if not rows or "平衡电压" not in "".join(rows[0]) or "时间" not in "".join(rows[0]):
         raise ValueError("CSV 表头需包含平衡电压和时间")
     readings = [row for row in rows[1:] if any(cell.strip() for cell in row)]
-    if len(readings) % 4 or not 3 <= len(readings) // 4 <= 10:
-        raise ValueError("CSV 每颗油滴需有连续 4 行记录，共需 3 至 10 颗")
+    if len(readings) % 4 or not 3 <= len(readings) // 4 <= 8:
+        raise ValueError("CSV 每颗油滴需有连续 4 行记录，共需 3 至 8 颗")
     data = {"voltage": [], **{f"time_{j}": [] for j in range(1, 5)}}
     source_rows = []
     for index in range(0, len(readings), 4):
@@ -69,7 +69,7 @@ def _millikan(content: bytes) -> dict:
             source_rows.append([str(index // 4 + 1), str(j), row[0].strip(),
                                 voltages[j - 1], times[j - 1], row[3].strip() if len(row) > 3 else ""])
     for values in data.values():
-        values.extend([""] * (10 - len(values)))
+        values.extend([""] * (8 - len(values)))
     return {"data": data, "parameters": {}, "sourceTables": [{
         "title": "密立根油滴仪 CSV 原始记录",
         "headers": ["油滴", "次数", "当前电压/V", "平衡电压/V", "时间/s", "电荷量/C"], "rows": source_rows,

@@ -100,13 +100,58 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     id: item.id, showName: `${item.label}（${item.count} 个${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
   })))
 
+  function readingCell(key: string, index: number) {
+    const item = experiment.measurements.find((item) => item.id === key)!
+    return <Input className="min-w-24" type="number" step="any" inputMode="decimal"
+      aria-label={`${item.label}${item.rowLabels?.[index] ?? `第 ${index + 1} 次`}`}
+      value={data[key][index]} onChange={(event) => changeReading(key, index, event.target.value)} />
+  }
+
+  function calculatedReading(keys: string[], index: number, calculate: (...values: number[]) => number) {
+    const raw = keys.map((key) => key === "probe_factor" ? parameters[key] : data[key][index])
+    if (raw.some((value) => !value?.trim() || !Number.isFinite(Number(value)) || Number(value) <= 0)) return "—"
+    const value = calculate(...raw.map(Number))
+    return Number.isFinite(value) ? Number(value.toPrecision(6)).toString() : "—"
+  }
+
   return (
     <div className="space-y-5">
       <header>
         <h1 className="text-2xl font-semibold">{experiment.title}</h1>
         <p className="text-muted-foreground">{experiment.note}</p>
       </header>
-      {!tableType && <section className="grid gap-4 lg:grid-cols-2">
+      {experiment.id === "oscilloscope" && <section className="space-y-4">
+        <div className="overflow-x-auto rounded-xl border bg-white p-4">
+          <h2 className="mb-3 font-semibold">波形电压、周期与频率</h2>
+          <table className="w-full text-center text-sm">
+            <thead><tr>{["待测波形", "V/div", "纵向跨度 / div", "Upp / V（计算）", "ms/div", "周期跨度 / div", "Ty / ms（计算）", "fv / Hz（计算）"].map((label) => <th key={label} className="whitespace-nowrap p-2">{label}</th>)}</tr></thead>
+            <tbody>{experiment.measurements[0].rowLabels?.map((name, index) => <tr key={name} className="border-t">
+              <th className="whitespace-nowrap p-2 font-normal">{name}</th>
+              <td className="p-2">{readingCell("voltage_scale", index)}</td>
+              <td className="p-2">{readingCell("voltage_divisions", index)}</td>
+              <td className="p-2">{calculatedReading(["voltage_scale", "voltage_divisions", "probe_factor"], index, (scale, divisions, probe) => scale * divisions * probe)}</td>
+              <td className="p-2">{readingCell("time_scale", index)}</td>
+              <td className="p-2">{readingCell("period_divisions", index)}</td>
+              <td className="p-2">{calculatedReading(["time_scale", "period_divisions"], index, (scale, divisions) => scale * divisions)}</td>
+              <td className="p-2">{calculatedReading(["time_scale", "period_divisions"], index, (scale, divisions) => 1000 / (scale * divisions))}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <div className="overflow-x-auto rounded-xl border bg-white p-4">
+          <h2 className="mb-3 font-semibold">李萨如图形测频</h2>
+          <table className="w-full text-center text-sm">
+            <thead><tr>{["组次", "fx / kHz", "ny", "nx", "fy = nx/ny × fx / kHz（计算）"].map((label) => <th key={label} className="whitespace-nowrap p-2">{label}</th>)}</tr></thead>
+            <tbody>{data.reference_frequency.map((_, index) => <tr key={index} className="border-t">
+              <th className="p-2 font-normal">{index + 1}</th>
+              <td className="p-2">{readingCell("reference_frequency", index)}</td>
+              <td className="p-2">{readingCell("ny", index)}</td>
+              <td className="p-2">{readingCell("nx", index)}</td>
+              <td className="p-2">{calculatedReading(["reference_frequency", "ny", "nx"], index, (fx, ny, nx) => nx / ny * fx)}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </section>}
+      {!tableType && experiment.id !== "oscilloscope" && <section className="grid gap-4 lg:grid-cols-2">
         {experiment.measurements.map((item) => (
           <div key={item.id} className="rounded-xl border bg-white p-4">
             <h2 className="mb-3 font-semibold">{item.label} <span className="text-sm font-normal text-muted-foreground">({item.unit})</span></h2>
@@ -150,7 +195,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
       </section>
       {tableType ? <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">上传原始数据表（必填）</h2>
-        <p className="mb-2 text-sm text-muted-foreground">{tableType === "csv" ? "上传与提供的密里根油滴 CSV 相同格式的记录，每颗油滴连续 4 行，共 3 至 10 颗。支持 UTF-8 和 GB18030。" : "上传与提供的扭摆实验 XLSX 相同版式的数据表，系统读取质量、尺寸、计时和滑块数据。"} 文件上限 2 MiB；数据会填入报告并附在原始记录页。</p>
+        <p className="mb-2 text-sm text-muted-foreground">{tableType === "csv" ? "上传与提供的密里根油滴 CSV 相同格式的记录，每颗油滴连续 4 行，共 3 至 8 颗。支持 UTF-8 和 GB18030。" : "上传与提供的扭摆实验 XLSX 相同版式的数据表，系统读取质量、尺寸、计时和滑块数据。"} 文件上限 2 MiB；数据会填入报告并附在原始记录页。</p>
         <Input type="file" accept={tableType === "csv" ? ".csv,text/csv" : ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
           aria-label={`上传${tableType.toUpperCase()}原始数据表`} onChange={(event) => {
             const selected = event.currentTarget.files?.[0] ?? null

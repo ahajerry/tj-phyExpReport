@@ -20,13 +20,33 @@ def sample(pattern):
 
 
 class TableUploadTests(unittest.TestCase):
+    def test_csv_accepts_eight_and_rejects_nine_or_ten_drops(self):
+        for count in (3, 8, 9, 10):
+            content = ("当前电压,平衡电压,时间\n" + "120,120,10\n" * (count * 4)).encode()
+            if count > 8:
+                with self.assertRaisesRegex(ValueError, "3 至 8"):
+                    parse_table("millikan", "data.csv", content)
+            else:
+                parsed = parse_table("millikan", "data.csv", content)
+                self.assertTrue(all(len(values) == 8 for values in parsed["data"].values()))
+                self.assertEqual(parsed["data"]["voltage"][count:], [""] * (8 - count))
+                self.assertEqual(len(parsed["sourceTables"][0]["rows"]), count * 4)
+
+    def test_json_requires_eight_slots(self):
+        for count in (9, 10):
+            payload = {"experimentId": "millikan", "parameters": {}, "data": {
+                key: ["120" if key == "voltage" else "10"] * count
+                for key in ("voltage", "time_1", "time_2", "time_3", "time_4")}}
+            with self.assertRaisesRegex(ValueError, "8 个读数"):
+                millikan_fields(payload)
+
     def test_millikan_csv_sample_has_eight_complete_drops(self):
         path = sample("密里根油滴.csv")
         if path is None:
             self.skipTest("user CSV is unavailable")
         parsed = parse_table("millikan", path.name, path.read_bytes())
         self.assertEqual(parsed["data"]["voltage"][0], "122.925")
-        self.assertEqual(parsed["data"]["voltage"][8:], ["", ""])
+        self.assertEqual(len(parsed["data"]["voltage"]), 8)
         self.assertEqual(len(parsed["sourceTables"][0]["rows"]), 32)
         fields = millikan_fields({"experimentId": "millikan", **parsed})
         self.assertIn("electron_charge_ls", fields)

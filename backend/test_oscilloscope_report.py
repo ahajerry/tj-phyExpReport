@@ -20,31 +20,43 @@ class OscilloscopeReportTests(TestCase):
     def payload(self):
         return {"experimentId": exp.EXPERIMENT_ID, **copy.deepcopy(samples[exp.EXPERIMENT_ID])}
 
-    def test_measurements_use_ms_khz_and_probe_factor(self):
+    def test_measurements_use_ms_hz_and_probe_factor(self):
         payload = self.payload()
         payload["parameters"]["probe_factor"] = "10"
         payload["data"]["voltage_divisions"][0] = "6.00"
         fields = validate_report(payload)
         self.assertEqual(Decimal(fields["voltage_pp_01"]), 30)
-        self.assertEqual(Decimal(fields["period_ms_01"]), 2)
-        self.assertEqual(Decimal(fields["frequency_khz_01"]), Decimal("0.5"))
+        self.assertEqual(Decimal(fields["period_ms_01"]), Decimal("0.58"))
+        self.assertEqual(Decimal(fields["frequency_hz_01"]), Decimal("1724.14"))
         self.assertEqual(fields["voltage_divisions_01"], "6.00")
-        # Calibration uses X1 regardless of the measurement probe setting.
-        self.assertEqual(Decimal(fields["cal_voltage"]), Decimal("0.5"))
-        self.assertEqual(Decimal(fields["cal_frequency"]), 1)
-        self.assertEqual(Decimal(fields["cal_voltage_error"]), 0)
 
     def test_horizontal_tangencies_are_numerator(self):
         payload = self.payload()
-        payload["data"]["reference_frequency"] = ["3", "1.5", "1", "0.75", "0.6"]
-        payload["data"]["nx"] = ["2", "4", "6", "8", "10"]
-        payload["data"]["ny"] = ["3"] * 5
+        payload["data"]["reference_frequency"] = ["3", "1.5", "1", "0.75"]
+        payload["data"]["nx"] = ["2", "4", "6", "8"]
+        payload["data"]["ny"] = ["3"] * 4
         fields = validate_report(payload)
-        for i in range(1, 6):
+        for i in range(1, 5):
             self.assertEqual(Decimal(fields[f"lissajous_frequency_{i:02d}"]), 2)
         self.assertEqual(fields["frequency_ratio_03"], "2:1")
         self.assertEqual(Decimal(fields["lissajous_mean_khz"]), 2)
         self.assertEqual(Decimal(fields["lissajous_u_khz"]), 0)
+
+    def test_photo_readings_and_sine_row(self):
+        fields = validate_report(self.payload())
+        self.assertEqual(Decimal(fields["voltage_pp_01"]), Decimal("2.75"))
+        self.assertEqual(Decimal(fields["voltage_pp_04"]), Decimal("0.72"))
+        self.assertEqual(Decimal(fields["period_ms_02"]), Decimal("0.062"))
+        self.assertEqual(Decimal(fields["sine_frequency_khz"]), Decimal("16.129"))
+        for i, expected in enumerate(("16.232", "16.232", "16.2315", "16.2315"), 1):
+            self.assertEqual(Decimal(fields[f"lissajous_frequency_{i:02d}"]), Decimal(expected))
+
+    def test_rejects_old_waveform_and_lissajous_counts(self):
+        for key, count in (("voltage_scale", 7), ("reference_frequency", 5)):
+            payload = self.payload()
+            payload["data"][key] = ["1"] * count
+            with self.assertRaisesRegex(ValueError, "4 个读数"):
+                validate_report(payload)
 
     def test_rejects_zero_negative_nonfinite_and_fractional_counts(self):
         for key, value in (("time_scale", "0"), ("period_divisions", "-1"),

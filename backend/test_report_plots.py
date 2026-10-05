@@ -36,7 +36,7 @@ class ReportPlotTests(unittest.TestCase):
         changed["data"]["voltage"][0] = str(float(changed["data"]["voltage"][0]) * 1.1)
         updated = fields_for("millikan", changed)
         self.assertNotEqual(original["charge_graph_points"], updated["charge_graph_points"])
-        self.assertEqual(len(re.findall(r"\([^()]+\)", updated["charge_graph_points"])), 10)
+        self.assertEqual(len(re.findall(r"\([^()]+\)", updated["charge_graph_points"])), 8)
 
     def test_other_required_graphs_use_all_readings(self):
         expected = {
