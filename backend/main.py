@@ -147,8 +147,6 @@ class ReportHandler(BaseHTTPRequestHandler):
         body = self.rfile.read(length)
         if media_type == "application/json":
             payload = json.loads(body.decode("utf-8"), parse_float=Decimal)
-            if isinstance(payload, dict) and payload.get("experimentId") in ("millikan", "moment-of-inertia"):
-                raise ValueError("请上传该实验的原始数据表")
             return payload, []
         if media_type != "multipart/form-data":
             raise ValueError("请使用 JSON 或 multipart/form-data 提交")
@@ -193,8 +191,6 @@ class ReportHandler(BaseHTTPRequestHandler):
                        "reportInfo": {**imported.get("reportInfo", {}), **{
                            key: value for key, value in payload.get("reportInfo", {}).items() if value
                        }}}
-        elif isinstance(payload, dict) and payload.get("experimentId") in ("millikan", "moment-of-inertia"):
-            raise ValueError("请上传该实验的原始数据表")
         if isinstance(payload, dict) and payload.get("experimentId") == "oscilloscope" and len(images) > 2:
             raise ValueError("示波器报告最多附两张原始记录图片，以保持完整报告为 6–7 页")
         return payload, images

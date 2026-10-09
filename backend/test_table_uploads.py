@@ -10,6 +10,8 @@ from .main import ReportHandler
 from .millikan_exp import report_fields as millikan_fields
 from .moment_of_inertia_exp import report_fields as torsion_fields
 from .table_uploads import parse_table
+from .experiment_registry import validate_report
+from scripts.verify_reports import samples
 
 
 SOURCE_DIR = Path("D:/ProgramData/QQDownloads")
@@ -20,6 +22,24 @@ def sample(pattern):
 
 
 class TableUploadTests(unittest.TestCase):
+    def test_manual_submission_without_table(self):
+        for experiment_id in ("millikan", "moment-of-inertia"):
+            payload = {"experimentId": experiment_id, **samples[experiment_id]}
+            encoded = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            boundary = "manual-readings"
+            multipart = (f'--{boundary}\r\nContent-Disposition: form-data; name="payload"\r\n\r\n'.encode()
+                         + encoded + f"\r\n--{boundary}--\r\n".encode())
+            for content_type, body in (("application/json", encoded),
+                                       (f"multipart/form-data; boundary={boundary}", multipart)):
+                with self.subTest(experiment_id=experiment_id, content_type=content_type):
+                    fake = SimpleNamespace(headers={"Content-Type": content_type,
+                                                    "Content-Length": str(len(body)), "X-Report-Request": "1"},
+                                           rfile=BytesIO(body))
+                    result, images = ReportHandler._read_submission(fake)
+                    self.assertEqual(result, payload)
+                    self.assertEqual(images, [])
+                    self.assertTrue(validate_report(result))
+
     def test_csv_accepts_eight_and_rejects_nine_or_ten_drops(self):
         for count in (3, 8, 9, 10):
             content = ("当前电压,平衡电压,时间\n" + "120,120,10\n" * (count * 4)).encode()

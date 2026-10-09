@@ -16,6 +16,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   const [images, setImages] = useState<File[]>([])
   const [table, setTable] = useState<File | null>(null)
   const tableType = experiment.id === "millikan" ? "csv" : experiment.id === "moment-of-inertia" ? "xlsx" : null
+  const [inputMode, setInputMode] = useState<"manual" | "table">("manual")
+  const usingTable = Boolean(tableType && inputMode === "table")
   const maxImages = experiment.id === "oscilloscope" ? 2 : 5
   const [importText, setImportText] = useState("")
   const [message, setMessage] = useState("")
@@ -38,6 +40,9 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         id: item.id, showName: item.label, unit: item.unit,
       })))
       for (const item of experiment.measurements) {
+        if (experiment.id === "millikan" && parsed[item.id].length >= 3 && parsed[item.id].length <= item.count) {
+          parsed[item.id] = [...parsed[item.id], ...Array<string>(item.count - parsed[item.id].length).fill("")]
+        }
         if (parsed[item.id].length !== item.count) throw new Error(`${item.label}需要 ${item.count} 个读数`)
       }
       setData(parsed)
@@ -50,17 +55,24 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   async function generate() {
     setError("")
-    if (tableType && !table) {
+    if (usingTable && tableType && !table) {
       setError(`请上传 ${tableType.toUpperCase()} 原始数据表`)
       return
     }
-    for (const item of tableType ? [] : experiment.measurements) {
-      if (data[item.id].some((value) => !value.trim() || !Number.isFinite(Number(value)))) {
+    const dropCount = experiment.id === "millikan" ? data.voltage.filter((value) => value.trim()).length : null
+    for (const item of usingTable ? [] : experiment.measurements) {
+      const values = data[item.id]
+      if (dropCount !== null && (dropCount < 3 || dropCount > 8 ||
+        values.slice(dropCount).some((value) => value.trim()))) {
+        setError("请连续填写 3 至 8 颗油滴的电压和四次下降时间，未使用的油滴留空")
+        return
+      }
+      if ((dropCount === null ? values : values.slice(0, dropCount)).some((value) => !value.trim() || !Number.isFinite(Number(value)))) {
         setError(`${item.label}需要 ${item.count} 个有效数字`)
         return
       }
     }
-    for (const item of tableType ? [] : experiment.parameters) {
+    for (const item of usingTable ? [] : experiment.parameters) {
       if (!parameters[item.id]?.trim() || !Number.isFinite(Number(parameters[item.id]))) {
         setError(`请填写${item.label}`)
         return
@@ -75,11 +87,11 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     try {
       const payload = { experimentId: experiment.id, data, parameters, reportInfo }
       let response: Response
-      if (images.length || table) {
+      if ((!usingTable && images.length) || (usingTable && table)) {
         const form = new FormData()
         form.append("payload", JSON.stringify(payload))
-        images.forEach((file) => form.append("images", file))
-        if (table) form.append("table", table)
+        if (!usingTable) images.forEach((file) => form.append("images", file))
+        if (usingTable && table) form.append("table", table)
         response = await fetch("/api/reports/jobs", { method: "POST", headers: { "X-Report-Request": "1" }, body: form })
       } else {
         response = await fetch("/api/reports/jobs", {
@@ -120,6 +132,16 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         <h1 className="text-2xl font-semibold">{experiment.title}</h1>
         <p className="text-muted-foreground">{experiment.note}</p>
       </header>
+      {tableType && <section className="rounded-xl border bg-white p-4">
+        <h2 className="mb-3 font-semibold">数据输入方式</h2>
+        <div className="flex gap-2">
+          <Button variant={inputMode === "manual" ? "default" : "outline"} aria-pressed={inputMode === "manual"}
+            onClick={() => { setInputMode("manual"); setError("") }}>手动输入</Button>
+          <Button variant={inputMode === "table" ? "default" : "outline"} aria-pressed={inputMode === "table"}
+            onClick={() => { setInputMode("table"); setError("") }}>上传数据表</Button>
+        </div>
+        {experiment.id === "millikan" && !usingTable && <p className="mt-2 text-sm text-muted-foreground">连续填写 3 至 8 颗油滴的平衡电压和四次下降时间，未使用的油滴留空；各输入区的相同序号对应同一颗油滴。</p>}
+      </section>}
       {experiment.id === "oscilloscope" && <section className="space-y-4">
         <div className="overflow-x-auto rounded-xl border bg-white p-4">
           <h2 className="mb-3 font-semibold">波形电压、周期与频率</h2>
@@ -151,7 +173,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           </table>
         </div>
       </section>}
-      {!tableType && experiment.id !== "oscilloscope" && <section className="grid gap-4 lg:grid-cols-2">
+      {!usingTable && experiment.id !== "oscilloscope" && <section className="grid gap-4 lg:grid-cols-2">
         {experiment.measurements.map((item) => (
           <div key={item.id} className="rounded-xl border bg-white p-4">
             <h2 className="mb-3 font-semibold">{item.label} <span className="text-sm font-normal text-muted-foreground">({item.unit})</span></h2>
@@ -167,7 +189,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           </div>
         ))}
       </section>}
-      {!tableType && experiment.parameters.length > 0 && (
+      {!usingTable && experiment.parameters.length > 0 && (
         <section className="rounded-xl border bg-white p-4">
           <h2 className="mb-3 font-semibold">仪器及计算参数</h2>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -193,7 +215,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           ))}
         </div>
       </section>
-      {tableType ? <section className="rounded-xl border bg-white p-4">
+      {usingTable && tableType ? <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">上传原始数据表（必填）</h2>
         <p className="mb-2 text-sm text-muted-foreground">{tableType === "csv" ? "上传与提供的密里根油滴 CSV 相同格式的记录，每颗油滴连续 4 行，共 3 至 8 颗。支持 UTF-8 和 GB18030。" : "上传与提供的扭摆实验 XLSX 相同版式的数据表，系统读取质量、尺寸、计时和滑块数据。"} 文件上限 2 MiB；数据会填入报告并附在原始记录页。</p>
         <Input type="file" accept={tableType === "csv" ? ".csv,text/csv" : ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
@@ -223,7 +245,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
             } else setImages(selected)
           }} />
       </section>}
-      {!tableType && <section className="rounded-xl border bg-white p-4">
+      {!usingTable && <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">从 JSON 导入读数</h2>
         <details className="mb-2 text-sm"><summary className="cursor-pointer text-blue-700">查看识别提示词</summary>
           <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-slate-50 p-3">{prompt}</pre></details>
