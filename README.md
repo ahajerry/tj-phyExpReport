@@ -93,6 +93,17 @@ git commit -m "Record current development state"
 除密立根油滴和扭摆法外的报告可以附带最多 5 张原始数据图片，每张不超过 8 MiB，请求体上限 30 MiB。图片按任务编号存放在 `.report-data/original-images/<任务编号>/`，并依上传顺序追加到 PDF 原始数据记录页后。未上传图片时，原始数据记录页保留空白提示。支持 PNG、JPEG、GIF、TIFF、WebP、HEIC、AVIF；HEIC 需要 `pillow-heif`。密立根油滴和扭摆法的数据表上限为 2 MiB，报告的原始数据记录页展示解析后的表格。
 部署到服务器时，需为 `.report-data/` 使用持久化磁盘，才能在服务器迁移或容器重建后保留报告与原始图片。
 
+本地数据维护工具 `scripts/report_index.py` 只依赖 Python 标准库，按提交日期、组号、姓名建立内存中的交互式目录，无需启动服务或生成文件副本。工具脚本和 `.report-data/` 均已加入 `.gitignore`，脚本仅保存在本机，不随仓库分发。
+
+```bash
+python scripts/report_index.py
+python scripts/report_index.py --by group,name,date
+python scripts/report_index.py --name "张三" --list
+python scripts/report_index.py --data-dir /path/to/.report-data
+```
+
+用 `↑`/`↓` 选择条目，按回车进入分类或用系统默认程序打开文件，`>` 标记当前选中项；跨页自动翻页，`PageUp`/`PageDown` 翻页，`Home`/`End` 跳至首尾，`Esc` 返回上一级。也可输入数字或命令后按回车：`n`/`p` 翻页，`b` 返回，`q` 退出，`r` 重新读取数据库。`/关键词` 搜索日期、组号、姓名、学号、实验、状态和任务编号，单独输入 `/` 清空搜索；`by group,name,date` 切换分类顺序，也支持 `student-id`、`experiment`、`status`。任务菜单中 `f 编号` 打开文件所在目录，`v` 查看原始提交 JSON，`x` 将该 JSON 导出至 `.report-data/index/payloads/` 并打开。提交日期使用数据库 `day`，不是封面上的实验日期；缺失姓名或组号归入“未填写”。数据库始终只读，导出 JSON 的修改不会写回数据库；没有归档文件的任务仍能查看提交数据。真实终端支持逐键操作，重定向输入时自动使用普通命令行模式。
+
 八种报告页面统一由 `src/structured-experiments.ts` 配置、`src/StructuredExperimentPage.tsx` 渲染，读数和仪器参数保存在浏览器 localStorage，刷新后可恢复。声速页面首次打开时会把旧版 Cookie 中的读数、参数和封面信息带入新表单；长度、密度演示计算页面仍使用 Cookie。实验页面提供 JSON 导入区，识别提示词与字段名按各自实验配置生成。导入前会校验字段和读数数量，成功后一次性替换当前实验的输入。
 
 前端发给 `POST /api/reports/jobs` 的 JSON 与 `experiments` 配置中的实验 id 和物理量 id 对齐。`GET /api/reports/session` 返回当前访客的任务和今日额度；`GET /api/reports/jobs/{id}` 查询任务；`GET /api/reports/jobs/{id}/download` 下载已完成的 PDF：

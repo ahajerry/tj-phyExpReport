@@ -22,6 +22,8 @@ __pycache__/
 .ruff_cache/
 legacy/assets/
 .report-data/
+# Local interactive report maintenance tool
+scripts/report_index.py
 .sound-speed-report-*/
 *.local
 .env

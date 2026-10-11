@@ -12,7 +12,7 @@ from PIL import Image
 from scripts.verify_reports import samples
 from . import oscilloscope_exp as exp
 from .experiment_registry import validate_report
-from .fill_sound_speed import FIELD_PATTERN
+from .fill_sound_speed import FIELD_PATTERN, fill_report
 from .main import ReportHandler
 
 
@@ -75,6 +75,23 @@ class OscilloscopeReportTests(TestCase):
     def test_all_report_fields_exist_in_template(self):
         source = (Path(__file__).resolve().parents[1] / "tex/templates/oscilloscope.tex").read_text(encoding="utf-8")
         self.assertLessEqual(set(validate_report(self.payload())), set(FIELD_PATTERN.findall(source)))
+
+    def test_lissajous_plots_use_each_submitted_row(self):
+        payload = self.payload()
+        payload["data"]["nx"] = ["5", "7", "4", "2"]
+        payload["data"]["ny"] = ["2", "3", "6", "5"]
+        template = Path(__file__).resolve().parents[1] / "tex/templates/oscilloscope.tex"
+        with patch.object(Path, "write_text") as write:
+            fill_report(validate_report(payload), template.with_name("test-filled.tex"), template)
+            source = write.call_args.args[0]
+        self.assertIn(r"\csname reportfield@nx_\index\endcsname", source)
+        self.assertIn(r"\csname reportfield@ny_\index\endcsname", source)
+        self.assertIn(r"samples=\plotSamples", source)
+        self.assertNotIn("1/1/0/{1:1}", source)
+        for index, ratio in enumerate(("5:2", "7:3", "2:3", "2:5"), 1):
+            self.assertIn(rf"\SetField{{frequency_ratio_{index:02d}}}{{{ratio}}}", source)
+            for key in ("nx", "ny"):
+                self.assertIn(rf"\SetField{{{key}_{index:02d}}}{{{payload['data'][key][index - 1]}}}", source)
 
     def test_three_originals_rejected_before_compilation(self):
         image_dir = MagicMock()
