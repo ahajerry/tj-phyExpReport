@@ -234,7 +234,8 @@ def torsion() -> str:
 小角度扭摆的周期为 $T=2\pi\sqrt{I/\kappa}$。以圆盘空载周期 $T_0$ 和已知圆柱体惯量 $I'_1$ 标定
 \[\kappa=\frac{4\pi^2 I'_1}{T_1^2-T_0^2},\qquad
 I_0=\frac{\kappa T_0^2}{4\pi^2},\qquad
-I_{j,\rm exp}=\frac{\kappa T_j^2}{4\pi^2}-I_0.\]
+I_{j,\rm exp}=\frac{\kappa T_j^2}{4\pi^2}-I_0\quad(j=1,2).\]
+木球、细杆及细杆加滑块直接安装在转轴上，实验惯量为 $I=\kappa T^2/(4\pi^2)$，不扣除 $I_0$。
 \noindent 不计标定圆柱质量和直径的仪器误差时，令 $D=T_1^2-T_0^2$，
 由独立重复计时的不确定度传递得到参考公式
 \[u_\kappa=\kappa\sqrt{\left(\frac{2T_0u_{T_0}}{D}\right)^2+
@@ -244,8 +245,10 @@ u_{I_0}^2={}&\left(\frac{2I'_1T_0T_1^2u_{T_0}}{D^2}\right)^2+
 \left(\frac{2I'_1T_1T_0^2u_{T_1}}{D^2}\right)^2,\\
 u_{I_j}^2={}&\left(\frac{2I'_1T_ju_{T_j}}{D}\right)^2+
 \left(\frac{2I'_1T_0(T_j^2-T_1^2)u_{T_0}}{D^2}\right)^2\\
-&+\left(\frac{2I'_1T_1(T_j^2-T_0^2)u_{T_1}}{D^2}\right)^2\quad(j\ne1).
+&+\left(\frac{2I'_1T_1(T_j^2-T_0^2)u_{T_1}}{D^2}\right)^2\quad(j=2).
 \end{aligned}\]
+木球、细杆及细杆加滑块的计时不确定度为
+\[u_I^2=\left(\frac{\kappa T u_T}{2\pi^2}\right)^2+\left(\frac{T^2u_\kappa}{4\pi^2}\right)^2.\]
 \noindent 对标定圆柱本身，按同一周期数据代入实验惯量时计时项相关并相消；如需完整不确定度，还应计入质量和尺寸误差。
 \ReportSection{实验内容}
 分别测量空盘转动二十周期、四种物体转动十周期的时间，各重复三次；再改变两个对称滑块的位置，分别测量五周期的时间。
@@ -279,7 +282,7 @@ $\Field{slider_experiment_15_u}$、$\Field{slider_experiment_20_u}$ kg m$^2$。
 \noindent 理论模型 $I_{\rm th}(x)=I'_{\rm rod}+2I_s+2m_sx^2$；
 滑块的位移应按其质心到转轴的距离计。
 \ReportSection{讨论与分析}
-比较理论与实验惯量时均须扣除载物圆盘惯量 $I_0$。扭摆轴摩擦、计时起止误差和物体偏心安装会使周期及惯量出现系统偏差。
+比较理论与实验惯量时，仅圆柱、圆筒扣除载物圆盘惯量 $I_0$；木球、细杆及细杆加滑块不扣除。扭摆轴摩擦、计时起止误差和物体偏心安装会使周期及惯量出现系统偏差。
 \ReportSection{实验结论}
 利用周期差可标定扭转常数；随滑块离轴距离增大，转动惯量按平方规律增加。""")
 

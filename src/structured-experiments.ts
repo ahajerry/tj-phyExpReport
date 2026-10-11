@@ -79,7 +79,7 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "moment-of-inertia", title: "用扭摆法测定物体转动惯量",
-    note: "可手动输入计时、质量及尺寸，也可上传扭摆实验 XLSX 数据表；空盘计时 20 周期，其他物体 10 周期，滑块 5 周期，每种状态重复三次。注意手动填好组号。",
+    note: "可手动输入计时、质量及尺寸，也可上传扭摆实验 XLSX 数据表；空盘计时 20 周期，其他物体 10 周期，滑块 5 周期，每种状态重复三次。圆柱、圆筒放在载物盘上，计算时扣除空盘惯量；木球、细杆及细杆加滑块直接安装在转轴上，不扣除空盘惯量。注意手动填好组号。",
     measurements: [
       ...(["disk", "cylinder", "tube", "ball", "rod"] as const).map((key, i) => ({
         id: `time_${key}`, label: ["载物圆盘", "实心圆柱", "空心圆筒", "木球", "金属细杆"][i], unit: key === "disk" ? "s / 20 周期" : "s / 10 周期", count: 3,

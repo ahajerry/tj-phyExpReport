@@ -13,7 +13,7 @@
 \ReportSection{实验原理}
 扭摆的回复力矩在小角度范围内近似满足 $M=-\kappa\theta$，运动方程为 $I\ddot\theta+\kappa\theta=0$，故
 \[T=2\pi\sqrt{\frac I\kappa}.\]
-以圆柱作标准物体，比较空盘周期 $T_0$ 和装圆柱周期 $T_1$，可由圆柱理论惯量 $I'_1=\frac{mD^2}{8}$ 求 $\kappa=\frac{4\pi^2I'_1}{T_1^2-T_0^2}$。其他物体的实验惯量由 $I_j=\frac{\kappa T_j^2}{4\pi^2}-I_0$ 求得。对两个质量均为 $m_s$ 的滑块，平行轴模型为 $I(x)=I_{\rm rod}+2I_s+2m_sx^2$。
+以圆柱作标准物体，比较空盘周期 $T_0$ 和装圆柱周期 $T_1$，可由圆柱理论惯量 $I'_1=\frac{mD^2}{8}$ 求 $\kappa=\frac{4\pi^2I'_1}{T_1^2-T_0^2}$。圆柱、圆筒置于载物盘上，实验惯量为 $I_j=\frac{\kappa T_j^2}{4\pi^2}-I_0$（$j=1,2$）；木球、细杆及细杆加滑块直接安装在转轴上，实验惯量为 $I_j=\frac{\kappa T_j^2}{4\pi^2}$，不扣除 $I_0$。对两个质量均为 $m_s$ 的滑块，平行轴模型为 $I(x)=I_{\rm rod}+2I_s+2m_sx^2$。
 以 $\Delta=T_1^2-T_0^2$ 记周期平方差。暂把标准圆柱的理论惯量视为已知常量，独立重复计时的传播公式为
 \[u_\kappa=\kappa\sqrt{\left(\frac{2T_0u_{T_0}}{\Delta}\right)^2+
 \left(\frac{2T_1u_{T_1}}{\Delta}\right)^2}.\]
@@ -22,15 +22,17 @@ u_{I_0}^2={}&\left(\frac{2I'_1T_0T_1^2u_{T_0}}{\Delta^2}\right)^2+
 \left(\frac{2I'_1T_1T_0^2u_{T_1}}{\Delta^2}\right)^2,\\
 u_{I_j}^2={}&\left(\frac{2I'_1T_ju_{T_j}}{\Delta}\right)^2+
 \left(\frac{2I'_1T_0(T_j^2-T_1^2)u_{T_0}}{\Delta^2}\right)^2\\
-&+\left(\frac{2I'_1T_1(T_j^2-T_0^2)u_{T_1}}{\Delta^2}\right)^2\quad(j\ne1).
+&+\left(\frac{2I'_1T_1(T_j^2-T_0^2)u_{T_1}}{\Delta^2}\right)^2\quad(j=2).
 \end{aligned}\]
+木球、细杆及细杆加滑块的计时不确定度为
+\[u_I^2=\left(\frac{\kappa T u_T}{2\pi^2}\right)^2+\left(\frac{T^2u_\kappa}{4\pi^2}\right)^2.\]
 标定圆柱的 $I_1$ 与 $I'_1$ 由同一组周期构成，其计时项相消；完整不确定度还需计入圆柱质量、直径等仪器误差。
 \begin{center}\includegraphics[width=3.4cm]{figures/torsion-apparatus.png}\par
 {\small 扭摆装置示意图。}\end{center}
 \ReportSection{实验内容}
 \ReportSubsection{周期和几何量}
 1. 调节底座水平与转轴竖直，保证载物盘空载时自由摆动；轻转一小角度后放手，避免向下压轴。\par
-2. 测量空盘连续二十周期的总时长三次。依次安装圆柱、圆筒、木球和细杆，各计十周期并重复三次。\par
+2. 测量空盘连续二十周期的总时长三次。圆柱、圆筒置于载物盘上；拆下载物盘后直接安装木球或细杆，各计十周期并重复三次。\par
 3. 测量各物体质量及必要的直径、长度；装置应居中、固定可靠，换物体时保持转轴条件一致。\par
 \ReportSubsection{平行轴验证}
 4. 把两个滑块关于转轴对称放在细杆上，量取滑块质心到轴的距离；在 5、10、15、20 cm 四个位置分别计五周期三次。\par
@@ -106,7 +108,7 @@ $u_I=\Field{slider_experiment_5_u},\Field{slider_experiment_10_u},\Field{slider_
 \ReportSubsection{图形与模型}
 若平行轴定理适用，$I$ 对 $x^2$ 的点应近似落在直线上，斜率由两个滑块的质量决定。若图中随位置出现系统偏离，应检查距离是否从滑块质心量起、两个滑块是否对称，以及滑块本身惯量是否计入。\par
 \ReportSubsection{主要误差}
-计时起止点不一致、转轴摩擦、振幅过大和物体偏心都会改变周期。圆柱用于标定 $\kappa$，其质量和直径误差会传递到所有实验惯量。比较理论值时必须扣除空盘惯量 $I_0$。\par
+计时起止点不一致、转轴摩擦、振幅过大和物体偏心都会改变周期。圆柱用于标定 $\kappa$，其质量和直径误差会传递到所有实验惯量。仅圆柱、圆筒扣除空盘惯量 $I_0$；木球、细杆及细杆加滑块不扣除。\par
 \ReportSection{实验结论}
 由圆柱与空盘的周期差标定扭转常数 $\kappa=(\MathField{torsion_constant}\pm\MathField{torsion_constant_u})\,\mathrm{N\,m}$，再求其他物体惯量。这里的不确定度只计重复计时的贡献。滑块位置变化所得散点应与 $I=I_{\rm rod}+2I_s+2m_sx^2$ 的平方关系比较，不能只凭周期随距离变大作结论。
 \ReportSection{思考题}

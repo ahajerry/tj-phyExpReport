@@ -188,17 +188,25 @@ def torsion(fields, data, p):
     finish_pair(fields, "torsion_constant", "torsion_constant_u", kappa, kappa_u)
     finish_pair(fields, "empty_inertia", "empty_inertia_u", i0, i0_u)
 
-    def inertia_u(period: Decimal, uncertainty: Decimal, *, standard: bool = False) -> Decimal:
+    def inertia_u(period: Decimal, uncertainty: Decimal, *, standard: bool = False,
+                  uses_disk: bool = False) -> Decimal:
         if standard:
             return Decimal(0)  # 标定圆柱的计时贡献与自身的标准值相消。
+        if not uses_disk:
+            # 木球、细杆及滑块组合直接安装在转轴上，不扣除载物盘。
+            measured = i1*period**2/difference
+            return ((2*i1*period*uncertainty/difference)**2
+                    + (measured*kappa_u/kappa)**2).sqrt()
         numerator = period**2-t0**2
         return ((2*i1*period*uncertainty/difference)**2
                 + (2*i1*t0*(period**2-t1**2)*u0/difference**2)**2
                 + (2*i1*t1*numerator*u1/difference**2)**2).sqrt()
 
     for key, expected in theory.items():
-        measured = i1*(periods[key]**2-t0**2)/difference
-        measured_u = inertia_u(periods[key], period_u[key], standard=key == "cylinder")
+        uses_disk = key in ("cylinder", "tube")
+        measured = i1*(periods[key]**2-(t0**2 if uses_disk else 0))/difference
+        measured_u = inertia_u(periods[key], period_u[key], standard=key == "cylinder",
+                               uses_disk=uses_disk)
         result = finish_pair(fields, f"experiment_{key}", f"experiment_{key}_u", measured, measured_u)
         fields[f"theory_{key}"] = format_report_at_place(expected, result.place)
         fields[f"error_{key}"] = ("0" if measured == expected else
@@ -213,7 +221,7 @@ def torsion(fields, data, p):
         period = mean(times) / 5
         period_uncertainty = sem(times) / 5
         expected = theory["rod"] + 2*slider_self + 2*slider_mass*(Decimal(x)/100)**2
-        measured = i1*(period**2-t0**2)/difference
+        measured = i1*period**2/difference
         measured_u = inertia_u(period, period_uncertainty)
         slider_points.append((x*x, measured*1000))
         slider_theory_points.append((x*x, expected*1000))
