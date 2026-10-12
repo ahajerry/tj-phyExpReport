@@ -63,3 +63,44 @@ assert.deepEqual(migratedScope.parameters, { probe_factor: '10' })
 saved.set('phyexp_report_oscilloscope', JSON.stringify(migratedScope))
 assert.deepEqual(readSavedExperimentValues(scope), migratedScope)
 console.log('示波器旧版波形顺序迁移与重复读取测试通过')
+
+const resonance = structuredExperimentById.get('forced-vibration')
+saved.set('phyexp_report_forced-vibration', JSON.stringify({
+  data: { free_angle: ['100'], damped_period: ['1.5670'], damped_peak: ['142'] },
+  parameters: { damping_setting: '1' },
+}))
+const migratedResonance = readSavedExperimentValues(resonance)
+assert.equal(migratedResonance.data.free_angle.length, 90)
+assert.equal(migratedResonance.data.damped_peak.length, 30)
+assert.deepEqual(migratedResonance.data.damped_time_10, ['15.67', '', ''])
+assert.equal(migratedResonance.data.drive_period.length, 20)
+migratedResonance.data.free_period[89] = '1.5716'
+migratedResonance.data.damped_time_10[2] = '15.671'
+migratedResonance.data.amplitude[19] = '150'
+saved.set('phyexp_report_forced-vibration', JSON.stringify(migratedResonance))
+assert.deepEqual(readSavedExperimentValues(resonance), migratedResonance)
+console.log('波尔共振旧周期迁移和完整表格读数保存测试通过')
+
+const millikan = structuredExperimentById.get('millikan')
+saved.set('phyexp_report_millikan', JSON.stringify({ data: { voltage: ['120', '130', '140'],
+  time_1: ['10', '20', '30'], time_2: ['11', '21', '31'], time_3: ['12', '22', '32'], time_4: ['13', '23', '33'] }, parameters: {} }))
+const migratedOil = readSavedExperimentValues(millikan)
+assert.deepEqual(migratedOil.data.balance_voltage.slice(0, 8), ['120', '120', '120', '120', '130', '130', '130', '130'])
+assert.deepEqual(migratedOil.data.fall_time.slice(0, 8), ['10', '11', '12', '13', '20', '21', '22', '23'])
+migratedOil.data.balance_voltage[31] = '75.3'
+saved.set('phyexp_report_millikan', JSON.stringify(migratedOil))
+assert.deepEqual(readSavedExperimentValues(millikan), migratedOil)
+
+const torsion = structuredExperimentById.get('moment-of-inertia')
+saved.set('phyexp_report_moment-of-inertia', JSON.stringify({ data: { time_disk: ['12.79', '12.79', '12.81'] },
+  parameters: { mass_cylinder_g: '717.3', diameter_cylinder_mm: '99.78', slider_mass_g: '238.65', slider_self_inertia: '0.000040695' } }))
+const migratedTorsion = readSavedExperimentValues(torsion)
+assert.equal(migratedTorsion.parameters.mass_cylinder_kg, '0.7173')
+assert.deepEqual(migratedTorsion.data.size_cylinder_cm, ['9.978', '', ''])
+assert.equal(migratedTorsion.parameters.slider_pair_inertia_scaled, '0.8139')
+assert.equal(migratedTorsion.parameters.slider_mass_2_kg, '')
+migratedTorsion.data.size_cylinder_cm = ['9.976', '9.980', '9.978']
+migratedTorsion.parameters.slider_mass_2_kg = '0.2387'
+saved.set('phyexp_report_moment-of-inertia', JSON.stringify(migratedTorsion))
+assert.deepEqual(readSavedExperimentValues(torsion), migratedTorsion)
+console.log('油滴逐行数据与扭摆法原始尺寸迁移和保存测试通过')

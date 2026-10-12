@@ -1,8 +1,10 @@
 """密立根油滴：单滴电荷与两种元电荷估计。"""
 try:
+    from .editable_instrument_data import normalize_millikan
     from .structured_report import parse_report, render
     from .report_calculations import millikan
 except ImportError:
+    from editable_instrument_data import normalize_millikan
     from structured_report import parse_report, render
     from report_calculations import millikan
 
@@ -15,11 +17,13 @@ PARAMETERS = ()
 
 
 def report_fields(payload):
+    payload = normalize_millikan(payload)
     fields, data, params = parse_report(payload, EXPERIMENT_ID, DATA_SPEC, PARAMETERS)
     millikan(fields, data, params)
     return fields
 
 
 def render_report(payload, progress, image_dir):
+    payload = normalize_millikan(payload)
     return render(report_fields(payload), EXPERIMENT_ID, TITLE, progress, image_dir,
                   source_tables=payload.get("sourceTables"))

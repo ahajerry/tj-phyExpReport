@@ -1,4 +1,4 @@
-"""Parse the two instrument exports into report readings and source tables."""
+"""Parse instrument exports into report readings and source tables."""
 
 from __future__ import annotations
 
@@ -40,7 +40,78 @@ def parse_table(experiment_id: str, filename: str, content: bytes) -> dict:
         return _millikan(content)
     if experiment_id == "moment-of-inertia" and suffix == "xlsx":
         return _torsion(content)
-    raise ValueError("密立根油滴请上传 CSV，扭摆法请上传 XLSX")
+    if experiment_id == "forced-vibration" and suffix == "xlsx":
+        return _forced_vibration(content)
+    raise ValueError("密立根油滴请上传 CSV，扭摆法和波尔共振请上传 XLSX")
+
+
+def _forced_vibration(content: bytes) -> dict:
+    try:
+        workbook = load_workbook(BytesIO(content), data_only=True)
+    except (KeyError, OSError, BadZipFile, ValueError) as exc:
+        raise ValueError("XLSX 文件损坏或格式不正确") from exc
+    try:
+        if "学生实验数据" not in workbook.sheetnames:
+            raise ValueError("XLSX 不是所给格式的波尔共振实验数据表")
+        ws = workbook["学生实验数据"]
+        for cell, label in (("A1", "波尔共振"), ("A6", "振幅与周期"),
+                            ("A40", "阻尼系数"), ("G41", "阻尼档位"),
+                            ("C43", "10T"), ("D62", "周期"), ("H62", "相位差")):
+            if label not in str(ws[cell].value):
+                raise ValueError(f"XLSX 不是所给格式的波尔共振实验数据表（{cell}）")
+        data = {key: [] for key in ("free_angle", "free_period", "damped_peak",
+                                    "damped_period", "drive_period", "amplitude", "phase")}
+        free_rows = []
+        for row in range(9, 39):
+            values = [_reading(ws, f"{col}{row}") for col in "ABDEGH"]
+            free_rows.append(values)
+        # Each pair of columns is a continuation of the previous pair.
+        for offset in (0, 2, 4):
+            data["free_angle"].extend(row[offset] for row in free_rows)
+            data["free_period"].extend(row[offset + 1] for row in free_rows)
+        damped_rows = []
+        for trial, start in enumerate((44, 49, 54), 1):
+            timing = _reading(ws, f"C{start}")
+            data["damped_period"].append(_plain(Decimal(timing) / 10))
+            early, late = [], []
+            for row in range(start, start + 5):
+                if Decimal(_reading(ws, f"D{row}")) != row - start + 1:
+                    raise ValueError(f"阻尼峰值序号 D{row} 与模板不一致")
+                first, second = (_reading(ws, f"{col}{row}") for col in "FH")
+                early.append(first)
+                late.append(second)
+                damped_rows.append([str(trial), timing, str(row - start + 1), first, second])
+            data["damped_peak"].extend(early + late)
+        forced_rows = []
+        for row in range(63, 83):
+            if Decimal(_reading(ws, f"A{row}")) != row - 62:
+                raise ValueError(f"受迫振动序号 A{row} 与模板不一致")
+            period, amplitude = (_reading(ws, f"{col}{row}") for col in "DF")
+            # A zero phase is a valid reading.
+            try:
+                phase = Decimal(str(ws[f"H{row}"].value).strip())
+            except InvalidOperation as exc:
+                raise ValueError(f"H{row} 缺少有效相位差") from exc
+            if not phase.is_finite() or not 0 <= phase <= 180:
+                raise ValueError(f"H{row} 相位滞后角读数应在 0 至 180 度之间")
+            phase_text = str(ws[f"H{row}"].value).strip()
+            for key, value in (("drive_period", period), ("amplitude", amplitude), ("phase", phase_text)):
+                data[key].append(value)
+            forced_rows.append([str(row - 62), period, amplitude, phase_text])
+        return {"data": data, "parameters": {"damping_setting": _reading(ws, "H41")},
+                "reportInfo": {"student": str(ws["B4"].value or ""),
+                               "student_id": str(ws["F3"].value or ""),
+                               "group": str(ws["B3"].value or ""),
+                               "date": str(ws["F4"].value or "")[:10]},
+                "sourceTables": [
+                    {"title": "波尔共振 XLSX 自由振动原始记录（各列依次续接）",
+                     "headers": ["振幅1/°", "周期1/s", "振幅2/°", "周期2/s", "振幅3/°", "周期3/s"], "rows": free_rows},
+                    {"title": "波尔共振 XLSX 阻尼原始记录（档位 " + _reading(ws, "H41") + "）",
+                     "headers": ["测量组", "10T/s", "n", "峰值n/°", "峰值(n+5)/°"], "rows": damped_rows},
+                    {"title": "波尔共振 XLSX 受迫振动原始记录",
+                     "headers": ["序号", "驱动单周期/s", "稳定振幅/°", "滞后角正读数/°"], "rows": forced_rows}]}
+    finally:
+        workbook.close()
 
 
 def _millikan(content: bytes) -> dict:
@@ -121,7 +192,8 @@ def _torsion(content: bytes) -> dict:
         return {"data": data, "parameters": parameters, "geometryReadings": geometry,
                 "sourceTables": tables,
                 "reportInfo": {"student": str(ws["E3"].value or ""),
-                               "student_id": str(ws["H3"].value or "")}}
+                               "student_id": str(ws["H3"].value or ""),
+                               "date": str(ws["H4"].value or "")[:10]}}
     except (KeyError, OSError, BadZipFile, ValueError) as exc:
         if isinstance(exc, ValueError):
             raise

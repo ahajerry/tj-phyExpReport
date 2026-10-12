@@ -1,4 +1,4 @@
-export type MeasurementSpec = { id: string; label: string; unit: string; count: number; rowLabels?: string[] }
+export type MeasurementSpec = { id: string; label: string; unit: string; count: number; rowLabels?: string[]; optional?: boolean }
 export type ParameterSpec = { id: string; label: string; unit: string; initial?: string; min?: number; minExclusive?: number }
 export type StructuredExperiment = {
   id: string
@@ -71,33 +71,33 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "millikan", title: "密立根油滴实验",
-    note: "可手动输入 3 至 8 颗油滴的平衡电压和四次下降时间，也可上传油滴仪 CSV 原始记录（每颗油滴连续四行）。计算式采用教材给定的仪器常数。",
+    note: "按 CSV 数据文件逐行填写当前电压、平衡电压、下降时间及仪器电荷量，每颗油滴四行，共 3 至 8 颗。上传文件可自动填入下方表格，所有记录均可修改；计算使用每颗油滴四次平衡电压的平均值。",
     measurements: [
-      { id: "voltage", label: "平衡电压", unit: "V", count: 8 },
-      ...[1, 2, 3, 4].map((n) => ({ id: `time_${n}`, label: `第 ${n} 次下降时间`, unit: "s", count: 8 })),
+      { id: "current_voltage", label: "当前电压", unit: "V", count: 32, optional: true },
+      { id: "balance_voltage", label: "平衡电压", unit: "V", count: 32 },
+      { id: "fall_time", label: "下降时间", unit: "s", count: 32 },
+      { id: "instrument_charge", label: "仪器电荷量", unit: "C", count: 32, optional: true },
     ], parameters: [],
   },
   {
     id: "moment-of-inertia", title: "用扭摆法测定物体转动惯量",
-    note: "可手动输入计时、质量及尺寸，也可上传扭摆实验 XLSX 数据表；空盘计时 20 周期，其他物体 10 周期，滑块 5 周期，每种状态重复三次。圆柱、圆筒放在载物盘上，计算时扣除空盘惯量；木球、细杆及细杆加滑块直接安装在转轴上，不扣除空盘惯量。注意手动填好组号。",
+    note: "按 XLSX 数据文件填写质量（kg）、三次尺寸（cm）、三次计时（s）、两个滑块质量及两滑块自身惯量。上传文件可自动填入全部记录并继续修改。空盘计时 20 周期，其他物体 10 周期，滑块 5 周期；平均尺寸和单位换算由系统完成。",
     measurements: [
+      ...["cylinder", "tube_inner", "tube_outer", "ball", "rod"].map((key, index) => ({
+        id: `size_${key}_cm`, label: ["圆柱直径", "圆筒内径", "圆筒外径", "圆球直径", "细杆长度"][index], unit: "cm", count: 3,
+      })),
       ...(["disk", "cylinder", "tube", "ball", "rod"] as const).map((key, i) => ({
         id: `time_${key}`, label: ["载物圆盘", "实心圆柱", "空心圆筒", "木球", "金属细杆"][i], unit: key === "disk" ? "s / 20 周期" : "s / 10 周期", count: 3,
       })),
       ...[5, 10, 15, 20].map((x) => ({ id: `slider_time_${x}`, label: `滑块距轴 ${x} cm`, unit: "s / 5 周期", count: 3 })),
     ],
     parameters: [
-      { id: "mass_cylinder_g", label: "圆柱质量", unit: "g" },
-      { id: "diameter_cylinder_mm", label: "圆柱直径", unit: "mm" },
-      { id: "mass_tube_g", label: "圆筒质量", unit: "g" },
-      { id: "diameter_tube_outer_mm", label: "圆筒外径", unit: "mm" },
-      { id: "diameter_tube_inner_mm", label: "圆筒内径", unit: "mm" },
-      { id: "mass_ball_g", label: "木球质量", unit: "g" },
-      { id: "diameter_ball_mm", label: "木球直径", unit: "mm" },
-      { id: "mass_rod_g", label: "细杆质量", unit: "g" },
-      { id: "length_rod_mm", label: "细杆长度", unit: "mm" },
-      { id: "slider_mass_g", label: "单个滑块质量", unit: "g" },
-      { id: "slider_self_inertia", label: "单个滑块自身惯量", unit: "kg·m²", initial: "0" },
+      ...["cylinder", "tube", "ball", "rod"].map((key, index) => ({
+        id: `mass_${key}_kg`, label: ["圆柱质量", "圆筒质量", "圆球质量", "细杆质量"][index], unit: "kg", minExclusive: 0,
+      })),
+      { id: "slider_mass_1_kg", label: "滑块1质量", unit: "kg", minExclusive: 0 },
+      { id: "slider_mass_2_kg", label: "滑块2质量", unit: "kg", minExclusive: 0 },
+      { id: "slider_pair_inertia_scaled", label: "两滑块绕质心转轴的转动惯量", unit: "×10⁻⁴ kg·m²", initial: "0", min: 0 },
     ],
   },
   {
@@ -120,15 +120,15 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "forced-vibration", title: "用波尔共振仪研究物体受迫振动",
-    note: "自由振动十组、阻尼峰值十个、受迫振动十五组。驱动周期和相位差必须一一对应。",
+    note: "按 XLSX 原始记录表填写 90 组自由振动、3 次阻尼测量和 20 组受迫振动。上传 XLSX 可自动填入下方表格，所有数据均可继续修改；报告使用当前表格中的数据。",
     measurements: [
-      { id: "free_angle", label: "自由振动起始角", unit: "°", count: 10 },
-      { id: "free_period", label: "自由振动周期", unit: "s", count: 10 },
-      { id: "damped_peak", label: "阻尼振动峰值", unit: "°", count: 10 },
-      { id: "damped_period", label: "阻尼振动单周期", unit: "s", count: 1 },
-      { id: "drive_period", label: "受迫振动驱动周期", unit: "s", count: 15 },
-      { id: "amplitude", label: "稳定振幅", unit: "°", count: 15 },
-      { id: "phase", label: "相位差", unit: "°", count: 15 },
+      { id: "free_angle", label: "自由振动振幅", unit: "°", count: 90 },
+      { id: "free_period", label: "自由振动周期", unit: "s", count: 90 },
+      { id: "damped_peak", label: "阻尼振动峰值", unit: "°", count: 30 },
+      { id: "damped_time_10", label: "阻尼振动 10T 计时", unit: "s", count: 3 },
+      { id: "drive_period", label: "受迫振动驱动周期", unit: "s", count: 20 },
+      { id: "amplitude", label: "稳定振幅", unit: "°", count: 20 },
+      { id: "phase", label: "相位滞后角读数 α", unit: "°", count: 20 },
     ], parameters: [{ id: "damping_setting", label: "阻尼档位", unit: "档" }],
   },
   {

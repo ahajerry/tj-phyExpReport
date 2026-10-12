@@ -3,6 +3,8 @@ import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { ForcedVibrationReadings } from "@/components/forced-vibration-readings"
+import { MillikanReadings, TorsionReadings } from "@/components/instrument-readings"
 import { buildImportPrompt, parseImportedMeasurements } from "@/lib/experiment-data"
 import { readSavedExperimentValues, REPORT_INFO_FIELDS } from "@/lib/structured-experiment-storage"
 import type { StructuredExperiment } from "@/structured-experiments"
@@ -14,10 +16,10 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   const [parameters, setParameters] = useState(initial.parameters)
   const [reportInfo, setReportInfo] = useState(initial.reportInfo)
   const [images, setImages] = useState<File[]>([])
-  const [table, setTable] = useState<File | null>(null)
-  const tableType = experiment.id === "millikan" ? "csv" : experiment.id === "moment-of-inertia" ? "xlsx" : null
-  const [inputMode, setInputMode] = useState<"manual" | "table">("manual")
-  const usingTable = Boolean(tableType && inputMode === "table")
+  const tableType = experiment.id === "millikan" ? "csv" : ["moment-of-inertia", "forced-vibration"].includes(experiment.id) ? "xlsx" : null
+  const isForcedVibration = experiment.id === "forced-vibration"
+  const [importingTable, setImportingTable] = useState(false)
+  const [tableImportMessage, setTableImportMessage] = useState("")
   const maxImages = experiment.id === "oscilloscope" ? 2 : 5
   const [importText, setImportText] = useState("")
   const [message, setMessage] = useState("")
@@ -37,10 +39,10 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   function importReadings() {
     try {
       const parsed = parseImportedMeasurements(importText, experiment.measurements.map((item) => ({
-        id: item.id, showName: item.label, unit: item.unit,
+        id: item.id, showName: item.label, unit: item.unit, allowBlank: experiment.id === "millikan",
       })))
       for (const item of experiment.measurements) {
-        if (experiment.id === "millikan" && parsed[item.id].length >= 3 && parsed[item.id].length <= item.count) {
+        if (experiment.id === "millikan" && parsed[item.id].length >= 12 && parsed[item.id].length <= item.count) {
           parsed[item.id] = [...parsed[item.id], ...Array<string>(item.count - parsed[item.id].length).fill("")]
         }
         if (parsed[item.id].length !== item.count) throw new Error(`${item.label}需要 ${item.count} 个读数`)
@@ -53,26 +55,57 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     }
   }
 
-  async function generate() {
+  async function importTable(file: File) {
     setError("")
-    if (usingTable && tableType && !table) {
-      setError(`请上传 ${tableType.toUpperCase()} 原始数据表`)
+    setTableImportMessage("")
+    if (!file.name.toLowerCase().endsWith(`.${tableType}`) || file.size > 2 * 1024 * 1024 || !file.size) {
+      setError(`请选择不超过 2 MiB 的非空 ${tableType?.toUpperCase()} 文件`)
       return
     }
-    const dropCount = experiment.id === "millikan" ? data.voltage.filter((value) => value.trim()).length : null
-    for (const item of usingTable ? [] : experiment.measurements) {
-      const values = data[item.id]
-      if (dropCount !== null && (dropCount < 3 || dropCount > 8 ||
-        values.slice(dropCount).some((value) => value.trim()))) {
-        setError("请连续填写 3 至 8 颗油滴的电压和四次下降时间，未使用的油滴留空")
-        return
+    setImportingTable(true)
+    try {
+      const form = new FormData()
+      form.append("payload", JSON.stringify({ experimentId: experiment.id, reportInfo }))
+      form.append("table", file)
+      const response = await fetch("/api/reports/import-table", {
+        method: "POST", headers: { "X-Report-Request": "1" }, body: form,
+      })
+      const result = await response.json() as {
+        data?: Record<string, string[]>; parameters?: Record<string, string>; reportInfo?: Record<string, string>; error?: string
       }
-      if ((dropCount === null ? values : values.slice(0, dropCount)).some((value) => !value.trim() || !Number.isFinite(Number(value)))) {
-        setError(`${item.label}需要 ${item.count} 个有效数字`)
+      if (!response.ok || !result.data || !result.parameters) throw new Error(result.error ?? "数据表导入失败")
+      for (const item of experiment.measurements) {
+        if (result.data[item.id]?.length !== item.count) throw new Error(`${item.label}的数量与表格不一致`)
+      }
+      setData(result.data)
+      setParameters(result.parameters)
+      setReportInfo((current) => Object.fromEntries(REPORT_INFO_FIELDS.map(({ id }) => [id, current[id] || result.reportInfo?.[id] || ""])))
+      setTableImportMessage(`已导入 ${file.name}，可在下方修改数据。报告将使用修改后的表格内容。`)
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "数据表导入失败")
+    } finally {
+      setImportingTable(false)
+    }
+  }
+
+  async function generate() {
+    setError("")
+    const lastDropRow = experiment.id === "millikan"
+      ? Math.max(-1, ...experiment.measurements.flatMap((item) => data[item.id].flatMap((value, index) => value.trim() ? [index] : []))) : null
+    const dropRows = lastDropRow === null ? null : (Math.floor(lastDropRow / 4) + 1) * 4
+    if (dropRows !== null && (dropRows < 12 || dropRows > 32)) {
+      setError("请连续填写 3 至 8 颗油滴，每颗油滴 4 行记录")
+      return
+    }
+    for (const item of experiment.measurements) {
+      const values = data[item.id]
+      if ((dropRows === null ? values : values.slice(0, dropRows)).some((value) =>
+        (!value.trim() && !item.optional) || (value.trim() && !Number.isFinite(Number(value))))) {
+        setError(experiment.id === "millikan" ? `${item.label}的已使用行需填写有效数字` : `${item.label}需要 ${item.count} 个有效数字`)
         return
       }
     }
-    for (const item of usingTable ? [] : experiment.parameters) {
+    for (const item of experiment.parameters) {
       if (!parameters[item.id]?.trim() || !Number.isFinite(Number(parameters[item.id]))) {
         setError(`请填写${item.label}`)
         return
@@ -87,11 +120,10 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     try {
       const payload = { experimentId: experiment.id, data, parameters, reportInfo }
       let response: Response
-      if ((!usingTable && images.length) || (usingTable && table)) {
+      if (images.length) {
         const form = new FormData()
         form.append("payload", JSON.stringify(payload))
-        if (!usingTable) images.forEach((file) => form.append("images", file))
-        if (usingTable && table) form.append("table", table)
+        images.forEach((file) => form.append("images", file))
         response = await fetch("/api/reports/jobs", { method: "POST", headers: { "X-Report-Request": "1" }, body: form })
       } else {
         response = await fetch("/api/reports/jobs", {
@@ -110,13 +142,20 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   const prompt = buildImportPrompt(experiment.title, experiment.measurements.map((item) => ({
     id: item.id, showName: `${item.label}（${item.count} 个${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
-  })))
+  }))) + (experiment.id === "millikan" ? "\n每颗油滴对应连续四行，各字段按相同的行顺序排列。选填项与未使用油滴的空白读数用空字符串表示。" : "")
 
   function readingCell(key: string, index: number) {
     const item = experiment.measurements.find((item) => item.id === key)!
     return <Input className="min-w-24" type="number" step="any" inputMode="decimal"
       aria-label={`${item.label}${item.rowLabels?.[index] ?? `第 ${index + 1} 次`}`}
       value={data[key][index]} onChange={(event) => changeReading(key, index, event.target.value)} />
+  }
+
+  function parameterCell(key: string) {
+    const item = experiment.parameters.find((item) => item.id === key)!
+    return <Input className="min-w-24" type="number" step="any" inputMode="decimal"
+      aria-label={`${item.label}（${item.unit}）`} value={parameters[key]}
+      onChange={(event) => setParameters((current) => ({ ...current, [key]: event.target.value }))} />
   }
 
   function calculatedReading(keys: string[], index: number, calculate: (...values: number[]) => number) {
@@ -133,14 +172,17 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         <p className="text-muted-foreground">{experiment.note}</p>
       </header>
       {tableType && <section className="rounded-xl border bg-white p-4">
-        <h2 className="mb-3 font-semibold">数据输入方式</h2>
-        <div className="flex gap-2">
-          <Button variant={inputMode === "manual" ? "default" : "outline"} aria-pressed={inputMode === "manual"}
-            onClick={() => { setInputMode("manual"); setError("") }}>手动输入</Button>
-          <Button variant={inputMode === "table" ? "default" : "outline"} aria-pressed={inputMode === "table"}
-            onClick={() => { setInputMode("table"); setError("") }}>上传数据表</Button>
-        </div>
-        {experiment.id === "millikan" && !usingTable && <p className="mt-2 text-sm text-muted-foreground">连续填写 3 至 8 颗油滴的平衡电压和四次下降时间，未使用的油滴留空；各输入区的相同序号对应同一颗油滴。</p>}
+        <h2 className="mb-2 font-semibold">从 {tableType.toUpperCase()} 填入数据（选填）</h2>
+        <p className="mb-3 text-sm text-muted-foreground">{isForcedVibration ? "选择与提供的波尔共振 XLSX 相同版式的文件，将自动填入下方全部测量数据和阻尼档位。" : experiment.id === "millikan" ? "选择油滴仪 CSV 原始记录，每颗油滴连续 4 行，共 3 至 8 颗。支持 UTF-8 和 GB18030，逐行保留电压、时间和仪器电荷量。" : "选择与提供的扭摆实验 XLSX 相同版式的文件，将自动填入质量、三次尺寸和计时、两个滑块质量及两滑块自身惯量。"}导入会替换当前读数；封面信息仅补充空白项。文件上限 2 MiB。</p>
+        <Input type="file" accept={tableType === "csv" ? ".csv,text/csv" : ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+          aria-label={`上传${tableType.toUpperCase()}原始数据表`} disabled={importingTable || generating} onChange={(event) => {
+            const file = event.currentTarget.files?.[0]
+            event.currentTarget.value = ""
+            if (file) void importTable(file)
+          }} />
+        {importingTable && <p role="status" className="mt-2 text-sm">正在读取并填入数据…</p>}
+        {tableImportMessage && <p role="status" className="mt-2 text-sm text-green-700">{tableImportMessage}</p>}
+        {error && <p role="alert" className="mt-2 text-sm text-red-700">{error}</p>}
       </section>}
       {experiment.id === "oscilloscope" && <section className="space-y-4">
         <div className="overflow-x-auto rounded-xl border bg-white p-4">
@@ -173,7 +215,12 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           </table>
         </div>
       </section>}
-      {!usingTable && experiment.id !== "oscilloscope" && <section className="grid gap-4 lg:grid-cols-2">
+      {isForcedVibration && <ForcedVibrationReadings readingCell={readingCell} dampingSetting={parameters.damping_setting}
+        onDampingSettingChange={(value) => setParameters((current) => ({ ...current, damping_setting: value }))}
+        disabled={importingTable || generating} />}
+      {experiment.id === "millikan" && <MillikanReadings readingCell={readingCell} disabled={importingTable || generating} />}
+      {experiment.id === "moment-of-inertia" && <TorsionReadings readingCell={readingCell} parameterCell={parameterCell} disabled={importingTable || generating} />}
+      {!tableType && experiment.id !== "oscilloscope" && <section className="grid gap-4 lg:grid-cols-2">
         {experiment.measurements.map((item) => (
           <div key={item.id} className="rounded-xl border bg-white p-4">
             <h2 className="mb-3 font-semibold">{item.label} <span className="text-sm font-normal text-muted-foreground">({item.unit})</span></h2>
@@ -189,7 +236,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           </div>
         ))}
       </section>}
-      {!usingTable && experiment.parameters.length > 0 && (
+      {!tableType && experiment.parameters.length > 0 && (
         <section className="rounded-xl border bg-white p-4">
           <h2 className="mb-3 font-semibold">仪器及计算参数</h2>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -215,23 +262,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           ))}
         </div>
       </section>
-      {usingTable && tableType ? <section className="rounded-xl border bg-white p-4">
-        <h2 className="mb-2 font-semibold">上传原始数据表（必填）</h2>
-        <p className="mb-2 text-sm text-muted-foreground">{tableType === "csv" ? "上传与提供的密里根油滴 CSV 相同格式的记录，每颗油滴连续 4 行，共 3 至 8 颗。支持 UTF-8 和 GB18030。" : "上传与提供的扭摆实验 XLSX 相同版式的数据表，系统读取质量、尺寸、计时和滑块数据。"} 文件上限 2 MiB；数据会填入报告并附在原始记录页。</p>
-        <Input type="file" accept={tableType === "csv" ? ".csv,text/csv" : ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
-          aria-label={`上传${tableType.toUpperCase()}原始数据表`} onChange={(event) => {
-            const selected = event.currentTarget.files?.[0] ?? null
-            if (selected && (!selected.name.toLowerCase().endsWith(`.${tableType}`) || selected.size > 2 * 1024 * 1024)) {
-              setError(`请选择不超过 2 MiB 的 ${tableType.toUpperCase()} 文件`)
-              setTable(null)
-              event.currentTarget.value = ""
-            } else {
-              setTable(selected)
-              setError("")
-            }
-          }} />
-        {table && <p className="mt-2 text-sm text-muted-foreground">已选择：{table.name}</p>}
-      </section> : <section className="rounded-xl border bg-white p-4">
+      <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">原始数据记录图片（选填）</h2>
         <p className="mb-2 text-sm text-muted-foreground">最多 {maxImages} 张，每张不超过 8 MiB；首张图片填入原始数据记录页，多张图片依次分页。{experiment.id === "oscilloscope" && "示波器完整报告保持在 6–7 页。"}</p>
         <Input type="file" accept="image/png,image/jpeg,image/gif,image/tiff,image/webp,image/heic,image/heif,image/avif,.heic,.heif" multiple
@@ -244,17 +275,17 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
               event.currentTarget.value = ""
             } else setImages(selected)
           }} />
-      </section>}
-      {!usingTable && <section className="rounded-xl border bg-white p-4">
+      </section>
+      <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">从 JSON 导入读数</h2>
         <details className="mb-2 text-sm"><summary className="cursor-pointer text-blue-700">查看识别提示词</summary>
           <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-slate-50 p-3">{prompt}</pre></details>
         <Textarea aria-label="实验数据 JSON" rows={5} value={importText} onChange={(event) => setImportText(event.target.value)} />
         <Button className="mt-2" variant="outline" onClick={importReadings} disabled={!importText.trim()}>导入读数</Button>
         {message && <p role="status" className="mt-2 text-sm text-green-700">{message}</p>}
-      </section>}
+      </section>
       <section className="rounded-xl border bg-white p-4">
-        <Button onClick={generate} disabled={generating}>{generating ? "正在提交任务…" : "生成实验报告"}</Button>
+        <Button onClick={generate} disabled={generating || importingTable}>{generating ? "正在提交任务…" : "生成实验报告"}</Button>
         {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
       </section>
     </div>

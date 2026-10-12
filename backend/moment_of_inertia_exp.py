@@ -1,8 +1,10 @@
 """扭摆惯量：标定、规则物体和平行轴验证。"""
 try:
+    from .editable_instrument_data import normalize_torsion
     from .structured_report import parse_report, render
     from .report_calculations import torsion
 except ImportError:
+    from editable_instrument_data import normalize_torsion
     from structured_report import parse_report, render
     from report_calculations import torsion
 
@@ -20,6 +22,7 @@ PARAMETERS = ("mass_cylinder_g", "diameter_cylinder_mm", "mass_tube_g",
 
 
 def report_fields(payload):
+    payload = normalize_torsion(payload)
     fields, data, params = parse_report(payload, EXPERIMENT_ID, DATA_SPEC, PARAMETERS)
     torsion(fields, data, params)
     geometry = payload.get("geometryReadings", {})
@@ -34,5 +37,6 @@ def report_fields(payload):
 
 
 def render_report(payload, progress, image_dir):
+    payload = normalize_torsion(payload)
     return render(report_fields(payload), EXPERIMENT_ID, TITLE, progress, image_dir,
                   source_tables=payload.get("sourceTables"))

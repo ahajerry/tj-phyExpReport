@@ -94,7 +94,7 @@ def parse_report(
 
 def render(fields: dict[str, str], experiment_id: str, title: str,
            progress=lambda _value, _stage: None, image_dir: Path | None = None,
-           source_tables=None) -> bytes:
+           source_tables=None, template_source: str | None = None) -> bytes:
     template = TEMPLATE_DIR / f"{experiment_id}.tex"
     progress(10, "正在检查编译环境")
     files = (template, TEMPLATE_DIR / "physics_report_base.tex",
@@ -112,7 +112,7 @@ def render(fields: dict[str, str], experiment_id: str, title: str,
     if missing:
         raise RuntimeError("部署缺少报告模板资源：" + "、".join(missing)
                            + "。请重新打包并部署 tex/templates/。")
-    source = template.read_text(encoding="utf-8")
+    source = template_source if template_source is not None else template.read_text(encoding="utf-8")
     allowed = set(FIELD_PATTERN.findall(source)) | set(PLOT_PATTERN.findall(source)) | set(COVER_PATTERN.findall(source))
     allowed.update(("experiment", "student", "student_id", "group", "date"))
     fields = {key: value for key, value in fields.items() if key in allowed}
@@ -122,6 +122,9 @@ def render(fields: dict[str, str], experiment_id: str, title: str,
     workdir = WORK_DIR / f".{experiment_id}-report-{uuid.uuid4().hex}"
     workdir.mkdir()
     try:
+        if template_source is not None:
+            template = workdir / "template.tex"
+            template.write_text(source, encoding="utf-8")
         images = prepare_report_images(image_dir, workdir)
         progress(25, "正在整理原始数据图片")
         tex_file = fill_report(fields, workdir / "report.tex", template,

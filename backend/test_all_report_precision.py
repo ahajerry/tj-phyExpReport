@@ -17,9 +17,7 @@ PAIRS = {
                            ("experiment_tube", "experiment_tube_u"),
                            ("slider_experiment_5", "slider_experiment_5_u")],
     "young-modulus": [("young_modulus_pa", "young_uncertainty_pa")],
-    "forced-vibration": [("free_period_mean_s", "free_period_u_s"),
-                         ("natural_omega_rad_s", "natural_omega_u_rad_s"),
-                         ("damping_beta_s_inv", "damping_beta_u_s_inv")],
+    "forced-vibration": [("damping_beta_s_inv", "damping_beta_u_s_inv")],
     "focal-length": [(f"focus_{method}_mean_mm", f"focus_{method}_u_mm")
                      for method in ("single", "bessel", "auto", "concave")],
 }

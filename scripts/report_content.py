@@ -116,29 +116,26 @@ u_{I_j}^2={}&\left(\frac{2I'_1T_ju_{T_j}}{\Delta}\right)^2+
         "实验结论": r"""通过光杠杆和五级逐差法得到 $E=(\MathField{young_modulus_pa}\pm\MathField{young_uncertainty_pa})\,\mathrm{Pa}$，与输入参考值的百分差为 $\Field{young_error_percent}\%$。应结合加载卸载一致性与直径测量评价结果。""",
     },
     "用波尔共振仪研究物体受迫振动": {
-        "实验目的": r"""1. 观察自由振动、阻尼振动与受迫振动的区别，求自由周期和阻尼系数。\par
-2. 改变驱动周期，记录稳定振幅和相位差，绘制由本次读数得到的幅频、相频曲线。\par
-3. 比较峰值位置与固有频率，并分析阻尼和测量步长对共振曲线的影响。\par""",
-        "实验原理": r"""阻尼受迫振动可写为 $\ddot\theta+2\beta\dot\theta+\omega_0^2\theta=M\cos\omega t$。自由振动给出 $\omega_0\approx\frac{2\pi}{T_0}$；阻尼峰值按 $\theta_k\propto\exp(-\beta kT_d)$ 逐渐衰减。稳态振幅与相位满足
-\[\theta_m=\frac{M}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}},\qquad
-\tan\varphi=\frac{2\beta\omega}{\omega_0^2-\omega^2}.\]
-阻尼越大，振幅峰值通常越低、曲线越宽；相位随频率穿过共振区时迅速改变。下图展示理论趋势，后文的散点和连线则由本次输入数据生成。
-\begin{center}\includegraphics[width=10.5cm]{figures/forced-reference-curves.png}\par
-{\small 幅频与相频曲线的理论趋势示意图。}\end{center}""",
-        "实验内容": r"""\ReportSubsection{自由与阻尼振动}
-1. 调平仪器、选择阻尼档位，拨动转盘使其自由振动；在不同初始角下记录十组周期，检查周期是否基本稳定。\par
-2. 记录连续十个阻尼峰值与单周期，使用相隔五个峰值的幅度比估计衰减系数。\par
-\ReportSubsection{受迫振动}
-3. 接通驱动装置，改变驱动周期并等待瞬态衰减；在十五个设置点记录驱动周期、稳定振幅及相位差。共振附近缩小调节步长。\par
-4. 将横轴统一为 $\frac{\omega}{\omega_0}=\frac{T_0}{T}$，分别绘制幅频和相频图；用实测最大振幅对应的驱动周期报告共振位置。""",
-        "实验仪器": r"""波尔共振仪（转盘、阻尼器和驱动电机）、角度盘、数字计时器与光电门。各组周期、振幅和相位读数必须按同一驱动设置对应。""",
-        "讨论与分析": r"""\ReportSubsection{曲线判读}
-幅频图应在固有频率附近出现峰值，相频图应有连续过渡。理论示意曲线展示了不同阻尼的趋势，本报告数据图只对应输入的一个阻尼档位。若最大值落在采样端点或曲线跳跃，应补测相关区间。\par
-\ReportSubsection{主要误差}
-驱动周期设置误差、光电门触发延迟、等待稳态时间不足及相位零点偏移都会改变曲线形状。阻尼峰值若没有随时间总体衰减，应先核对峰值顺序。\par
-\ReportSubsection{思考题}
-为何共振区要缩小步长？振幅和相位变化最快，大步长可能错过峰值。为何每次改变驱动周期后要等待？瞬态项尚未衰减时，读到的振幅并非稳态响应。""",
-        "实验结论": r"""自由周期平均值为 $(\MathField{free_period_mean_s}\pm\MathField{free_period_u_s})\,\mathrm s$，阻尼系数估计为 $(\MathField{damping_beta_s_inv}\pm\MathField{damping_beta_u_s_inv})\,\mathrm{s^{-1}}$。本次测量的最大稳定振幅 $\MathField{peak_amplitude_deg}^{\circ}$ 出现在驱动周期 $\MathField{resonance_period_s}\,\mathrm s$ 附近；最终应以数据图判断共振区与相位变化。""",
+        "实验目的": r"""1. 测量摆轮的自由周期和阻尼系数。\par
+2. 研究受迫振动的幅频、相频特性，观察共振现象。\par
+3. 学习用频闪法测量相位差。""",
+        "实验原理": r"""摆轮在弹簧恢复力、阻尼力和周期外力作用下做受迫振动，其运动方程为
+\[
+\ddot\theta+2\beta\dot\theta+\omega_0^2\theta=m\cos\omega t.
+\]
+其中，$\theta$ 为角位移，$\beta=b/(2J)$ 为阻尼系数，$\omega_0=\sqrt{k/J}$ 为固有圆频率，$\omega=2\pi/T$ 为外力圆频率，$m=M_0/J$。$J$ 为转动惯量，$k$ 为弹性力矩系数，$b$ 为阻尼力矩系数，$M_0$ 为外力矩幅值。
+稳定后，摆轮的振幅 $\theta_2$ 和相位差 $\varphi$ 满足
+\[
+\theta_2=\frac{m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}},\qquad
+\tan\varphi=-\frac{2\beta\omega}{\omega_0^2-\omega^2}.
+\]
+外力频率接近固有频率时，振幅明显增大，出现共振。摆轮的振动落后于外力，因此上式中的 $\varphi$ 为负；本报告的表格和相频图统一用它的大小 $\phi=|\varphi|$，即仪器的正读数。""",
+        "实验内容": r"""1. 无电磁阻尼时，记录摆轮从约 $160^\circ$ 衰减至 $50^\circ$ 过程中的振幅及自由周期。\par
+2. 选择阻尼档位，记录十个连续振幅及十周期总时间，重复测量。\par
+3. 保持阻尼档位不变，调节外力周期；每次待振幅稳定后，记录周期、振幅和相位差。共振附近适当加密测量点。""",
+        "实验仪器": r"""波尔共振仪、光电门、频闪相位读盘。""",
+        "讨论与分析": r"""自由周期随振幅略有变化，计算理论相位时应按振幅查表，避免统一取平均周期造成误差。相位读数还受稳态等待时间、读盘零点和读数判断影响。共振附近变化较快，测量点过少容易错过最大振幅。""",
+        "实验结论": r"""逐差法测得阻尼系数 $\beta=\MathField{damping_beta_s_inv}\,\mathrm{s^{-1}}$。最大振幅为 $\MathField{peak_amplitude_deg}^{\circ}$，对应外力周期约 $T_r=\MathField{resonance_period_s}\,\mathrm{s}$。幅频、相频曲线反映了摆轮在共振附近振幅增大、相位差变化较快的特点。""",
     },
     "透镜焦距的测量": {
         "实验目的": r"""1. 理解薄透镜成像公式及实物、虚物的物距符号，掌握四种焦距测量方法。\par
@@ -200,20 +197,16 @@ PLOTS = {
 \addplot+[mark=triangle*,black] coordinates {\PlotCoordinates{young_load_mean_points}};\addlegendentry{均值}
 \end{axis}\end{tikzpicture}\end{center}
 """,
-    "用波尔共振仪研究物体受迫振动": r"""\clearpage
-\ReportSection{阻尼衰减与受迫振动曲线}
-下列图形使用本次输入数据，横轴 $\frac{\omega}{\omega_0}=\frac{T_0}{T}$；连线只帮助观察趋势，不代表额外测量点。阻尼峰值图用于核对振幅总体衰减。
+    "用波尔共振仪研究物体受迫振动": r"""\par\clearpage
+\ReportSection{实验曲线}
+两图均以 $\omega/\omega_r$ 为横轴，相位差取正值，与主要结果表一致。
 \begin{center}\begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=5.8cm,xlabel={峰值序号},ylabel={阻尼峰值/$^\circ$},grid=both]
-\addplot+[mark=*,blue] coordinates {\PlotCoordinates{damped_graph_points}};
+\begin{axis}[width=.82\textwidth,height=6.2cm,xlabel={$\omega/\omega_r$},ylabel={$(\theta/\theta_r)^2$},grid=both]
+\addplot+[mark=*,blue] coordinates {\PlotCoordinates{normalized_amplitude_graph_points}};
 \end{axis}\end{tikzpicture}\par
 \begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=5.8cm,xlabel={$\frac{\omega}{\omega_0}$},ylabel={稳定振幅/$^\circ$},grid=both]
-\addplot+[mark=*,blue] coordinates {\PlotCoordinates{amplitude_graph_points}};
-\end{axis}\end{tikzpicture}\par
-\begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=5.8cm,xlabel={$\frac{\omega}{\omega_0}$},ylabel={相位差/$^\circ$},grid=both]
-\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{phase_graph_points}};
+\begin{axis}[width=.82\textwidth,height=6.2cm,xlabel={$\omega/\omega_r$},ylabel={相位差 $\phi$/$^\circ$},grid=both]
+\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{phase_magnitude_graph_points}};
 \end{axis}\end{tikzpicture}\end{center}
 """,
 }

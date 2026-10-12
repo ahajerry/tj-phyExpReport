@@ -134,7 +134,9 @@ def fill_report(
             cells = "|" + f"p{{{width}cm}}|" * len(headers)
             head = " & ".join(_tex_text(cell) for cell in headers) + r"\\\hline"
             body = "\n".join(" & ".join(_tex_text(cell) for cell in row) + r"\\\hline" for row in rows)
-            pages.append("\n".join((r"\par\medskip\noindent{\heiti " + _tex_text(title) + r"}\par",
+            # Keep a source-table title with its header and first rows.
+            keep_title = r"\Needspace{6\baselineskip}" if r"\input{physics_report_base.tex}" in source else ""
+            pages.append("\n".join((keep_title, r"\par\medskip\noindent{\heiti " + _tex_text(title) + r"}\par",
                                     r"{\footnotesize\renewcommand{\arraystretch}{1.15}",
                                     rf"\begin{{longtable}}{{{cells}}}\hline",
                                     head, r"\endfirsthead\hline", head, r"\endhead",

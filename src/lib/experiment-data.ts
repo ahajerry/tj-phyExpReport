@@ -1,4 +1,4 @@
-export type MeasurementQuantity = { id: string; showName: string; unit: string }
+export type MeasurementQuantity = { id: string; showName: string; unit: string; allowBlank?: boolean }
 
 const COOKIE_PREFIX = "phyexp_v1_"
 const COOKIE_CHUNK_SIZE = 3000
@@ -93,6 +93,7 @@ export function parseImportedMeasurements(text: string, quantities: MeasurementQ
         throw new Error(`${quantity.showName}第 ${index + 1} 个读数不是数字`)
       }
       const value = String(reading).trim()
+      if (quantity.allowBlank && value === "") return ""
       if (!DECIMAL_NUMBER.test(value) || !Number.isFinite(Number(value))) {
         throw new Error(`${quantity.showName}第 ${index + 1} 个读数无效：${value}`)
       }

@@ -6,7 +6,7 @@ Input units follow the labels on the corresponding LaTeX data tables.
 from __future__ import annotations
 
 from decimal import Decimal
-from math import log, pi, sqrt
+from math import atan2, degrees, log, pi, sqrt
 
 try:
     from .structured_report import fmt, mean, sem
@@ -277,40 +277,88 @@ def young(fields, data, p):
         abs(result-p["reference_modulus_pa"])/p["reference_modulus_pa"]*100, relative)
 
 
+def resonance_period_at_amplitude(angles, periods, amplitude):
+    """Average repeated angles, then interpolate within the measured range only."""
+    grouped = {}
+    for angle, period in zip(angles, periods):
+        grouped.setdefault(angle, []).append(period)
+    points = sorted((angle, mean(values)) for angle, values in grouped.items())
+    for angle, period in points:
+        if amplitude == angle:
+            return period
+    for (left, t_left), (right, t_right) in zip(points, points[1:]):
+        if left < amplitude < right:
+            return t_left + (t_right - t_left) * (amplitude - left) / (right - left)
+    return None
+
+
 def resonance(fields, data, p):
     del p
     free = [positive(x, "自由振动周期") for x in data["free_period"]]
     if any(angle <= 0 for angle in data["free_angle"]):
         raise ValueError("自由振动角度必须为正数")
-    t0 = mean(free)
-    omega = 2*PI/t0
-    damped_period = positive(data["damped_period"][0], "阻尼振动周期")
+    damped_periods = [positive(value, "阻尼振动周期") for value in data["damped_period"]]
     peaks = [positive(x, "阻尼峰值") for x in data["damped_peak"]]
-    beta_samples = [Decimal(str(log(float(peaks[i]/peaks[i+5]))))/(5*damped_period)
-                    for i in range(5)]
-    beta = mean(beta_samples)
+    beta_samples = [Decimal(str(log(float(peaks[trial*10+i]/peaks[trial*10+i+5]))))/(5*period)
+                    for trial, period in enumerate(damped_periods) for i in range(5)]
+    trial_betas = [mean(beta_samples[i:i+5]) for i in range(0, len(beta_samples), 5)]
+    for trial, period in enumerate(damped_periods):
+        for i in range(5):
+            fields[f"damped_log_ratio_{trial*5+i+1:02d}"] = format(beta_samples[trial*5+i]*5*period, ".4f")
+    beta = mean(trial_betas)
     if beta <= 0:
         raise ValueError("阻尼峰值总体应随时间衰减")
     drive = [positive(x, "驱动周期") for x in data["drive_period"]]
     amplitudes = [positive(x, "受迫振幅") for x in data["amplitude"]]
     for i, phase in enumerate(data["phase"], 1):
-        if not 0 <= phase <= 360:
-            raise ValueError(f"第 {i} 个相位差应在 0 至 360 度之间")
-    for i, value in enumerate(drive, 1):
-        fields[f"frequency_ratio_{i:02d}"] = fmt(t0/value)
-    fields["damped_graph_points"] = coordinates([(i, peak) for i, peak in enumerate(peaks, 1)])
-    fields["amplitude_graph_points"] = coordinates([(t0/t, amplitude) for t, amplitude in zip(drive, amplitudes)])
-    fields["phase_graph_points"] = coordinates([(t0/t, phase) for t, phase in zip(drive, data["phase"])])
-    peak_index = max(range(len(amplitudes)), key=lambda i: amplitudes[i])
-    put(fields, free_period_mean_s=t0, natural_omega_rad_s=omega,
-        damping_beta_s_inv=beta, peak_amplitude_deg=amplitudes[peak_index],
-        resonance_period_s=drive[peak_index])
-    free_u = sem(free)
-    finish_pair(fields, "free_period_mean_s", "free_period_u_s", t0, free_u)
-    finish_pair(fields, "natural_omega_rad_s", "natural_omega_u_rad_s",
-                omega, omega*free_u/t0)
+        if not 0 <= phase <= 180:
+            raise ValueError(f"第 {i} 个相位滞后角读数应在 0 至 180 度之间")
+    peak = max(amplitudes)
+    peak_periods = [t for t, amplitude in zip(drive, amplitudes) if amplitude == peak]
+    tr = mean(peak_periods)
+    missing = 0
+    for i, (value, amplitude, reading) in enumerate(zip(drive, amplitudes, data["phase"]), 1):
+        fields[f"frequency_ratio_{i:02d}"] = fmt(tr/value)
+        fields[f"normalized_amplitude_{i:02d}"] = fmt((amplitude/peak)**2)
+        fields[f"table_drive_period_{i:02d}"] = format(value, ".4f")
+        fields[f"table_phase_reading_{i:02d}"] = format(reading, ".1f")
+        fields[f"table_frequency_ratio_{i:02d}"] = format(tr/value, ".4f")
+        fields[f"table_amplitude_ratio_{i:02d}"] = format((amplitude/peak)**2, ".4f")
+        fields[f"signed_phase_{i:02d}"] = fmt(-reading)
+        t0 = resonance_period_at_amplitude(data["free_angle"], free, amplitude)
+        if t0 is None:
+            missing += 1
+            fields[f"table_phase_calculated_{i:02d}"] = "需补测"
+            for key in ("matched_period", "matched_omega", "theoretical_phase", "phase_residual"):
+                fields[f"{key}_{i:02d}"] = "需补测"
+            continue
+        omega0, omega = 2*PI/t0, 2*PI/value
+        phi = Decimal(str(-degrees(atan2(float(2*beta*omega), float(omega0**2-omega**2)))))
+        fields[f"table_phase_calculated_{i:02d}"] = format(abs(phi), ".1f")
+        for key, result in (("matched_period", t0), ("matched_omega", omega0),
+                            ("theoretical_phase", phi), ("phase_residual", -reading-phi)):
+            fields[f"{key}_{i:02d}"] = fmt(result)
+    graph_peaks = [mean(peaks[i::10]) for i in range(10)]
+    fields["damped_graph_points"] = coordinates([(i, peak) for i, peak in enumerate(graph_peaks, 1)])
+    fields["amplitude_graph_points"] = coordinates([(tr/t, amplitude) for t, amplitude in zip(drive, amplitudes)])
+    fields["normalized_amplitude_graph_points"] = coordinates([(tr/t, (amplitude/peak)**2) for t, amplitude in zip(drive, amplitudes)])
+    fields["phase_magnitude_graph_points"] = coordinates([(tr/t, phase) for t, phase in zip(drive, data["phase"])])
+    fields["phase_graph_points"] = coordinates([(tr/t, -phase) for t, phase in zip(drive, data["phase"])])
+    put(fields, free_period_mean_s=mean(free), peak_amplitude_deg=peak,
+        resonance_period_s=tr, resonance_omega_rad_s=2*PI/tr, peak_point_count=len(peak_periods))
+    peak_t0 = resonance_period_at_amplitude(data["free_angle"], free, peak)
+    theory_radicand = (2*PI/peak_t0)**2-2*beta**2 if peak_t0 is not None else None
+    fields["theoretical_resonance_omega_rad_s"] = (
+        fmt(theory_radicand.sqrt()) if theory_radicand is not None and theory_radicand > 0 else "不适用")
+    fields["matched_period_peak_s"] = fmt(peak_t0) if peak_t0 is not None else "需补测"
+    fields["phase_coverage_note"] = (f"有 {missing} 个受迫振幅超出自由振动测量范围，需补测对应振幅的自由周期；这些点不计算理论相位。"
+                                     if missing else "全部受迫振幅均在自由振动测量范围内，已完成查表或线性内插。")
+    fields["beta_trial_summary"] = "；".join(f"第 {i} 组：{fmt(value)}" for i, value in enumerate(trial_betas, 1))
+    fields["beta_uncertainty_note"] = (
+        "本次按各组阻尼系数的均值标准误计算，仅表示组间统计分散。" if len(trial_betas) > 1 else
+        "本次只有一组阻尼测量，按该组五个逐差估计值的均值标准误计算，仅表示组内统计分散。")
     finish_pair(fields, "damping_beta_s_inv", "damping_beta_u_s_inv",
-                beta, sem(beta_samples))
+                beta, sem(trial_betas if len(trial_betas) > 1 else beta_samples))
 
 
 def lens(fields, data, p):

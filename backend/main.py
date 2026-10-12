@@ -20,12 +20,14 @@ try:
     from .report_queue import ReportQueue, QuotaExceeded
     from .report_images import validate_image_bytes
     from .table_uploads import parse_table
+    from .editable_instrument_data import editable_import
 except ImportError:  # 兼容 python backend/main.py 的启动方式
     from backend_revision import backend_revision
     from experiment_registry import render_report, validate_report
     from report_queue import ReportQueue, QuotaExceeded
     from report_images import validate_image_bytes
     from table_uploads import parse_table
+    from editable_instrument_data import editable_import
 
 
 MAX_REQUEST_BYTES = 64 * 1024
@@ -117,11 +119,20 @@ class ReportHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         user_id, is_new = self._identity()
         new_user = user_id if is_new else None
-        if urlsplit(self.path).path != "/api/reports/jobs":
+        path = urlsplit(self.path).path
+        if path not in ("/api/reports/jobs", "/api/reports/import-table"):
             self._json(404, {"error": "接口不存在"}, new_user)
             return
         try:
             payload, images = self._read_submission()
+            if path == "/api/reports/import-table":
+                if (not isinstance(payload, dict) or payload.get("experimentId") not in ("forced-vibration", "millikan", "moment-of-inertia")
+                        or not payload.get("sourceTables") or images):
+                    raise ValueError("请上传对应实验的原始数据表")
+                imported = editable_import(payload)
+                validate_report({"experimentId": payload["experimentId"], **imported})
+                self._json(200, imported, new_user)
+                return
             job = self.queue.create(user_id, payload, images)
         except (ValueError, UnicodeError) as exc:
             self._json(400, {"error": str(exc)}, new_user)
