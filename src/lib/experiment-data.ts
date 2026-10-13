@@ -1,9 +1,9 @@
-export type MeasurementQuantity = { id: string; showName: string; unit: string; allowBlank?: boolean }
+export type MeasurementQuantity = { id: string; showName: string; unit: string; allowBlank?: boolean; optionalCount?: number }
 
 const COOKIE_PREFIX = "phyexp_v1_"
 const COOKIE_CHUNK_SIZE = 3000
 const COOKIE_AGE = 365 * 24 * 60 * 60
-const MAX_IMPORT_VALUES = 200
+const MAX_IMPORT_VALUES = 300
 const DECIMAL_NUMBER = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 
 function cookieBase(experimentId: string, quantityId: string): string {
@@ -85,6 +85,7 @@ export function parseImportedMeasurements(text: string, quantities: MeasurementQ
   if (extra.length) throw new Error(`存在未识别的字段：${extra.join("、")}`)
   return Object.fromEntries(quantities.map((quantity) => {
     const readings = object[quantity.id]
+    if (readings === undefined && quantity.optionalCount !== undefined) return [quantity.id, Array<string>(quantity.optionalCount).fill("")]
     if (!Array.isArray(readings) || readings.length === 0 || readings.length > MAX_IMPORT_VALUES) {
       throw new Error(`${quantity.showName}必须是包含 1 至 ${MAX_IMPORT_VALUES} 个读数的数组`)
     }

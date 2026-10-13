@@ -446,7 +446,7 @@ def lens(fields, data, p):
         positive(value, "自准直焦距")
         focus["auto"].append(value)
         fields[f"auto_focus_{i:02d}"] = fmt(value)
-    for i, (virtual_at, lens_at, image_at) in enumerate(zip(data["concave_object"], data["concave_lens"], data["concave_image"]), 1):
+    for i, (virtual_at, lens_at, image_at) in enumerate(zip(data.get("concave_object", []), data.get("concave_lens", []), data.get("concave_image", [])), 1):
         u = lens_at-virtual_at
         v = image_at-lens_at
         if u >= 0 or v <= 0 or u+v == 0:
@@ -457,6 +457,8 @@ def lens(fields, data, p):
         focus["concave"].append(value)
         fields[f"concave_focus_{i:02d}"] = fmt(value)
     for name, values in focus.items():
+        if not values:
+            continue
         result = finish_pair(fields, f"focus_{name}_mean_mm", f"focus_{name}_u_mm",
                              mean(values), sem(values))
         for i, value in enumerate(values, 1):

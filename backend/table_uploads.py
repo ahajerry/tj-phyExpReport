@@ -56,21 +56,35 @@ def _forced_vibration(content: bytes) -> dict:
         ws = workbook["学生实验数据"]
         for cell, label in (("A1", "波尔共振"), ("A6", "振幅与周期"),
                             ("A40", "阻尼系数"), ("G41", "阻尼档位"),
-                            ("C43", "10T"), ("D62", "周期"), ("H62", "相位差")):
+                            ("C43", "10T")):
             if label not in str(ws[cell].value):
                 raise ValueError(f"XLSX 不是所给格式的波尔共振实验数据表（{cell}）")
+        forced_header = next((row for row in range(49, 101)
+                              if "周期" in str(ws[f"D{row}"].value)
+                              and "相位差" in str(ws[f"H{row}"].value)), None)
+        if forced_header is None:
+            raise ValueError("XLSX 缺少受迫振动周期和相位差表头")
         data = {key: [] for key in ("free_angle", "free_period", "damped_peak",
                                     "damped_period", "drive_period", "amplitude", "phase")}
         free_rows = []
         for row in range(9, 39):
-            values = [_reading(ws, f"{col}{row}") for col in "ABDEGH"]
+            values = []
+            for first, second in ("AB", "DE", "GH"):
+                cells = (f"{first}{row}", f"{second}{row}")
+                values.extend(["", ""] if all(ws[cell].value is None for cell in cells)
+                              else [_reading(ws, cell) for cell in cells])
             free_rows.append(values)
         # Each pair of columns is a continuation of the previous pair.
         for offset in (0, 2, 4):
-            data["free_angle"].extend(row[offset] for row in free_rows)
-            data["free_period"].extend(row[offset + 1] for row in free_rows)
+            data["free_angle"].extend(row[offset] for row in free_rows if row[offset])
+            data["free_period"].extend(row[offset + 1] for row in free_rows if row[offset])
         damped_rows = []
-        for trial, start in enumerate((44, 49, 54), 1):
+        for trial, start in enumerate(range(44, forced_header - 4, 5), 1):
+            if not any(ws[f"{col}{row}"].value is not None
+                       for row in range(start, start + 5) for col in "CFH"):
+                continue
+            if "周期" in str(ws[f"D{start}"].value) or "强迫" in str(ws[f"A{start}"].value):
+                break
             timing = _reading(ws, f"C{start}")
             data["damped_period"].append(_plain(Decimal(timing) / 10))
             early, late = [], []
@@ -83,8 +97,10 @@ def _forced_vibration(content: bytes) -> dict:
                 damped_rows.append([str(trial), timing, str(row - start + 1), first, second])
             data["damped_peak"].extend(early + late)
         forced_rows = []
-        for row in range(63, 83):
-            if Decimal(_reading(ws, f"A{row}")) != row - 62:
+        for row in range(forced_header + 1, min(ws.max_row, forced_header + 100) + 1):
+            if all(ws[f"{col}{row}"].value is None for col in "ADFH"):
+                continue
+            if Decimal(_reading(ws, f"A{row}")) != len(forced_rows) + 1:
                 raise ValueError(f"受迫振动序号 A{row} 与模板不一致")
             period, amplitude = (_reading(ws, f"{col}{row}") for col in "DF")
             # A zero phase is a valid reading.
@@ -97,7 +113,7 @@ def _forced_vibration(content: bytes) -> dict:
             phase_text = str(ws[f"H{row}"].value).strip()
             for key, value in (("drive_period", period), ("amplitude", amplitude), ("phase", phase_text)):
                 data[key].append(value)
-            forced_rows.append([str(row - 62), period, amplitude, phase_text])
+            forced_rows.append([str(len(forced_rows) + 1), period, amplitude, phase_text])
         return {"data": data, "parameters": {"damping_setting": _reading(ws, "H41")},
                 "reportInfo": {"student": str(ws["B4"].value or ""),
                                "student_id": str(ws["F3"].value or ""),

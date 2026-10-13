@@ -66,6 +66,21 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
         parsed.data.damped_time_10 = parsed.data.damped_period.map((value) =>
           value.trim() && Number.isFinite(Number(value)) ? String(Number((Number(value) * 10).toPrecision(12))) : "")
       }
+      if (experiment.id === "forced-vibration" && parsed.data) {
+        const readings = parsed.data
+        for (const [keys, min, max] of [
+          [["free_angle", "free_period"], 2, 300],
+          [["drive_period", "amplitude", "phase"], 3, 100],
+          [["damped_time_10", "damped_peak"], 1, 10],
+        ] as [string[], number, number][]) {
+          const counts = keys.filter((key) => Array.isArray(readings[key])).map((key) =>
+            key === "damped_peak" ? Math.ceil(readings[key].length / 10) : readings[key].length)
+          if (!counts.length) continue
+          const count = Math.min(max, Math.max(min, ...counts))
+          for (const key of keys) readings[key] = Array.from({ length: key === "damped_peak" ? count * 10 : count },
+            (_, index) => readings[key]?.[index] ?? "")
+        }
+      }
       // Previous oscilloscope forms stored seven waveforms in a different order.
       if (experiment.id === "oscilloscope" && parsed.data?.voltage_scale?.length === 7) {
         for (const key of ["voltage_scale", "voltage_divisions", "time_scale", "period_divisions"]) {
@@ -75,7 +90,9 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
       }
       return {
         data: Object.fromEntries(experiment.measurements.map((item) => [
-          item.id, Array.from({ length: item.count }, (_, index) => parsed.data?.[item.id]?.[index] ?? fallback.data[item.id][index]),
+          item.id, experiment.id === "forced-vibration" && Array.isArray(parsed.data?.[item.id])
+            ? parsed.data[item.id].slice(0, item.id === "damped_peak" ? 100 : item.id === "damped_time_10" ? 10 : item.id.startsWith("free_") ? 300 : 100)
+            : Array.from({ length: item.count }, (_, index) => parsed.data?.[item.id]?.[index] ?? fallback.data[item.id][index]),
         ])),
         parameters: Object.fromEntries(experiment.parameters.map((item) => [item.id, parsed.parameters?.[item.id] ?? fallback.parameters[item.id]])),
         reportInfo: Object.fromEntries(REPORT_INFO_FIELDS.map((item) => [item.id, parsed.reportInfo?.[item.id] ?? fallback.reportInfo[item.id]])),

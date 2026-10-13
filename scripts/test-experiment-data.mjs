@@ -35,6 +35,8 @@ assert.throws(() => parseImportedMeasurements('{"mass":[1],"volume":[2],"other":
 assert.throws(() => parseImportedMeasurements('{"mass":[""]}', quantities.slice(0, 1)), /无效/)
 assert.deepEqual(parseImportedMeasurements('{"mass":["0.0",""]}', [{ ...quantities[0], allowBlank: true }]), { mass: ['0.0', ''] })
 assert.deepEqual(parseImportedMeasurements('{"mass":["3.0"]}', quantities.slice(0, 1)), { mass: ['3.0'] })
+assert.deepEqual(parseImportedMeasurements('{"mass":["3.0"]}', [quantities[0], { ...quantities[1], optionalCount: 5 }]),
+  { mass: ['3.0'], volume: ['', '', '', '', ''] })
 assert.deepEqual(
   parseImportedMeasurements('{"mass":[1],"volume":[2],"length":[3]}', [...quantities, { id: 'length', showName: '长度', unit: 'cm' }]),
   { mass: ['1'], volume: ['2'], length: ['3'] },

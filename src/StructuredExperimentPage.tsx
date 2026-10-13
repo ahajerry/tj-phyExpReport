@@ -36,17 +36,42 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     setData((current) => ({ ...current, [key]: current[key].map((old, i) => i === index ? value : old) }))
   }
 
+  function resizeReadings(section: "free" | "damped" | "forced", count: number) {
+    const keys = section === "free" ? ["free_angle", "free_period"]
+      : section === "damped" ? ["damped_peak", "damped_time_10"] : ["drive_period", "amplitude", "phase"]
+    setData((current) => ({ ...current, ...Object.fromEntries(keys.map((key) => [key,
+      Array.from({ length: key === "damped_peak" ? count * 10 : count }, (_, index) => current[key][index] ?? ""),
+    ])) }))
+  }
+
+  function validateCounts(readings: Record<string, string[]>) {
+    if (!isForcedVibration) return
+    for (const [keys, min, max] of [
+      [["free_angle", "free_period"], 2, 300],
+      [["damped_time_10"], 1, 10],
+      [["drive_period", "amplitude", "phase"], 3, 100],
+    ] as [string[], number, number][]) {
+      const count = readings[keys[0]]?.length ?? 0
+      if (count < min || count > max || keys.some((key) => readings[key]?.length !== count)) {
+        throw new Error(`${keys.map((key) => experiment.measurements.find((item) => item.id === key)?.label).join("、")}需填写数量一致的 ${min} 至 ${max} 组读数`)
+      }
+    }
+    if (readings.damped_peak?.length !== readings.damped_time_10.length * 10) throw new Error("每次阻尼测量需要 10 个峰值和一次计时")
+  }
+
   function importReadings() {
     try {
       const parsed = parseImportedMeasurements(importText, experiment.measurements.map((item) => ({
-        id: item.id, showName: item.label, unit: item.unit, allowBlank: experiment.id === "millikan",
+        id: item.id, showName: item.label, unit: item.unit, allowBlank: experiment.id === "millikan" || item.optional,
+        optionalCount: experiment.id === "focal-length" && item.optional ? item.count : undefined,
       })))
       for (const item of experiment.measurements) {
         if (experiment.id === "millikan" && parsed[item.id].length >= 12 && parsed[item.id].length <= item.count) {
           parsed[item.id] = [...parsed[item.id], ...Array<string>(item.count - parsed[item.id].length).fill("")]
         }
-        if (parsed[item.id].length !== item.count) throw new Error(`${item.label}需要 ${item.count} 个读数`)
+        if (!isForcedVibration && parsed[item.id].length !== item.count) throw new Error(`${item.label}需要 ${item.count} 个读数`)
       }
+      validateCounts(parsed)
       setData(parsed)
       setMessage("原始读数已导入。")
       setError("")
@@ -75,8 +100,9 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
       }
       if (!response.ok || !result.data || !result.parameters) throw new Error(result.error ?? "数据表导入失败")
       for (const item of experiment.measurements) {
-        if (result.data[item.id]?.length !== item.count) throw new Error(`${item.label}的数量与表格不一致`)
+        if (!isForcedVibration && result.data[item.id]?.length !== item.count) throw new Error(`${item.label}的数量与表格不一致`)
       }
+      validateCounts(result.data)
       setData(result.data)
       setParameters(result.parameters)
       setReportInfo((current) => Object.fromEntries(REPORT_INFO_FIELDS.map(({ id }) => [id, current[id] || result.reportInfo?.[id] || ""])))
@@ -90,6 +116,11 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   async function generate() {
     setError("")
+    try { validateCounts(data) } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "读数数量不正确")
+      return
+    }
+    const concaveUsed = experiment.id === "focal-length" && experiment.measurements.filter((item) => item.id.startsWith("concave_")).some((item) => data[item.id].some((value) => value.trim()))
     const lastDropRow = experiment.id === "millikan"
       ? Math.max(-1, ...experiment.measurements.flatMap((item) => data[item.id].flatMap((value, index) => value.trim() ? [index] : []))) : null
     const dropRows = lastDropRow === null ? null : (Math.floor(lastDropRow / 4) + 1) * 4
@@ -100,8 +131,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     for (const item of experiment.measurements) {
       const values = data[item.id]
       if ((dropRows === null ? values : values.slice(0, dropRows)).some((value) =>
-        (!value.trim() && !item.optional) || (value.trim() && !Number.isFinite(Number(value))))) {
-        setError(experiment.id === "millikan" ? `${item.label}的已使用行需填写有效数字` : `${item.label}需要 ${item.count} 个有效数字`)
+        (!value.trim() && (!item.optional || concaveUsed && item.id.startsWith("concave_"))) || (value.trim() && !Number.isFinite(Number(value))))) {
+        setError(experiment.id === "millikan" ? `${item.label}的已使用行需填写有效数字` : `${item.label}需要 ${values.length} 个有效数字`)
         return
       }
     }
@@ -141,8 +172,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   }
 
   const prompt = buildImportPrompt(experiment.title, experiment.measurements.map((item) => ({
-    id: item.id, showName: `${item.label}（${item.count} 个${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
-  }))) + (experiment.id === "millikan" ? "\n每颗油滴对应连续四行，各字段按相同的行顺序排列。选填项与未使用油滴的空白读数用空字符串表示。" : "")
+    id: item.id, showName: `${item.label}（${isForcedVibration ? "按实际测量数量" : `${item.count} 个`}${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
+  }))) + (experiment.id === "millikan" ? "\n每颗油滴对应连续四行，各字段按相同的行顺序排列。选填项与未使用油滴的空白读数用空字符串表示。" : experiment.id === "focal-length" ? "\n未做凹透镜实验时可省略 concave_object、concave_lens、concave_image 三个字段。" : "")
 
   function readingCell(key: string, index: number) {
     const item = experiment.measurements.find((item) => item.id === key)!
@@ -216,6 +247,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         </div>
       </section>}
       {isForcedVibration && <ForcedVibrationReadings readingCell={readingCell} dampingSetting={parameters.damping_setting}
+        freeCount={data.free_angle.length} trialCount={data.damped_time_10.length} forcedCount={data.drive_period.length}
+        onResize={resizeReadings}
         onDampingSettingChange={(value) => setParameters((current) => ({ ...current, damping_setting: value }))}
         disabled={importingTable || generating} />}
       {experiment.id === "millikan" && <MillikanReadings readingCell={readingCell} disabled={importingTable || generating} />}

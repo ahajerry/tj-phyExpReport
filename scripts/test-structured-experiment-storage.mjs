@@ -70,15 +70,24 @@ saved.set('phyexp_report_forced-vibration', JSON.stringify({
   parameters: { damping_setting: '1' },
 }))
 const migratedResonance = readSavedExperimentValues(resonance)
-assert.equal(migratedResonance.data.free_angle.length, 90)
-assert.equal(migratedResonance.data.damped_peak.length, 30)
-assert.deepEqual(migratedResonance.data.damped_time_10, ['15.67', '', ''])
-assert.equal(migratedResonance.data.drive_period.length, 20)
-migratedResonance.data.free_period[89] = '1.5716'
-migratedResonance.data.damped_time_10[2] = '15.671'
-migratedResonance.data.amplitude[19] = '150'
+assert.equal(migratedResonance.data.free_angle.length, 2)
+assert.equal(migratedResonance.data.free_period.length, 2)
+assert.equal(migratedResonance.data.damped_peak.length, 10)
+assert.deepEqual(migratedResonance.data.damped_time_10, ['15.67'])
+assert.equal(migratedResonance.data.drive_period.length, 15)
+migratedResonance.data.free_period[1] = '1.5716'
+migratedResonance.data.damped_time_10[0] = '15.671'
+migratedResonance.data.amplitude[14] = '150'
 saved.set('phyexp_report_forced-vibration', JSON.stringify(migratedResonance))
 assert.deepEqual(readSavedExperimentValues(resonance), migratedResonance)
+const variableResonance = {
+  ...migratedResonance,
+  data: Object.fromEntries(resonance.measurements.map((item) => [item.id,
+    Array(item.id.startsWith('free_') ? 89 : item.id === 'damped_peak' ? 20 : item.id === 'damped_time_10' ? 2 : 17).fill('1.50'),
+  ])),
+}
+saved.set('phyexp_report_forced-vibration', JSON.stringify(variableResonance))
+assert.deepEqual(readSavedExperimentValues(resonance), variableResonance)
 console.log('波尔共振旧周期迁移和完整表格读数保存测试通过')
 
 const millikan = structuredExperimentById.get('millikan')
