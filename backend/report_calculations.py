@@ -10,10 +10,10 @@ from math import atan2, degrees, log, pi, sqrt
 
 try:
     from .structured_report import fmt, mean, sem
-    from .result_precision import finish_report_result, format_report_at_place
+    from .result_precision import finish_report_result, format_report_at_place, format_uncertainty
 except ImportError:
     from structured_report import fmt, mean, sem
-    from result_precision import finish_report_result, format_report_at_place
+    from result_precision import finish_report_result, format_report_at_place, format_uncertainty
 
 PI = Decimal(str(pi))
 E_REF = Decimal("1.602176634e-19")
@@ -234,25 +234,24 @@ def torsion(fields, data, p):
 
 
 def young(fields, data, p):
+    nonnegative(p["preload_kg"], "预载质量")
     positions = []
-    up_points = []
-    down_points = []
-    mean_points = []
     for i, (up, down) in enumerate(zip(data["load_up"], data["load_down"]), 1):
         position = (up+down)/2
         positions.append(position)
-        load = p["preload_kg"] + (i-1)*p["mass_step_kg"]
-        up_points.append((load, up))
-        down_points.append((load, down))
-        mean_points.append((load, position))
         fields[f"load_mean_{i:02d}"] = fmt(position)
-    fields["young_load_up_points"] = coordinates(up_points)
-    fields["young_load_down_points"] = coordinates(down_points)
-    fields["young_load_mean_points"] = coordinates(mean_points)
+        fields[f"load_mass_{i:02d}"] = fmt((i-1)*p["mass_step_kg"])
+    displacements = [abs(x - positions[0]) for x in positions]
+    if any(b <= a for a, b in zip(displacements, displacements[1:])):
+        raise ValueError("标尺位移应随载荷严格增大，请检查加载、卸载读数的级数顺序")
+    for i, value in enumerate(displacements, 1):
+        fields[f"load_displacement_{i:02d}"] = fmt(value)
     differences = [abs(positions[i+5]-positions[i]) for i in range(5)]
     for i, value in enumerate(differences):
         fields[f"load_difference_{i:02d}"] = fmt(value)
     l = positive(mean(differences), "五级逐差位移") / 100
+    for value in data["diameter"]:
+        positive(value, "金属丝直径（末读数减初读数）")
     d = positive(mean(data["diameter"]), "金属丝直径") / 1000
     length = positive(p["wire_length_cm"], "金属丝长度") / 100
     distance = positive(p["mirror_distance_cm"], "镜尺距离") / 100
@@ -261,20 +260,86 @@ def young(fields, data, p):
     gravity = positive(p["gravity_ms2"], "重力加速度")
     positive(p["reference_modulus_pa"], "参考模量")
     result = 8*length*distance*gravity*(5*step)/(PI*d*d*arm*l)
-    relative = ((sem(data["diameter"])/mean(data["diameter"])*2)**2
-                + (sem(differences)/mean(differences))**2).sqrt()
+    # The supplied handout uses 1.14 * SEM and instrument limits / sqrt(3).
+    d_a = Decimal("1.14") * sem(data["diameter"])
+    d_b = nonnegative(p["diameter_error_mm"], "测微计仪器误差") / Decimal(3).sqrt()
+    d_u = (d_a*d_a + d_b*d_b).sqrt()
+    l_a = Decimal("1.14") * sem(differences)
+    l_b = nonnegative(p["scale_error_cm"], "逐差位移仪器误差") / Decimal(3).sqrt()
+    l_u = (l_a*l_a + l_b*l_b).sqrt()
+    rd, rl = d_u / mean(data["diameter"]), l_u / mean(differences)
+    rlength = Decimal("0.1") / p["wire_length_cm"]
+    rdistance = Decimal("0.2") / p["mirror_distance_cm"]
+    rarm = Decimal("0.02") / p["lever_arm_cm"]
+    relative = (rlength**2 + rdistance**2 + rarm**2 + 4*rd**2 + rl**2).sqrt()
+    d_squares = [(x-mean(data["diameter"]))**2 for x in data["diameter"]]
+    l_squares = [(x-mean(differences))**2 for x in differences]
+    for i, (value, square) in enumerate(zip(data["diameter"], d_squares), 1):
+        fields[f"diameter_{i:02d}"] = fmt(value)
+        fields[f"diameter_square_{i:02d}"] = format(square*Decimal("1e6"), "f")
+    for i, square in enumerate(l_squares):
+        fields[f"difference_square_{i:02d}"] = fmt(square)
+    put(fields, diameter_square_sum=sum(d_squares)*Decimal("1e6"),
+        difference_square_sum=sum(l_squares), diameter_u_a=d_a, diameter_u_b=d_b,
+        difference_u_a=l_a, difference_u_b=l_b,
+        diameter_relative_percent=rd*100, difference_relative_percent=rl*100,
+        length_relative_percent=rlength*100, distance_relative_percent=rdistance*100,
+        arm_relative_percent=rarm*100, young_relative_percent=relative*100,
+        difference_mass_kg=5*step, difference_slope_kg_cm=5*step/mean(differences))
+    fields["diameter_square_sum"] = format(sum(d_squares)*Decimal("1e6"), "f")
+    # Straight line in m-l coordinates, using all ten averages. A/B are on the
+    # line at 10%/90% of its span, distinct from the measured point symbols.
+    masses = [i*step for i in range(10)]
+    xbar, ybar = mean(displacements), mean(masses)
+    sxx = sum((x-xbar)**2 for x in displacements)
+    slope = positive(sum((x-xbar)*(y-ybar) for x, y in zip(displacements, masses))/sxx,
+                     "图解法斜率")
+    intercept = ybar-slope*xbar
+    a = min(displacements) + (max(displacements)-min(displacements))*Decimal("0.1")
+    b = min(displacements) + (max(displacements)-min(displacements))*Decimal("0.9")
+    ay, by = intercept+slope*a, intercept+slope*b
+    graph_result = 8*length*distance*gravity/(PI*d*d*arm)*slope*100
+    fields["young_graph_points"] = coordinates(list(zip(displacements, masses)))
+    fields["young_graph_line"] = coordinates([(min(displacements), intercept+slope*min(displacements)),
+                                              (max(displacements), intercept+slope*max(displacements))])
+    fields["young_graph_a"] = coordinates([(a, ay)])
+    fields["young_graph_b"] = coordinates([(b, by)])
+    put(fields, graph_a_l=a, graph_a_m=ay, graph_b_l=b, graph_b_m=by,
+        graph_slope_kg_cm=(by-ay)/(b-a),
+        young_graph_modulus_pa=graph_result,
+        young_graph_error_percent=abs(graph_result-p["reference_modulus_pa"])/p["reference_modulus_pa"]*100)
     put(fields, diameter_mean_mm=mean(data["diameter"]), difference_mean_cm=mean(differences),
         young_modulus_pa=result, young_uncertainty_pa=result*relative,
         young_error_percent=abs(result-p["reference_modulus_pa"])/p["reference_modulus_pa"]*100)
     finish_pair(fields, "diameter_mean_mm", "diameter_mean_u_mm",
-                mean(data["diameter"]), sem(data["diameter"]))
+                mean(data["diameter"]), d_u)
     difference_result = finish_pair(fields, "difference_mean_cm", "difference_mean_u_cm",
-                                    mean(differences), sem(differences))
+                                    mean(differences), l_u)
     for i, value in enumerate(differences):
         fields[f"load_difference_{i:02d}"] = format_report_at_place(value, difference_result.place)
     finish_pair(fields, "young_modulus_pa", "young_uncertainty_pa", result, result*relative)
     fields["young_error_percent"] = finish_percent(
         abs(result-p["reference_modulus_pa"])/p["reference_modulus_pa"]*100, relative)
+    for key, value in {
+        "diameter_u_a": d_a, "diameter_u_b": d_b,
+        "difference_u_a": l_a, "difference_u_b": l_b,
+        "diameter_relative_percent": rd*100, "difference_relative_percent": rl*100,
+        "length_relative_percent": rlength*100, "distance_relative_percent": rdistance*100,
+        "arm_relative_percent": rarm*100, "young_relative_percent": relative*100,
+    }.items():
+        fields[key] = format_uncertainty(value)
+    fields["young_graph_modulus_pa"] = finish_report_result(graph_result, graph_result*relative).value
+    fields["young_graph_error_percent"] = finish_percent(
+        abs(graph_result-p["reference_modulus_pa"])/p["reference_modulus_pa"]*100, relative)
+    fields["graph_slope_kg_cm"] = finish_report_result(slope, slope*rl).value
+    difference_slope = 5*step/mean(differences)
+    fields["difference_slope_kg_cm"] = finish_report_result(difference_slope, difference_slope*rl).value
+    for key, source, uncertainty in (
+        ("length_result_cm", "wire_length_cm", "0.1"),
+        ("distance_result_cm", "mirror_distance_cm", "0.2"),
+        ("arm_result_cm", "lever_arm_cm", "0.02"),
+    ):
+        fields[key] = finish_report_result(p[source], Decimal(uncertainty)).value
 
 
 def resonance_period_at_amplitude(angles, periods, amplitude):

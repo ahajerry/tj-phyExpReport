@@ -1,96 +1,167 @@
 \input{physics_report_base.tex}
 % ===== 数据输入区开始 =====
-\SetField{experiment}{金属丝杨氏模量的测定}
-% 后端以 \SetField{字段名}{值} 填入数据；缺省值保持空白。
-% 母模板封面字段：\Field{experiment} \Field{student} \Field{student_id} \Field{group} \Field{date}
+\SetField{experiment}{杨氏模量的测量}
+% 原始仪器读数：\Field{wire_length_cm} \Field{mirror_distance_cm} \Field{lever_arm_cm}
 % ===== 数据输入区结束 =====
+\usepackage{multirow}
+\newcommand{\PlotCoordinates}[1]{(0,0)}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\newcommand{\Ysection}[1]{\ReportSection{#1}}
+\newcommand{\Yitem}[2]{\noindent\hangindent=2em #1.\quad #2\par}
 \begin{document}\fontsize{10.5pt}{20pt}\selectfont
-\ReportCover{金属丝杨氏模量的测定}
-\ReportSection{实验目的}
-1. 理解杨氏模量与应力、应变的关系，用光杠杆放大金属丝微小伸长。\par
-2. 完成加载和卸载两组读数，采用五级逐差法减小零点与随机误差。\par
-3. 测量金属丝直径、长度、光杠杆臂长和镜尺距离，并估计结果的不确定度。\par
-\ReportSection{实验原理}
-弹性限度内，金属丝的杨氏模量 $E=\frac{F/S}{\Delta L/L}$，其中 $S=\frac{\pi d^2}{4}$。光杠杆镜面转角很小，标尺像移动 $l$ 对应金属丝伸长 $\Delta L=\frac{Kl}{2D}$；$K$ 为光杠杆臂长，$D$ 为镜尺距离。因此五级载荷增量 $5\delta m$ 的结果为
-\[E=\frac{8LDg(5\delta m)}{\pi d^2K\bar l}.\]
-逐差法比较第 0--4 级和第 5--9 级的平均标尺像位置，既增加有效位移，也削弱统一零点偏差。
-\begin{center}\includegraphics[width=9.3cm]{figures/young-optical-lever.png}\par
-{\small 光杠杆镜尺关系示意图。}\end{center}
-\ReportSection{实验内容}
-\ReportSubsection{仪器调节}
-1. 检查金属丝竖直且未超过弹性限度，施加预载消除松弛。调节光杠杆镜面、望远镜和标尺，使标尺像及十字线清晰。\par
-2. 测量金属丝长度、镜尺距离与光杠杆臂长；用螺旋测微计在不同方向测直径五次，记录零点。\par
-\ReportSubsection{加卸载测量}
-3. 按固定质量步长逐级加载，待标尺像稳定后读取十级位置；再逐级卸载，记录对应的十级位置。\par
-4. 对每级加载、卸载读数取均值，计算五组逐差 $l_i$ 和杨氏模量；若两条曲线明显分离，应检查摩擦、松弛或是否超出弹性范围。
-\ReportSection{实验仪器}
-杨氏模量仪、金属丝、光杠杆、望远镜与标尺、砝码、螺旋测微计、游标卡尺和米尺。直径进入平方项，应重视其测量与零点检查。
-\ReportSection{数据记录处理}
-逐级载荷下的标尺像位置（cm）：
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|c|c|c|c|}\hline
-级数 & 加载 & 卸载 & 均值\\\hline
-0 & \Field[10mm]{load_up_01} & \Field[10mm]{load_down_01} & \Field[10mm]{load_mean_01}\\\hline
-1 & \Field[10mm]{load_up_02} & \Field[10mm]{load_down_02} & \Field[10mm]{load_mean_02}\\\hline
-2 & \Field[10mm]{load_up_03} & \Field[10mm]{load_down_03} & \Field[10mm]{load_mean_03}\\\hline
-3 & \Field[10mm]{load_up_04} & \Field[10mm]{load_down_04} & \Field[10mm]{load_mean_04}\\\hline
-4 & \Field[10mm]{load_up_05} & \Field[10mm]{load_down_05} & \Field[10mm]{load_mean_05}\\\hline
-5 & \Field[10mm]{load_up_06} & \Field[10mm]{load_down_06} & \Field[10mm]{load_mean_06}\\\hline
-6 & \Field[10mm]{load_up_07} & \Field[10mm]{load_down_07} & \Field[10mm]{load_mean_07}\\\hline
-7 & \Field[10mm]{load_up_08} & \Field[10mm]{load_down_08} & \Field[10mm]{load_mean_08}\\\hline
-8 & \Field[10mm]{load_up_09} & \Field[10mm]{load_down_09} & \Field[10mm]{load_mean_09}\\\hline
-9 & \Field[10mm]{load_up_10} & \Field[10mm]{load_down_10} & \Field[10mm]{load_mean_10}\\\hline
-\end{tabular}
-\end{center}
-\noindent 每级质量增量 $\delta m=\Field{mass_step_kg}$ kg；预载质量 $\Field{preload_kg}$ kg。
-\par\noindent 金属丝直径（mm）：
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|c|c|}\hline
-序号 & 直径\\\hline
-1 & \Field[10mm]{diameter_01}\\\hline
-2 & \Field[10mm]{diameter_02}\\\hline
-3 & \Field[10mm]{diameter_03}\\\hline
-4 & \Field[10mm]{diameter_04}\\\hline
-5 & \Field[10mm]{diameter_05}\\\hline
-\end{tabular}
-\end{center}
-\ReportSection{数据记录处理（续）}
-\noindent $L=\Field{wire_length_cm}$ cm，$D=\Field{mirror_distance_cm}$ cm，
-$K=\Field{lever_arm_cm}$ cm；当地 $g=\Field{gravity_ms2}$ m/s$^2$。
-\par\noindent 逐差 $l_i=|x_{i+5}-x_i|$（cm）：
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|c|c|}\hline
-$i$ & $l_i$\\\hline
-1 & \Field[10mm]{load_difference_00}\\\hline
-2 & \Field[10mm]{load_difference_01}\\\hline
-3 & \Field[10mm]{load_difference_02}\\\hline
-4 & \Field[10mm]{load_difference_03}\\\hline
-5 & \Field[10mm]{load_difference_04}\\\hline
-\end{tabular}
-\end{center}
-\[\bar d=(\MathField{diameter_mean_mm}\pm\MathField{diameter_mean_u_mm})\,\mathrm{mm},\quad
-\bar l=(\MathField{difference_mean_cm}\pm\MathField{difference_mean_u_cm})\,\mathrm{cm},\quad
-E=(\MathField{young_modulus_pa}\pm\MathField{young_uncertainty_pa})\,\mathrm{Pa}.\]
-\noindent 与参考值 $\MathField{reference_modulus_pa}$ Pa 的百分差为 $\Field{young_error_percent}\%$。
+\ReportCover{杨氏模量的测量}
+\Ysection{1. 引言}
+在物体的弹性限度内，当物体受外力作用时，均会发生弹性形变；发生弹性形变时，物体内部产生恢复原状的内应力。弹性模量是反映材料抵抗形变能力的物理量，在工程上作为选择材料的依据之一。
+\Ysection{2. 实验目的}
+\Yitem{1}{用拉伸法测定金属丝的杨氏弹性模量。}
+\Yitem{2}{掌握光杠杆镜尺法测定长度微小变化的原理。}
+\Yitem{3}{熟练掌握望远镜调节方法。}
+\Yitem{4}{学习处理数据的两种方法：图解法、逐差法。}
+\Ysection{3. 实验原理}
+基于胡克定律，固体在外力作用下将发生形变，如果外力撤去之后其形变消失，这种形变称之为弹性形变。如果外力后仍有残余形变，这种形变称为塑性形变。
 
-\ReportSection{加载与卸载曲线}
-以加载质量为横轴、望远镜标尺像位置为纵轴，绘出加载、卸载和两者均值。图形用于检查数据是否近似线性及是否存在明显滞后；点均由本次十级读数生成。
+应力是指单位面积上所受到的力，其单位为 $F/S$。应变是指在外力作用下的相对形变，或相对伸长，即 $\Delta L/L$，反映了物体形变的大小。其中，$L$ 为原长，$\Delta L$ 为形变量。
+
+杨氏弹性模量 $Y$ 是材料弹性性质的一个重要特征量，指在弹性限度范围内，材料所受应力与所产生的应变之比。
+
+杨氏弹性模量公式为
+\begin{equation}Y=\frac{F}{S}\cdot\frac{L}{\Delta L}=\frac{4FL}{\pi d^2\Delta L}\tag{3.3.1}\end{equation}
+其中，$F$ 表示材料所受拉（压）力，$S$ 表示材料的截面积，$L$ 表示材料的原长度，$\Delta L$ 表示材料的长度延长（缩短）量。
+\Ysection{4. 实验仪器}
+杨氏模量测定仪如图 3.3.1 所示，包括：拉伸仪、光杠杆、望远镜、标尺和支架等。
+
+\ReportSubsection{1）金属丝与支架}
+
+金属丝长约 0.8 米，上端被一个夹头固定在支架的上梁，下端有另一圆形夹头，可以在支架的下梁的圆孔内上下移动。实验中应尽量避免下夹头和支架下梁圆孔壁之间的摩擦。
+
+支架底座上有三个可调支脚螺丝，并有一个水准泡。实验前需调节支脚螺丝使底座水平，即支架和其上的金属丝处于垂直状态。
+\ReportSubsection{2）光杠杆}
+
+使用时两前支脚放在支架的下梁平台三角形凹槽内，后支脚放在圆柱形夹头上端平面上。当钢丝受到拉伸时，随着圆柱夹头下降，光杠杆的后支脚也下降，时平面镜以两前支脚为轴旋转。
+\begin{center}\includegraphics[width=.95\textwidth]{figures/young-apparatus-reference.png}\par 图 3.3.1 杨氏弹性模量测定仪\end{center}
+\ReportSubsection{3）望远镜与标尺}
+
+望远镜由物镜、目镜、十字分划板组成。使用时先调节目镜，使看清十字分划板（如图 3.3.2 所示）。继续调节望远镜的物镜调焦旋钮和仰角螺丝等，直至在望远镜中能看清标尺中部读数，如图 3.3.3 所示，则标尺像与分划板处于同一平面，消除读数时的视差。
+\begin{center}\includegraphics[width=.85\textwidth]{figures/young-reticles-reference.png}\par 图 3.3.2 十字分划板\qquad\qquad 图 3.3.3 分划板与标尺读数\end{center}
+\Ysection{5. 实验方法——光杠杆镜尺法测量微小长度的变化}
+在（3.3.1）式中，在外力 $F$ 的拉伸下，钢丝的伸长量 $\Delta L$ 是很小的量。用一般的长度测量仪器无法测量。在本实验中采用光杠杆镜尺法，原理图如图 3.3.4 所示。
+\begin{center}\includegraphics[width=.95\textwidth]{figures/young-principle-reference.png}\par 图 3.3.4 光杠杆镜尺法原理图\end{center}
+施加应力拉伸钢丝之前，使光杠杆的平面镜处于垂直状态。标尺刻度通过平面镜反射后，在望远镜中呈像。则望远镜可以通过平面镜观察到标尺刻度所成的像，即望远镜中十字线的水平线对应的标尺上刻度 $x_0$。
+
+当在钢丝下的挂盘添加砝码，即施加应力使钢丝伸长 $\Delta L$，下架头的位置因而下降 $\Delta L$ 时，平面镜将转动 $\varphi$ 角。可通过望远镜，观察到标尺刻度的像也发生移动，十字线的水平线对应于标尺刻度为 $x_i$ 处。
+
+由图 3.3.4 可知，当平面镜转动 $\varphi$ 角时，入射光与反射光的夹角为 $2\varphi$。从图中看出望远镜中标尺刻度的变化量为 $l=x_i-x_0$。
+
+因为 $\varphi$ 角很小，适用于小角度近似条件，则由图 3.3.4 可知
+\begin{equation}\theta\approx\tan\theta=\frac{\Delta L}{K}\tag{3.3.2}\end{equation}
+\begin{equation}2\theta\approx\tan2\theta=\frac{l}{D}\tag{3.3.3}\end{equation}
+则有
+\begin{equation}\Delta L=\frac{K}{2D}l\tag{3.3.4}\end{equation}
+由（3.3.1）（3.3.4）得
+\begin{equation}Y=\frac{mg}{S}\cdot\frac{L}{\Delta L}=\frac{2LDF}{SKl}=\frac{8LDg}{\pi d^2K}\frac{m}{l}\tag{3.3.5}\end{equation}
+\Ysection{6. 实验内容}
+\ReportSubsection{6.1 仪器调节}
+\Yitem{1}{调节测定仪支架螺丝，使水平仪气泡居中，并使钢丝垂直。}
+\Yitem{2}{调节光杠杆的位置：将光杠杆后尖脚置于夹头上，两前尖脚置于平台凹槽上。}
+\Yitem{3}{调节光杠杆与望远镜、米尺中部在同一高度上。}
+\Yitem{4}{调节望远镜的位置或光杠杆镜面仰角，直至眼睛在望远镜目镜附近能直接（不通过望远镜筒）从光杠杆镜面中观察到标尺中部的像。}
+\Yitem{5}{调节望远镜方位和仰角调节螺丝，使望远镜上缺口与准星连线粗略对准光杠杆镜面。}
+\Yitem{6}{调节望远镜目镜调焦旋钮，直至在望远镜中能看清叉丝。}
+\Yitem{7}{调节望远镜的物镜调焦旋钮直至在望远镜中能看清整个镜面。}
+\Yitem{8}{继续调节望远镜的物镜调焦旋钮和仰角螺丝等，直至在望远镜中能看清标尺中部读数。}
+\Ysection{6.2 数据测量}
+\Yitem{1}{在金属丝下端先挂若干砝码（如 2 kg），使金属丝完全伸直（此砝码不计入所加作用力 $mg$ 之内）。}
+\Yitem{2}{每增加 0.500 kg 砝码，通过望远镜记录 10 组数据。然后，将砝码逐次减少 0.500 kg，记录相应读数，取对应于同一荷重下两次读数的平均值。}
+\Yitem{3}{用钢尺测量光杠杆镜面到标尺距离 $D$。用米尺测量金属丝上下两夹头间金属丝长度 $L$。用螺旋测微计测量金属丝直径 $d$，测量 10 次取平均值。用游标卡尺测量光杠杆前尖脚到两后尖脚的连线的垂直长度 $K$。}
+\Ysection{7. 数据处理}
+\ReportSubsection{7.1 逐差法}
+实验中测量的数据分别填入，上海地区重力加速度 $g=\MathField{gravity_ms2}\,\mathrm{m/s^2}$。\par
+\Needspace{12\baselineskip}\noindent 表 3.3.1 砝码质量与望远镜中标尺读数记录
+\begin{center}\fontsize{9pt}{13pt}\selectfont\begin{adjustbox}{max width=\textwidth}\renewcommand{\arraystretch}{1.5}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}|c|c|c|c|c|c|c|c|}\hline
+$i$ & $m_i$(kg) & \shortstack{增荷时\\$x'_i$(cm)} & \shortstack{减荷时\\$x''_i$(cm)} & \shortstack{$x_i=\frac12(x'_i+x''_i)$\\(cm)} & \shortstack{$l_i=|x_i-x_0|$\\(cm)} & \shortstack{$l_{i+5}-l_i$\\(cm)} & $v_i^2$(cm$^2$)\\\hline
+0 & \Field[6mm]{load_mass_01} & \Field[6mm]{load_up_01} & \Field[6mm]{load_down_01} & \Field[6mm]{load_mean_01} & \Field[6mm]{load_displacement_01} & \Field[6mm]{load_difference_00} & \Field[6mm]{difference_square_00}\\\hline
+1 & \Field[6mm]{load_mass_02} & \Field[6mm]{load_up_02} & \Field[6mm]{load_down_02} & \Field[6mm]{load_mean_02} & \Field[6mm]{load_displacement_02} & \Field[6mm]{load_difference_01} & \Field[6mm]{difference_square_01}\\\hline
+2 & \Field[6mm]{load_mass_03} & \Field[6mm]{load_up_03} & \Field[6mm]{load_down_03} & \Field[6mm]{load_mean_03} & \Field[6mm]{load_displacement_03} & \Field[6mm]{load_difference_02} & \Field[6mm]{difference_square_02}\\\hline
+3 & \Field[6mm]{load_mass_04} & \Field[6mm]{load_up_04} & \Field[6mm]{load_down_04} & \Field[6mm]{load_mean_04} & \Field[6mm]{load_displacement_04} & \Field[6mm]{load_difference_03} & \Field[6mm]{difference_square_03}\\\hline
+4 & \Field[6mm]{load_mass_05} & \Field[6mm]{load_up_05} & \Field[6mm]{load_down_05} & \Field[6mm]{load_mean_05} & \Field[6mm]{load_displacement_05} & \Field[6mm]{load_difference_04} & \Field[6mm]{difference_square_04}\\\hline
+5 & \Field[6mm]{load_mass_06} & \Field[6mm]{load_up_06} & \Field[6mm]{load_down_06} & \Field[6mm]{load_mean_06} & \Field[6mm]{load_displacement_06} & \multirow{5}{*}{\shortstack{$\overline{l_{i+5}-l_i}$\\$=\MathField{difference_mean_cm}$}} & \multirow{5}{*}{$\sum v_i^2=\MathField{difference_square_sum}$}\\\cline{1-6}
+6 & \Field[6mm]{load_mass_07} & \Field[6mm]{load_up_07} & \Field[6mm]{load_down_07} & \Field[6mm]{load_mean_07} & \Field[6mm]{load_displacement_07} &  & \\\cline{1-6}
+7 & \Field[6mm]{load_mass_08} & \Field[6mm]{load_up_08} & \Field[6mm]{load_down_08} & \Field[6mm]{load_mean_08} & \Field[6mm]{load_displacement_08} &  & \\\cline{1-6}
+8 & \Field[6mm]{load_mass_09} & \Field[6mm]{load_up_09} & \Field[6mm]{load_down_09} & \Field[6mm]{load_mean_09} & \Field[6mm]{load_displacement_09} &  & \\\cline{1-6}
+9 & \Field[6mm]{load_mass_10} & \Field[6mm]{load_up_10} & \Field[6mm]{load_down_10} & \Field[6mm]{load_mean_10} & \Field[6mm]{load_displacement_10} &  & \\\hline
+\end{tabular*}\end{adjustbox}\end{center}
+实验所用钢丝的杨氏弹性模量参考值：$Y'=\MathField{reference_modulus_pa}\,\mathrm{N/m^2}$。
+\[\begin{aligned}
+L&=(\MathField{length_result_cm}\pm0.1)\,\mathrm{cm}; & U_{rL}&=\MathField{length_relative_percent}\%,\\
+D&=(\MathField{distance_result_cm}\pm0.2)\,\mathrm{cm}; & U_{rD}&=\MathField{distance_relative_percent}\%,\\
+K&=(\MathField{arm_result_cm}\pm0.02)\,\mathrm{cm}; & U_{rK}&=\MathField{arm_relative_percent}\%.
+\end{aligned}\]
+\Needspace{10\baselineskip}\noindent 表 3.3.2 钢丝直径 $d$ 的测量
+\begin{center}\small\renewcommand{\arraystretch}{1.5}\begin{adjustbox}{max width=\textwidth}
+\begin{tabular*}{.95\textwidth}{@{\extracolsep{\fill}}c|c|c|c|c}\toprule
+$i$ & \shortstack{初读数\\$d'_i$(mm)} & \shortstack{末读数\\$d''_i$(mm)} & $d_i=d''_i-d'_i$/mm & \shortstack{$v_i^2=(d_i-\bar d)^2$\\($10^{-6}$ mm$^2$)}\\\midrule
+1 & \Field[6mm]{diameter_initial_01} & \Field[6mm]{diameter_final_01} & \Field[6mm]{diameter_01} & \Field[6mm]{diameter_square_01}\\\hline
+2 & \Field[6mm]{diameter_initial_02} & \Field[6mm]{diameter_final_02} & \Field[6mm]{diameter_02} & \Field[6mm]{diameter_square_02}\\\hline
+3 & \Field[6mm]{diameter_initial_03} & \Field[6mm]{diameter_final_03} & \Field[6mm]{diameter_03} & \Field[6mm]{diameter_square_03}\\\hline
+4 & \Field[6mm]{diameter_initial_04} & \Field[6mm]{diameter_final_04} & \Field[6mm]{diameter_04} & \Field[6mm]{diameter_square_04}\\\hline
+5 & \Field[6mm]{diameter_initial_05} & \Field[6mm]{diameter_final_05} & \Field[6mm]{diameter_05} & \Field[6mm]{diameter_square_05}\\\hline
+\multicolumn{4}{r|}{平均值 $\bar d=\MathField{diameter_mean_mm}$ mm} & $\sum v_i^2=\MathField{diameter_square_sum}$\\\bottomrule
+\end{tabular*}\end{adjustbox}\end{center}
+\noindent 每级质量增量 $\delta m=\MathField{mass_step_kg}$ kg；预载 $\MathField{preload_kg}$ kg 不计入 $m_i$。
+\par\[\begin{aligned}
+u_{dA}&=1.14\sqrt{\frac{\sum v_i^2}{n(n-1)}}=\MathField{diameter_u_a}\,\mathrm{mm},\\[5pt]
+u_{dB}&=\frac{\Delta_{\text{仪},d}}{\sqrt3}=\frac{\MathField{diameter_error_mm}}{\sqrt3}=\MathField{diameter_u_b}\,\mathrm{mm},\\[5pt]
+U_d&=\sqrt{u_{dA}^2+u_{dB}^2}=\MathField{diameter_mean_u_mm}\,\mathrm{mm},\\[5pt]
+U_{rd}&=\frac{U_d}{\bar d}\times100\%=\MathField{diameter_relative_percent}\%,\\[5pt]
+U_{lA}&=1.14\sqrt{\frac{\sum v_i^2}{n(n-1)}}=\MathField{difference_u_a}\,\mathrm{cm},\\[5pt]
+U_{lB}&=\frac{\Delta_{\text{仪},l}}{\sqrt3}=\frac{\MathField{scale_error_cm}}{\sqrt3}=\MathField{difference_u_b}\,\mathrm{cm},\\[5pt]
+U_l&=\sqrt{U_{lA}^2+U_{lB}^2}=\MathField{difference_mean_u_cm}\,\mathrm{cm},\\[5pt]
+U_{rl}&=\frac{U_l}{\overline{l_{i+5}-l_i}}\times100\%=\MathField{difference_relative_percent}\%.
+\end{aligned}\]
+\Needspace{12cm}
+\Ysection{7.2 图解法}
+在以下毫米方格纸内绘制 $m$-$l$ 关系曲线，用图解法求出比值 $m/l$。
+
+注意作图要求，求斜率的两点要以不同描点符号在直线上标出，其坐标值也要在图中标出。
 \begin{center}\begin{tikzpicture}
-\begin{axis}[width=.88\textwidth,height=7cm,xlabel={加载质量/kg},ylabel={标尺像位置/cm},grid=both,legend pos=north west]
-\addplot+[mark=*,blue] coordinates {\PlotCoordinates{young_load_up_points}};\addlegendentry{加载}
-\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{young_load_down_points}};\addlegendentry{卸载}
-\addplot+[mark=triangle*,black] coordinates {\PlotCoordinates{young_load_mean_points}};\addlegendentry{均值}
+\begin{axis}[width=.95\textwidth,height=8.5cm,xlabel={$l$/cm},ylabel={$m$/kg},grid=both,
+minor tick num=4,minor grid style={gray!18},major grid style={gray!45},
+tick label style={font=\small},legend style={font=\small},legend pos=north west,
+enlargelimits=0.14,clip=false]
+\addplot[only marks,mark=*,black] coordinates {\PlotCoordinates{young_graph_points}};\addlegendentry{测量点}
+\addplot[blue,no marks] coordinates {\PlotCoordinates{young_graph_line}};\addlegendentry{直线}
+\addplot[only marks,mark=square*,red,mark size=3pt,
+nodes near coords={$A(\MathField{graph_a_l},\MathField{graph_a_m})$},
+every node near coord/.append style={anchor=north west,font=\small,fill=white,inner sep=2pt}]
+coordinates {\PlotCoordinates{young_graph_a}};
+\addplot[only marks,mark=triangle*,red,mark size=3.5pt,
+nodes near coords={$B(\MathField{graph_b_l},\MathField{graph_b_m})$},
+every node near coord/.append style={anchor=south east,font=\small,fill=white,inner sep=2pt}]
+coordinates {\PlotCoordinates{young_graph_b}};
 \end{axis}\end{tikzpicture}\end{center}
-\ReportSection{讨论与分析}
-\ReportSubsection{加载与卸载}
-图中的加载、卸载及均值曲线用于检查弹性区的近似线性。若加载与卸载差距大，可能有机械滞后、支架松动或读数尚未稳定，不能仅凭平均值掩盖异常。\par
-\ReportSubsection{不确定度}
-金属丝直径以平方进入公式，直径偏差会被放大；镜尺距离和臂长误差以及望远镜视差也应检查。逐差法利用较大的位移可减弱标尺像单次读数的相对误差，但不能消除系统误差。\par
-\ReportSubsection{思考题}
-为何先施加预载？使钢丝和装置进入稳定受力状态。为何沿多个方向测直径？金属丝可能略呈椭圆，多方位测量有助于估计截面尺寸。
-\ReportSection{实验结论}
-通过光杠杆和五级逐差法得到 $E=(\MathField{young_modulus_pa}\pm\MathField{young_uncertainty_pa})\,\mathrm{Pa}$，与输入参考值的百分差为 $\Field{young_error_percent}\%$。应结合加载卸载一致性与直径测量评价结果。
-
+由图解法得：
+\[\frac{m}{l}=\frac{m_B-m_A}{l_B-l_A}=\MathField{graph_slope_kg_cm}\,\mathrm{kg/cm}.\]
+求得钢丝的杨氏弹性模量：
+\[Y_1=\frac{8LDg}{\pi d^2K}\cdot\frac{m}{l}=\MathField{young_graph_modulus_pa}\,\mathrm{Pa}.\]
+百分差：
+\[E_0=\frac{|Y_1-Y'|}{Y'}\times100\%=\MathField{young_graph_error_percent}\%.\]
+\Ysection{2. 用逐差法处理实验数据}
+\[\frac{m}{l}=\frac{5\delta m}{\overline{l_{i+5}-l_i}}=\frac{\MathField{difference_mass_kg}}{\MathField{difference_mean_cm}}=\MathField{difference_slope_kg_cm}\,\mathrm{kg/cm}.\]
+\[Y_2=\frac{8LDg}{\pi d^2K}\cdot\frac{m}{l}=\MathField{young_modulus_pa}\,\mathrm{Pa}.\]
+百分差：
+\[E_0=\frac{|Y_2-Y'|}{Y'}\times100\%=\MathField{young_error_percent}\%.\]
+\Needspace{9\baselineskip}
+\Ysection{3. 不确定度估算}
+\[U_{rY_2}=\frac{U_{Y_2}}{Y_2}=\sqrt{U_{rL}^2+U_{rD}^2+U_{rK}^2+4U_{rd}^2+U_{rl}^2}=\MathField{young_relative_percent}\%.\]
+\[U_{Y_2}=U_{rY_2}\cdot Y_2=\MathField{young_uncertainty_pa}\,\mathrm{Pa}.\]
+结果表示为：
+\[Y_2\pm U_{Y_2}=(\MathField{young_modulus_pa}\pm\MathField{young_uncertainty_pa})\,\mathrm{Pa},\quad U_{rY_2}=\MathField{young_relative_percent}\%.\]
+\Ysection{8. 注意事项}
+\Yitem{1}{光杠杆与望远镜的目镜和物镜属光学器件，禁止用手触摸。光杠杆必须放置稳妥，以防掉落，打碎镜子；}
+\Yitem{2}{调节望远镜时，要注意消除视差，即要求做到眼睛上下移动时，标尺读数相对十字叉丝无相对位移；}
+\Yitem{3}{在加减砝码时要格外小心，做到轻拿轻放，避免震动产生较大的实验误差。光杠杆与望远镜调整好之后，实验过程中两者位置不能有任何移动。}
 \ReportRecord
 % ===== 原始数据图片插入区 =====
 \end{document}

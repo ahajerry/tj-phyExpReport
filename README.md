@@ -82,7 +82,9 @@ git commit -m "Record current development state"
 
 目前支持生成八种实验报告：声速测定、空气比热容比、密立根油滴、扭摆转动惯量、杨氏模量、波尔共振、透镜焦距、阴极射线示波器。密立根油滴上传 CSV 原始记录（每颗连续四行，支持 UTF-8/GB18030，3–8 颗），扭摆转动惯量上传与提供样例相同版式的 XLSX；后端读取读数、单位与仪器参数，将原始表附入报告。其余实验页面按对应数据表输入读数，仪器参数单独输入，封面信息和原始记录图片可选填。声速报告计算逐差波长、平均室温、声速、A/B 类及合成不确定度、理论声速与百分差；两法算术平均值也会填入报告。理论声速采用 [OpenStax 的干燥空气近似式](https://openstax.org/books/university-physics-volume-1/pages/17-2-speed-of-sound)：`331 × sqrt(1 + t/273)` m/s。
 
-八份统一版式的可编辑模板位于 `tex/templates/`；公共版式 `physics_report_base.tex` 源自 `tex/物理实验报告模板.tex`，封面和原始数据页沿用同济实验报告结构。每份独立压缩包及 `.tex` 副本位于 `tex/zipped/`。原有的 `specific_heat_ratio.zip`、`torsion_inertia.zip`、`young_modulus.zip` 保留为参考资料，最终归档仅保留每个实验一份模板。`tex/official/` 和 `tex/original/` 保留原资料。重新生成模板可运行 `python scripts/build_report_templates.py`；检验字段和示例 PDF 可运行 `python scripts/verify_reports.py --render`。示例 PDF 写入 `output/report-review/`。
+杨氏模量报告内容按用户提供的截图模板保留，版式遵循 `tex/物理实验报告模板.tex`，采用公共封面、页边距、10.5 pt 正文与 20 pt 行距、黑体标题、页眉页脚、装订线及原始记录页；三组示意图从截图裁切，图解法由 TikZ 绘制 m-l 图及直线上 A/B 两点。后端计算十级均值和位移、五组逐差及偏差平方和、五组直径初末读数差及统计量、图解法与逐差法模量和百分差；不确定度按截图的 1.14×SEM、仪器误差/√3 及 L/D/K/d/l 传播式合成，沿用末端有效位数规则。测微计和逐差位移仪器误差可修改，默认 0.004 mm、0.05 cm；L/D/K 绝对不确定度按模板为 0.1/0.2/0.02 cm。正文保留原文“直径测量 10 次”与五行记录表，计算采用实际五组记录。旧版净直径数据兼容为初读数零、末读数为原直径。
+
+八份可编辑模板位于 `tex/templates/`；公共版式 `physics_report_base.tex` 源自 `tex/物理实验报告模板.tex`，封面和原始数据页沿用同济实验报告结构。每份独立压缩包及 `.tex` 副本位于 `tex/zipped/`。原有的 `specific_heat_ratio.zip`、`torsion_inertia.zip`、`young_modulus.zip` 保留为参考资料，最终归档仅保留每个实验一份模板。`tex/official/` 和 `tex/original/` 保留原资料。重新生成模板可运行 `python scripts/build_report_templates.py`；检验字段和示例 PDF 可运行 `python scripts/verify_reports.py --render`。示例 PDF 写入 `output/report-review/`。
 
 打包脚本会核对并打包八份模板、`physics_report_base.tex`、同济标志和模板插图；部署后应检查 `tex/templates/millikan.tex` 等文件确实位于服务工作目录。编译临时文件写在 `.report-data/work/`，模板目录只需可读。
 

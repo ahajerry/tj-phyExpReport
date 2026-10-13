@@ -288,39 +288,7 @@ $\Field{slider_experiment_15_u}$、$\Field{slider_experiment_20_u}$ kg m$^2$。
 
 
 def young() -> str:
-    rows = [[str(i-1), f(f"load_up_{i:02d}"), f(f"load_down_{i:02d}"), f(f"load_mean_{i:02d}")]
-            for i in range(1, 11)]
-    diam = [[str(i), f(f"diameter_{i:02d}")] for i in range(1, 6)]
-    diffs = [[str(i + 1), f(f"load_difference_{i:02d}")] for i in range(5)]
-    return build("金属丝杨氏模量的测定", r"""\ReportSection{实验目的}
-用光杠杆测量金属丝的微小伸长，采用逐差法处理加载和卸载读数，求杨氏模量及不确定度。
-\ReportSection{实验原理}
-胡克定律 $E=4mgL/(\pi d^2\Delta L)$；光杠杆将伸长量转换为标尺像位移
-$\Delta L=Kl/(2D)$，故
-\[E=\frac{8LDg}{\pi d^2K}\frac{m}{l}.\]
-\ReportSection{实验内容}
-逐级加卸砝码，记录十级标尺像位置；测金属丝长度、直径、光杠杆臂长及镜尺距离。
-\ReportSection{实验仪器}
-杨氏模量仪、光杠杆、望远镜、米尺、砝码、螺旋测微计、游标卡尺。
-\ReportSection{数据记录处理}
-逐级载荷下的标尺像位置（cm）：
-""" + tab(["级数", "加载", "卸载", "均值"], rows) + r"""
-\noindent 每级质量增量 $\delta m=\Field{mass_step_kg}$ kg；预载质量 $\Field{preload_kg}$ kg。
-\par\noindent 金属丝直径（mm）：
-""" + tab(["序号", "直径"], diam) + r"""
-\clearpage\ReportSection{数据记录处理（续）}
-\noindent $L=\Field{wire_length_cm}$ cm，$D=\Field{mirror_distance_cm}$ cm，
-$K=\Field{lever_arm_cm}$ cm；当地 $g=\Field{gravity_ms2}$ m/s$^2$。
-\par\noindent 逐差 $l_i=|x_{i+5}-x_i|$（cm）：
-""" + tab(["$i$", "$l_i$"], diffs) + r"""
-\[\bar d=(\MathField{diameter_mean_mm}\pm\MathField{diameter_mean_u_mm})\,\mathrm{mm},\quad
-\bar l=(\MathField{difference_mean_cm}\pm\MathField{difference_mean_u_cm})\,\mathrm{cm},\quad
-E=(\MathField{young_modulus_pa}\pm\MathField{young_uncertainty_pa})\,\mathrm{Pa}.\]
-\noindent 与参考值 $\MathField{reference_modulus_pa}$ Pa 的百分差为 $\Field{young_error_percent}\%$。
-\ReportSection{讨论与分析}
-金属丝预载、望远镜视差及直径测量会影响结果；直径以平方进入公式，须在不同方位重复测量并检查零点。
-\ReportSection{实验结论}
-光杠杆与逐差法可将微小伸长转化为可读的标尺位移，并据此求出金属丝的杨氏模量。""")
+    return (ARCHIVE / "young-modulus.tex").read_text(encoding="utf-8")
 
 
 def resonance() -> str:
@@ -475,7 +443,7 @@ def main() -> None:
         name = f"{experiment_id}.tex"
         # These tracked templates follow the official DOCX table layouts.
         # Preserve their extended explanations and figures when packaging.
-        if experiment_id in ("millikan", "moment-of-inertia"):
+        if experiment_id in ("millikan", "moment-of-inertia", "young-modulus"):
             source = (ARCHIVE / name).read_text(encoding="utf-8")
         else:
             source = factory()

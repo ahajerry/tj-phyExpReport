@@ -41,8 +41,8 @@ class ReportPlotTests(unittest.TestCase):
     def test_other_required_graphs_use_all_readings(self):
         expected = {
             "moment-of-inertia": {"slider_graph_points": 4, "slider_graph_theory_points": 4},
-            "young-modulus": {"young_load_up_points": 10, "young_load_down_points": 10,
-                              "young_load_mean_points": 10},
+            "young-modulus": {"young_graph_points": 10, "young_graph_line": 2,
+                              "young_graph_a": 1, "young_graph_b": 1},
             "forced-vibration": {"damped_graph_points": 10, "amplitude_graph_points": 15,
                                  "phase_graph_points": 15},
         }

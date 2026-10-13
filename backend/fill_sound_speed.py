@@ -89,8 +89,8 @@ def fill_report(
 
     plot_fields = set(PLOT_PATTERN.findall(source))
     allowed = set(FIELD_PATTERN.findall(source)) | set(COVER_PATTERN.findall(source)) | plot_fields
-    if "\\ReportCover{" in source:
-        allowed.update({"experiment", "student", "student_id", "group", "date"})
+    # Report metadata may be supplied even when a source-specific template has no cover.
+    allowed.update({"experiment", "student", "student_id", "group", "date"})
     values = {"experiment": experiment_title}
     values.update({key: value for key, value in data.items() if value is not None})
     unknown = set(values) - allowed

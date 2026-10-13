@@ -32,6 +32,11 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
     const raw = localStorage.getItem(`phyexp_report_${experiment.id}`)
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SavedExperimentValues>
+      if (experiment.id === "young-modulus" && parsed.data?.diameter && !parsed.data.diameter_final) {
+        // The old form stored net diameters, equivalent to zero initial readings.
+        parsed.data.diameter_initial = Array<string>(5).fill("0")
+        parsed.data.diameter_final = parsed.data.diameter
+      }
       if (experiment.id === "millikan" && parsed.data?.voltage && !parsed.data.balance_voltage) {
         const previous = parsed.data
         parsed.data = {

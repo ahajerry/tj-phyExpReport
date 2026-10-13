@@ -102,11 +102,12 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "young-modulus", title: "金属丝杨氏模量的测定",
-    note: "加载、卸载各十级；直径测五次。逐差法比较第 0–4 级与第 5–9 级。",
+    note: "按新模板记录加卸载各十级和五组直径初、末读数，计算逐差法与图解法。预载不计入作用质量；L、D、K 的误差按模板为 0.1、0.2、0.02 cm。",
     measurements: [
       { id: "load_up", label: "加载标尺像位置", unit: "cm", count: 10 },
       { id: "load_down", label: "卸载标尺像位置", unit: "cm", count: 10 },
-      { id: "diameter", label: "金属丝直径", unit: "mm", count: 5 },
+      { id: "diameter_initial", label: "直径初读数", unit: "mm", count: 5 },
+      { id: "diameter_final", label: "直径末读数", unit: "mm", count: 5 },
     ],
     parameters: [
       { id: "mass_step_kg", label: "每级质量增量", unit: "kg", initial: "0.500" },
@@ -116,6 +117,8 @@ export const structuredExperiments: StructuredExperiment[] = [
       { id: "lever_arm_cm", label: "光杠杆臂长 K", unit: "cm" },
       { id: "gravity_ms2", label: "当地重力加速度", unit: "m/s²", initial: "9.794" },
       { id: "reference_modulus_pa", label: "参考杨氏模量", unit: "Pa", initial: "1.85e11" },
+      { id: "diameter_error_mm", label: "测微计仪器误差 Δ仪", unit: "mm", initial: "0.004" },
+      { id: "scale_error_cm", label: "逐差位移仪器误差 Δ仪", unit: "cm", initial: "0.05" },
     ],
   },
   {
