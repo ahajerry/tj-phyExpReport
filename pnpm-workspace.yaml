@@ -1,0 +1,6 @@
+packages:
+  - '.'
+# Dependency lifecycle scripts are denied unless explicitly reviewed here.
+allowBuilds:
+  '@tailwindcss/oxide': true
+  esbuild: true

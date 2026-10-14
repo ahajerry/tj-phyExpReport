@@ -132,7 +132,7 @@ async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<R
   try {
     return await fetch(input, init)
   } catch {
-    throw new Error("无法连接报告服务；本地开发请确认 npm run dev 正在运行")
+    throw new Error("无法连接报告服务；本地开发请确认 pnpm dev 正在运行")
   }
 }
 

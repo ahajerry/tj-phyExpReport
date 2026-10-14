@@ -2,9 +2,12 @@
 
 from hashlib import sha256
 from pathlib import Path
+import sys
 
 
 def backend_revision() -> str:
+    if getattr(sys, "frozen", False):
+        return Path(__file__).with_name("revision.txt").read_text(encoding="utf-8").strip()
     digest = sha256()
     for path in sorted(Path(__file__).parent.glob("*.py")):
         if path.name.startswith("test_"):

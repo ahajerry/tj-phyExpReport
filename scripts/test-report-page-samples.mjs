@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { structuredExperiments } from '../src/structured-experiments.ts'
 
-const samples = JSON.parse(readFileSync(new URL('../output/report-review/sample-data.json', import.meta.url), 'utf8'))
+const samples = JSON.parse(readFileSync(new URL('../server/testdata/web-samples.json', import.meta.url), 'utf8'))
 assert.equal(Object.keys(samples).length, structuredExperiments.length)
 
 for (const experiment of structuredExperiments) {

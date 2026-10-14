@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    image: phyexp-report:local
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${REPORT_BIND:-127.0.0.1}:${REPORT_PUBLIC_PORT:-8080}:8000"
+    environment:
+      REPORT_COOKIE_SECURE: "${REPORT_COOKIE_SECURE:-0}"
+    volumes:
+      - report-data:/data
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 128
+    mem_limit: 2g
+volumes:
+  report-data:

@@ -207,7 +207,7 @@ class ReportHandler(BaseHTTPRequestHandler):
         return payload, images
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="物理实验报告后端")
     parser.add_argument("--environment", choices=("development", "production"),
                         default=os.environ.get("REPORT_ENV", "development"))
@@ -223,3 +223,7 @@ if __name__ == "__main__":
     finally:
         server.server_close()
         ReportHandler.queue.close()
+
+
+if __name__ == "__main__":
+    main()
