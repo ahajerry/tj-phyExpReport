@@ -2,7 +2,7 @@
 
 ## 首次启动
 
-宿主机安装 Docker Engine 和 Compose v2。无需安装 Go、Node、Python、XeLaTeX 或字体。
+宿主机安装 Docker Engine 和 Compose v2 或更新版本。无需安装 Go、Node、Python、XeLaTeX 或字体。
 
 ```bash
 docker compose up -d --build

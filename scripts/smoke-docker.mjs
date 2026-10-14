@@ -3,17 +3,26 @@ import { execFileSync } from 'node:child_process'
 import { readFile, mkdir, writeFile } from 'node:fs/promises'
 import { setTimeout as delay } from 'node:timers/promises'
 import assert from 'node:assert/strict'
+import { fileURLToPath } from 'node:url'
 
+const useCompose = process.argv.includes('--compose')
 const image = process.env.REPORT_TEST_IMAGE || 'phyexp-report:local'
+if (useCompose && process.env.REPORT_TEST_IMAGE) throw new Error('Compose mode uses the image configured in compose.yaml')
 const name = `phyexp-smoke-${process.pid}-${Date.now()}`
 const volume = `${name}-data`
 const docker = (...args) => execFileSync('docker', args, { encoding: 'utf8', timeout: 120000 }).trim()
+const compose = (...args) => execFileSync('docker', ['compose', '--env-file', '/dev/null', '-f', 'compose.yaml', '-p', name, ...args], {
+  cwd: fileURLToPath(new URL('../', import.meta.url)),
+  env: { ...process.env, REPORT_BIND: '127.0.0.1', REPORT_PUBLIC_PORT: '0', REPORT_COOKIE_SECURE: '0' },
+  encoding: 'utf8', timeout: 120000,
+}).trim()
 const fixtures = new URL('../server/testdata/', import.meta.url)
-const output = new URL('../output/docker-smoke/', import.meta.url)
+const output = new URL(useCompose ? '../output/compose-smoke/' : '../output/docker-smoke/', import.meta.url)
 await mkdir(output, { recursive: true })
 let cookie
 let base
 let started = false
+let container = name
 const results = []
 async function request(path, options = {}, identity = true) {
   const response = await fetch(`${base}${path}`, { ...options, headers: { ...(identity && cookie ? { Cookie: cookie } : {}), ...options.headers }, signal: AbortSignal.timeout(90000) })
@@ -57,13 +66,21 @@ async function complete(payload, label, images = []) {
   return job
 }
 try {
-  docker('volume', 'create', volume)
-  docker('run', '-d', '--name', name, '--init', '--security-opt', 'no-new-privileges', '--cap-drop', 'ALL', '--pids-limit', '128', '--memory', '2g', '-p', '127.0.0.1::8000', '-e', 'REPORT_COOKIE_SECURE=0', '-v', `${volume}:/data`, image)
-  started = true
-  const port = docker('port', name, '8000/tcp').split(':').at(-1)
+  if (useCompose) {
+    started = true // Also clean up resources if up fails partway through.
+    compose('up', '-d', '--no-build', '--wait', '--wait-timeout', '90')
+    container = compose('ps', '-q', 'app')
+    assert.ok(container)
+    assert.equal(docker('inspect', '--format', '{{.State.Health.Status}}', container), 'healthy')
+  } else {
+    docker('volume', 'create', volume)
+    docker('run', '-d', '--name', name, '--init', '--security-opt', 'no-new-privileges', '--cap-drop', 'ALL', '--pids-limit', '128', '--memory', '2g', '-p', '127.0.0.1::8000', '-e', 'REPORT_COOKIE_SECURE=0', '-v', `${volume}:/data`, image)
+    started = true
+  }
+  const port = docker('port', container, '8000/tcp').split(':').at(-1)
   base = `http://127.0.0.1:${port}`
   await waitReady()
-  const runtime = docker('exec', name, 'sh', '-c', 'id -u; command -v python || command -v python3 || true; xelatex --version | head -1; kpsewhich FandolSong-Regular.otf')
+  const runtime = docker('exec', container, 'sh', '-c', 'id -u; command -v python || command -v python3 || true; xelatex --version | head -1; kpsewhich FandolSong-Regular.otf')
   assert.match(runtime, /^10001\n/)
   assert.doesNotMatch(runtime, /\/python/)
   assert.match(runtime, /FandolSong-Regular\.otf/)
@@ -94,17 +111,22 @@ try {
   await complete(sound, 'images-standard', ['sample.png', 'sample.jpg', 'sample.gif', 'sample.tif', 'sample.webp'])
   await complete(sound, 'images-heif', ['sample.heic', 'sample.avif'])
   const before = await (await request('/api/reports/session')).json()
-  docker('restart', name)
+  if (useCompose) compose('restart', 'app')
+  else docker('restart', container)
   // Docker may allocate a different host port when restarting an ephemeral mapping.
-  base = `http://127.0.0.1:${docker('port', name, '8000/tcp').split(':').at(-1)}`
+  base = `http://127.0.0.1:${docker('port', container, '8000/tcp').split(':').at(-1)}`
   await waitReady()
   const after = await (await request('/api/reports/session')).json()
   assert.equal(after.usedToday, before.usedToday)
   assert.deepEqual(after.jobs.map(j => [j.id, j.status]), before.jobs.map(j => [j.id, j.status]))
   for (const item of results) assert.equal((await request(`/api/reports/jobs/${item.id}/download`)).status, 200)
-  await writeFile(new URL('results.json', output), JSON.stringify({ image, runtime, imports: imports.length, reports: results, restart: 'passed' }, null, 2))
+  await writeFile(new URL('results.json', output), JSON.stringify({ mode: useCompose ? 'compose' : 'docker', image, runtime, imports: imports.length, reports: results, restart: 'passed' }, null, 2))
   console.log(`PASS: ${results.length} PDFs, ${imports.length} imports, 7 image formats, ownership and restart persistence`)
 } finally {
-  if (started) docker('rm', '-f', name)
-  docker('volume', 'rm', volume)
+  if (useCompose) {
+    if (started) compose('down', '--volumes', '--remove-orphans')
+  } else {
+    if (started) docker('rm', '-f', name)
+    docker('volume', 'rm', volume)
+  }
 }

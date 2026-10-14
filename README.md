@@ -6,7 +6,7 @@ React/TypeScript 前端、Go 后端、SQLite 任务队列与 XeLaTeX 报告引�
 
 ## Docker 启动
 
-需要 Docker Engine 与 Compose v2，在仓库根目录执行：
+需要 Docker Engine 与 Compose v2 或更新版本，在仓库根目录执行：
 
 ```bash
 docker compose up -d --build

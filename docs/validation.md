@@ -29,6 +29,16 @@ Go 回归样本位于 `server/testdata/`：45 个有效计算场景、31 个无�
 
 最近一次结果写入被 Git 忽略的 `output/docker-smoke/results.json`。另对生成报告进行 PDF 文本检查，并抽查示波器和受迫振动报告的页面缩略图，中文、表格及曲线正常；这不代表逐页人工审阅所有报告。
 
+## Compose 补充验收
+
+2026-10-15 安装 Docker Compose 5.6.0 后，以下检查通过：
+
+- `docker compose -p phyexp-compose-build-check build`：使用现有构建缓存成功生成镜像。本机未安装 buildx，Compose 自动回退到经典构建器；未验证 BuildKit 专有功能。
+- `pnpm test:docker --compose`：使用仓库 `compose.yaml` 创建独立项目，健康检查通过，14 份 PDF、10 个导入样本、7 种图片格式和匿名身份隔离检查全部通过。
+- `docker compose restart app` 后，额度、报告历史与全部报告下载保持正常。
+- 测试结束后专属容器、网络和临时卷均已清理。结果保存在被 Git 忽略的 `output/compose-smoke/results.json`。
+- 验收脚本新增 Compose 模式，`pnpm lint` 与 `git diff --check` 通过；复测命令见[开发与验证](development.md)。
+
 ## 尚未直接验证的环境
 
-本机未安装 Docker Compose，未直接执行 `docker compose` 启动流程；已验证 Docker 镜像构建及原生 Docker 容器运行流程。[部署指南](deployment.md) 提供两种启动方法。尚未执行远程服务器部署、实际域名 HTTPS 接入或真实用户数据迁移；迁移步骤与回退要求见[迁移记录](migration.md)。
+尚未执行远程服务器部署、实际域名 HTTPS 接入或真实用户数据迁移；[部署指南](deployment.md) 提供启动方法，迁移步骤与回退要求见[迁移记录](migration.md)。
