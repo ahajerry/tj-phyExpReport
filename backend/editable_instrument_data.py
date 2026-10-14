@@ -27,6 +27,7 @@ def editable_import(payload):
     parameters = dict(payload["parameters"])
     if experiment_id == "forced-vibration":
         data["damped_time_10"] = [format(Decimal(value) * 10, "f") for value in data.pop("damped_period")]
+        data["drive_time_10"] = [format(Decimal(value) * 10, "f") for value in data.pop("drive_period")]
     elif experiment_id == "millikan":
         rows = payload["sourceTables"][0]["rows"]
         data = {key: [row[index + 2] for row in rows] + [""] * (32 - len(rows))

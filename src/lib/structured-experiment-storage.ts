@@ -68,15 +68,19 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
       }
       if (experiment.id === "forced-vibration" && parsed.data) {
         const readings = parsed.data
-        for (const [keys, min, max] of [
-          [["free_angle", "free_period"], 2, 300],
-          [["drive_period", "amplitude", "phase"], 3, 100],
-          [["damped_time_10", "damped_peak"], 1, 10],
-        ] as [string[], number, number][]) {
+        if (readings.drive_period && !readings.drive_time_10) {
+          readings.drive_time_10 = readings.drive_period.map((value) =>
+            value.trim() && Number.isFinite(Number(value)) ? String(Number((Number(value) * 10).toPrecision(12))) : "")
+        }
+        for (const [keys, min] of [
+          [["free_angle", "free_period"], 2],
+          [["drive_time_10", "amplitude", "phase"], 3],
+          [["damped_time_10", "damped_peak"], 1],
+        ] as [string[], number][]) {
           const counts = keys.filter((key) => Array.isArray(readings[key])).map((key) =>
             key === "damped_peak" ? Math.ceil(readings[key].length / 10) : readings[key].length)
           if (!counts.length) continue
-          const count = Math.min(max, Math.max(min, ...counts))
+          const count = Math.max(min, ...counts)
           for (const key of keys) readings[key] = Array.from({ length: key === "damped_peak" ? count * 10 : count },
             (_, index) => readings[key]?.[index] ?? "")
         }
@@ -91,7 +95,7 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
       return {
         data: Object.fromEntries(experiment.measurements.map((item) => [
           item.id, experiment.id === "forced-vibration" && Array.isArray(parsed.data?.[item.id])
-            ? parsed.data[item.id].slice(0, item.id === "damped_peak" ? 100 : item.id === "damped_time_10" ? 10 : item.id.startsWith("free_") ? 300 : 100)
+            ? parsed.data[item.id].slice()
             : Array.from({ length: item.count }, (_, index) => parsed.data?.[item.id]?.[index] ?? fallback.data[item.id][index]),
         ])),
         parameters: Object.fromEntries(experiment.parameters.map((item) => [item.id, parsed.parameters?.[item.id] ?? fallback.parameters[item.id]])),

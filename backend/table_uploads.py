@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import csv
+import re
+import unicodedata
 from decimal import Decimal, InvalidOperation
 from io import BytesIO, StringIO
 from statistics import mean
@@ -32,6 +34,50 @@ def _plain(value: Decimal) -> str:
     return format(value.normalize(), "f")
 
 
+def _header(value):
+    return re.sub(r"\s+", "", unicodedata.normalize("NFKC", str(value or ""))).lower()
+
+
+def _vibration_headers(ws):
+    """Locate columns by their labels, including repeated continuation columns."""
+    headers = []
+    for row in ws:
+        labels = {cell.column: _header(cell.value) for cell in row if cell.value is not None}
+        periods = [c for c, s in labels.items() if "周期" in s and "查表" not in s]
+        phases = [c for c, s in labels.items() if "相位差" in s and "计算" not in s]
+        angles = [c for c, s in labels.items()
+                  if ("振幅" in s or "θ" in s)
+                  and not any(word in s for word in ("ln", "查表", "计算", "/θ", "²"))]
+        timings = [c for c, s in labels.items() if s.startswith("10t")]
+        indices = [c for c, s in labels.items() if s in ("n", "次数", "序号")]
+        if periods and phases and angles:
+            headers.append((row[0].row, "forced", (periods[0], angles[0], phases[0], indices)))
+        elif periods and angles and not set(periods).intersection(angles):
+            pairs = []
+            for index, col in enumerate(angles):
+                next_angle = angles[index + 1] if index + 1 < len(angles) else ws.max_column + 1
+                following = next((c for c in periods if col < c < next_angle), None)
+                if following is None:
+                    raise ValueError(f"第 {row[0].row} 行振幅与周期表头不成对")
+                pairs.append((col, following))
+            if pairs:
+                headers.append((row[0].row, "free", pairs))
+        elif len(angles) >= 2 and indices:
+            headers.append((row[0].row, "damped", (angles[:2], indices, timings)))
+    return headers
+
+
+def _vibration_boundary(ws, start, header_rows):
+    for row in range(start + 1, ws.max_row + 1):
+        if row in header_rows or any(
+            re.match(r"^(?:表\d+|\d+[.、]?(?:自由|振幅|阻尼|强迫|受迫|幅频))", _header(cell.value))
+            and isinstance(cell.value, str) and not _header(cell.value).replace(".", "", 1).isdigit()
+            for cell in ws[row]
+        ):
+            return row
+    return ws.max_row + 1
+
+
 def parse_table(experiment_id: str, filename: str, content: bytes) -> dict:
     if not content or len(content) > MAX_TABLE_BYTES:
         raise ValueError("数据表必须小于 2 MiB 且不能为空")
@@ -52,77 +98,145 @@ def _forced_vibration(content: bytes) -> dict:
         raise ValueError("XLSX 文件损坏或格式不正确") from exc
     try:
         if "学生实验数据" not in workbook.sheetnames:
-            raise ValueError("XLSX 不是所给格式的波尔共振实验数据表")
+            raise ValueError("XLSX 缺少“学生实验数据”工作表，请在该工作表填写测量数据")
         ws = workbook["学生实验数据"]
-        for cell, label in (("A1", "波尔共振"), ("A6", "振幅与周期"),
-                            ("A40", "阻尼系数"), ("G41", "阻尼档位"),
-                            ("C43", "10T")):
-            if label not in str(ws[cell].value):
-                raise ValueError(f"XLSX 不是所给格式的波尔共振实验数据表（{cell}）")
-        forced_header = next((row for row in range(49, 101)
-                              if "周期" in str(ws[f"D{row}"].value)
-                              and "相位差" in str(ws[f"H{row}"].value)), None)
-        if forced_header is None:
-            raise ValueError("XLSX 缺少受迫振动周期和相位差表头")
+        if not any("波尔共振" in str(cell.value) for row in ws for cell in row):
+            raise ValueError("XLSX 不是所给格式的波尔共振实验数据表")
+        headers = _vibration_headers(ws)
+        if not all(any(kind == required for _, kind, _ in headers) for required in ("free", "damped", "forced")):
+            raise ValueError("XLSX 缺少自由振动、阻尼或受迫振动的测量表头")
+        header_rows = {row for row, _, _ in headers}
         data = {key: [] for key in ("free_angle", "free_period", "damped_peak",
                                     "damped_period", "drive_period", "amplitude", "phase")}
-        free_rows = []
-        for row in range(9, 39):
-            values = []
-            for first, second in ("AB", "DE", "GH"):
-                cells = (f"{first}{row}", f"{second}{row}")
-                values.extend(["", ""] if all(ws[cell].value is None for cell in cells)
-                              else [_reading(ws, cell) for cell in cells])
-            free_rows.append(values)
-        # Each pair of columns is a continuation of the previous pair.
-        for offset in (0, 2, 4):
-            data["free_angle"].extend(row[offset] for row in free_rows if row[offset])
-            data["free_period"].extend(row[offset + 1] for row in free_rows if row[offset])
-        damped_rows = []
-        for trial, start in enumerate(range(44, forced_header - 4, 5), 1):
-            if not any(ws[f"{col}{row}"].value is not None
-                       for row in range(start, start + 5) for col in "CFH"):
-                continue
-            if "周期" in str(ws[f"D{start}"].value) or "强迫" in str(ws[f"A{start}"].value):
-                break
-            timing = _reading(ws, f"C{start}")
-            data["damped_period"].append(_plain(Decimal(timing) / 10))
-            early, late = [], []
-            for row in range(start, start + 5):
-                if Decimal(_reading(ws, f"D{row}")) != row - start + 1:
-                    raise ValueError(f"阻尼峰值序号 D{row} 与模板不一致")
-                first, second = (_reading(ws, f"{col}{row}") for col in "FH")
-                early.append(first)
-                late.append(second)
-                damped_rows.append([str(trial), timing, str(row - start + 1), first, second])
-            data["damped_peak"].extend(early + late)
-        forced_rows = []
-        for row in range(forced_header + 1, min(ws.max_row, forced_header + 100) + 1):
-            if all(ws[f"{col}{row}"].value is None for col in "ADFH"):
-                continue
-            if Decimal(_reading(ws, f"A{row}")) != len(forced_rows) + 1:
-                raise ValueError(f"受迫振动序号 A{row} 与模板不一致")
-            period, amplitude = (_reading(ws, f"{col}{row}") for col in "DF")
-            # A zero phase is a valid reading.
-            try:
-                phase = Decimal(str(ws[f"H{row}"].value).strip())
-            except InvalidOperation as exc:
-                raise ValueError(f"H{row} 缺少有效相位差") from exc
-            if not phase.is_finite() or not 0 <= phase <= 180:
-                raise ValueError(f"H{row} 相位滞后角读数应在 0 至 180 度之间")
-            phase_text = str(ws[f"H{row}"].value).strip()
-            for key, value in (("drive_period", period), ("amplitude", amplitude), ("phase", phase_text)):
-                data[key].append(value)
-            forced_rows.append([str(len(forced_rows) + 1), period, amplitude, phase_text])
-        return {"data": data, "parameters": {"damping_setting": _reading(ws, "H41")},
-                "reportInfo": {"student": str(ws["B4"].value or ""),
-                               "student_id": str(ws["F3"].value or ""),
-                               "group": str(ws["B3"].value or ""),
-                               "date": str(ws["F4"].value or "")[:10]},
+        free_rows, damped_rows, forced_rows = [], [], []
+        free_width = 0
+
+        def reading(row, col):
+            return _number(ws.cell(row, col).value, ws.cell(row, col).coordinate)
+
+        def occupied(row, columns):
+            return any(ws.cell(row, col).value not in (None, "") for col in columns)
+
+        def adjacent_value(cell):
+            # Labels may be merged across several columns.
+            col = cell.column + 1
+            for merged in ws.merged_cells.ranges:
+                if cell.coordinate in merged:
+                    col = merged.max_col + 1
+                    break
+            return ws.cell(cell.row, col)
+
+        setting = None
+        report_info = {}
+        cover_labels = {"姓名": "student", "学号": "student_id", "班号": "group", "时间": "date", "日期": "date"}
+        for row in ws:
+            for cell in row:
+                label = _header(cell.value).rstrip(":")
+                if label == "阻尼档位" and setting is None:
+                    target = adjacent_value(cell)
+                    if target.value not in (None, ""):
+                        setting = _number(target.value, target.coordinate)
+                if label in cover_labels:
+                    report_info[cover_labels[label]] = str(adjacent_value(cell).value or "")
+        if setting is None:
+            raise ValueError("XLSX 缺少阻尼档位读数")
+        if "date" in report_info:
+            report_info["date"] = report_info["date"][:10]
+
+        # Table 4 repeats measured columns beside calculated results. Prefer raw
+        # forced-vibration tables whenever present, regardless of their row count.
+        raw_forced = {row for row, kind, _ in headers if kind == "forced"
+                      and not any("计算" in _header(c.value) or "ω" in _header(c.value) for c in ws[row])}
+        for start, kind, columns in headers:
+            end = _vibration_boundary(ws, start, header_rows)
+            if kind == "free":
+                rows = []
+                free_width = max(free_width, len(columns) * 2)
+                for row in range(start + 1, end):
+                    values = []
+                    for first, second in columns:
+                        values.extend([reading(row, first), reading(row, second)]
+                                      if occupied(row, (first, second)) else ["", ""])
+                    if any(values):
+                        rows.append(values)
+                free_rows.extend(rows)
+                for offset in range(0, len(columns) * 2, 2):
+                    data["free_angle"].extend(row[offset] for row in rows if row[offset])
+                    data["free_period"].extend(row[offset + 1] for row in rows if row[offset])
+            elif kind == "damped":
+                angles, indices, timings = columns
+                groups, group = [], []
+                for row in range(start + 1, end):
+                    if not occupied(row, angles):
+                        continue
+                    # Summary and timing rows below the peaks are not readings.
+                    if any("平均" in str(cell.value) or _header(cell.value).startswith("10t")
+                           for cell in ws[row]):
+                        continue
+                    index = Decimal(reading(row, indices[0]))
+                    if index == 1 and group:
+                        groups.append(group)
+                        group = []
+                    if index != len(group) + 1:
+                        raise ValueError(f"阻尼峰值序号 {ws.cell(row, indices[0]).coordinate} 不连续")
+                    if len(indices) > 1 and Decimal(reading(row, indices[1])) != index + 5:
+                        raise ValueError("阻尼峰值第二列次数应为 n+5")
+                    group.append((row, reading(row, angles[0]), reading(row, angles[1])))
+                if group:
+                    groups.append(group)
+                # Some templates place the 10T timing below the peak table.
+                below_timings = [adjacent_value(cell) for row in range(start + 1, end)
+                                 for cell in ws[row] if _header(cell.value).startswith("10t")]
+                for index, group in enumerate(groups):
+                    if len(group) != 5:
+                        raise ValueError("每次阻尼测量需要 n=1 至 5 与 n+5 的十个峰值")
+                    if timings:
+                        timing = reading(group[0][0], timings[0])
+                    elif index < len(below_timings):
+                        cell = below_timings[index]
+                        timing = _number(cell.value, cell.coordinate)
+                    else:
+                        raise ValueError("XLSX 阻尼测量缺少 10T 计时表头或读数")
+                    data["damped_period"].append(_plain(Decimal(timing) / 10))
+                    data["damped_peak"].extend([item[1] for item in group] + [item[2] for item in group])
+                    trial = str(len(data["damped_period"]))
+                    damped_rows.extend([[trial, timing, str(i), first, second]
+                                        for i, (_, first, second) in enumerate(group, 1)])
+            elif not raw_forced or start in raw_forced:
+                period_col, amplitude_col, phase_col, indices = columns
+                local_count = 0
+                for row in range(start + 1, end):
+                    if not occupied(row, (period_col, amplitude_col, phase_col)):
+                        continue
+                    # Instruction lines between tables mark the end of records.
+                    if any("利用表" in str(c.value) for c in ws[row]):
+                        break
+                    local_count += 1
+                    if indices and Decimal(reading(row, indices[0])) != local_count:
+                        raise ValueError(f"受迫振动序号 {ws.cell(row, indices[0]).coordinate} 不连续")
+                    period, amplitude = reading(row, period_col), reading(row, amplitude_col)
+                    if "10t" in _header(ws.cell(start, period_col).value):
+                        period = _plain(Decimal(period) / 10)
+                    cell = ws.cell(row, phase_col)
+                    try:
+                        phase = Decimal(str(cell.value).strip())
+                    except InvalidOperation as exc:
+                        raise ValueError(f"{cell.coordinate} 缺少有效相位差") from exc
+                    if not phase.is_finite() or not 0 <= phase <= 180:
+                        raise ValueError(f"{cell.coordinate} 相位滞后角读数应在 0 至 180 度之间")
+                    phase_text = str(cell.value).strip()
+                    for key, value in (("drive_period", period), ("amplitude", amplitude), ("phase", phase_text)):
+                        data[key].append(value)
+                    forced_rows.append([str(len(forced_rows) + 1), period, amplitude, phase_text])
+        if any(not values for values in data.values()):
+            raise ValueError("XLSX 测量表缺少有效数据行")
+        free_rows = [row + [""] * (free_width - len(row)) for row in free_rows]
+        return {"data": data, "parameters": {"damping_setting": setting}, "reportInfo": report_info,
                 "sourceTables": [
                     {"title": "波尔共振 XLSX 自由振动原始记录（各列依次续接）",
-                     "headers": ["振幅1/°", "周期1/s", "振幅2/°", "周期2/s", "振幅3/°", "周期3/s"], "rows": free_rows},
-                    {"title": "波尔共振 XLSX 阻尼原始记录（档位 " + _reading(ws, "H41") + "）",
+                     "headers": [label for i in range(1, free_width // 2 + 1)
+                                 for label in (f"振幅{i}/°", f"周期{i}/s")], "rows": free_rows},
+                    {"title": "波尔共振 XLSX 阻尼原始记录（档位 " + setting + "）",
                      "headers": ["测量组", "10T/s", "n", "峰值n/°", "峰值(n+5)/°"], "rows": damped_rows},
                     {"title": "波尔共振 XLSX 受迫振动原始记录",
                      "headers": ["序号", "驱动单周期/s", "稳定振幅/°", "滞后角正读数/°"], "rows": forced_rows}]}

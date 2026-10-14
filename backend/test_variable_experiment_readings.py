@@ -35,8 +35,8 @@ class VariableReadingTests(unittest.TestCase):
         source = uploaded_template(89, 2, 17)
         markers = re.findall(r'\\Field(?:\[[^]]*\])?\{([^}]+)\}', source)
         self.assertFalse([key for key in markers if key not in fields and key not in ('experiment', 'student', 'student_id', 'group', 'date')])
-        self.assertIn('table_drive_period_17', source)
-        self.assertNotIn('table_drive_period_18', source)
+        self.assertIn('table_drive_time_10_17', source)
+        self.assertNotIn('table_drive_time_10_18', source)
         self.assertNotIn('free_angle_90', source)
 
     def test_attached_copy_imports_actual_record_counts(self):

@@ -357,6 +357,31 @@ def resonance_period_at_amplitude(angles, periods, amplitude):
     return None
 
 
+def resonance_half_power(drive, amplitudes):
+    """Interpolate the nearest half-power crossings on both sides of the peak.
+
+    Work in angular frequency (not period or normalized frequency). Average
+    repeated frequencies before interpolation and never extrapolate a crossing.
+    """
+    peak = max(amplitudes)
+    grouped = {}
+    for period, amplitude in zip(drive, amplitudes):
+        grouped.setdefault(2 * PI / period, []).append((amplitude / peak) ** 2)
+    points = sorted((omega, mean(values)) for omega, values in grouped.items())
+    center = max(range(len(points)), key=lambda i: points[i][1])
+    half = Decimal('0.5')
+
+    def crossing(side):
+        for (x0, y0), (x1, y1) in zip(side, side[1:]):
+            if y0 >= half and y1 <= half:
+                return x1 if y1 == half else x0 + (half - y0) * (x1 - x0) / (y1 - y0)
+        return None
+
+    left = crossing(list(reversed(points[:center + 1])))
+    right = crossing(points[center:])
+    return left, right
+
+
 def resonance(fields, data, p):
     del p
     free = [positive(x, "自由振动周期") for x in data["free_period"]]
@@ -368,6 +393,9 @@ def resonance(fields, data, p):
                     for trial, period in enumerate(damped_periods) for i in range(5)]
     trial_betas = [mean(beta_samples[i:i+5]) for i in range(0, len(beta_samples), 5)]
     for trial, period in enumerate(damped_periods):
+        fields[f"damped_time_10_{trial+1:02d}"] = format(period * 10, ".4f")
+        fields[f"damped_log_mean_{trial+1:02d}"] = format(trial_betas[trial] * 5 * period, ".5f")
+        fields[f"damped_beta_{trial+1:02d}"] = fmt(trial_betas[trial])
         for i in range(5):
             fields[f"damped_log_ratio_{trial*5+i+1:02d}"] = format(beta_samples[trial*5+i]*5*period, ".4f")
     beta = mean(trial_betas)
@@ -386,7 +414,9 @@ def resonance(fields, data, p):
         fields[f"frequency_ratio_{i:02d}"] = fmt(tr/value)
         fields[f"normalized_amplitude_{i:02d}"] = fmt((amplitude/peak)**2)
         fields[f"table_drive_period_{i:02d}"] = format(value, ".4f")
+        fields[f"table_drive_time_10_{i:02d}"] = format(value * 10, ".4f")
         fields[f"table_phase_reading_{i:02d}"] = format(reading, ".1f")
+        fields[f"table_signed_phase_{i:02d}"] = format(-reading if reading else Decimal(0), ".1f")
         fields[f"table_frequency_ratio_{i:02d}"] = format(tr/value, ".4f")
         fields[f"table_amplitude_ratio_{i:02d}"] = format((amplitude/peak)**2, ".4f")
         fields[f"signed_phase_{i:02d}"] = fmt(-reading)
@@ -394,12 +424,14 @@ def resonance(fields, data, p):
         if t0 is None:
             missing += 1
             fields[f"table_phase_calculated_{i:02d}"] = "需补测"
+            fields[f"table_signed_theory_{i:02d}"] = "需补测"
             for key in ("matched_period", "matched_omega", "theoretical_phase", "phase_residual"):
                 fields[f"{key}_{i:02d}"] = "需补测"
             continue
         omega0, omega = 2*PI/t0, 2*PI/value
         phi = Decimal(str(-degrees(atan2(float(2*beta*omega), float(omega0**2-omega**2)))))
         fields[f"table_phase_calculated_{i:02d}"] = format(abs(phi), ".1f")
+        fields[f"table_signed_theory_{i:02d}"] = format(phi, ".1f")
         for key, result in (("matched_period", t0), ("matched_omega", omega0),
                             ("theoretical_phase", phi), ("phase_residual", -reading-phi)):
             fields[f"{key}_{i:02d}"] = fmt(result)
@@ -409,6 +441,25 @@ def resonance(fields, data, p):
     fields["normalized_amplitude_graph_points"] = coordinates([(tr/t, (amplitude/peak)**2) for t, amplitude in zip(drive, amplitudes)])
     fields["phase_magnitude_graph_points"] = coordinates([(tr/t, phase) for t, phase in zip(drive, data["phase"])])
     fields["phase_graph_points"] = coordinates([(tr/t, -phase) for t, phase in zip(drive, data["phase"])])
+    # Report curves must follow increasing frequency even for unsorted imports.
+    fields["normalized_amplitude_graph_points"] = coordinates(sorted(
+        [(tr/t, (amplitude/peak)**2) for t, amplitude in zip(drive, amplitudes)]))
+    fields["phase_graph_points"] = coordinates(sorted(
+        [(tr/t, -phase) for t, phase in zip(drive, data["phase"])]))
+    fields["half_power_line_points"] = coordinates([
+        (min(tr/t for t in drive), Decimal('0.5')),
+        (max(tr/t for t in drive), Decimal('0.5'))])
+    left, right = resonance_half_power(drive, amplitudes)
+    for key, value in (("half_power_omega_1", left), ("half_power_omega_2", right)):
+        fields[key] = fmt(value) if value is not None else "需补测"
+    if left is not None and right is not None and right > left:
+        graph_beta = (right - left) / 2
+        fields["graph_beta_s_inv"] = fmt(graph_beta)
+        fields["graph_beta_difference_percent"] = format(abs(graph_beta - beta) / beta * 100, ".2f")
+        fields["graph_beta_note"] = "在实测归一化振幅平方曲线的峰值两侧，对相邻测量点作线性内插，确定半峰高交点。该方法适用于小阻尼及共振附近。"
+    else:
+        fields["graph_beta_s_inv"] = fields["graph_beta_difference_percent"] = "需补测"
+        fields["graph_beta_note"] = "实测曲线未覆盖峰值两侧的半峰高交点，需扩大测量范围或加密共振附近测点；不外推计算作图法阻尼系数。"
     put(fields, free_period_mean_s=mean(free), peak_amplitude_deg=peak,
         resonance_period_s=tr, resonance_omega_rad_s=2*PI/tr, peak_point_count=len(peak_periods))
     peak_t0 = resonance_period_at_amplitude(data["free_angle"], free, peak)

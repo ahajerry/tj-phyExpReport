@@ -5,9 +5,11 @@ import re
 try:
     from .structured_report import parse_report, render, number
     from .report_calculations import resonance
+    from .forced_vibration_tables import measurement_tables
 except ImportError:
     from structured_report import parse_report, render, number
     from report_calculations import resonance
+    from forced_vibration_tables import measurement_tables
 
 EXPERIMENT_ID = "forced-vibration"
 TITLE = "用波尔共振仪研究物体受迫振动"
@@ -22,24 +24,32 @@ PARAMETERS = ("damping_setting",)
 
 
 def report_fields(payload):
+    # New forms record ten drive cycles; old exports/API records use one cycle.
+    if isinstance(payload, dict) and isinstance(payload.get("data"), dict) and "drive_time_10" in payload["data"]:
+        data = dict(payload["data"])
+        timings = data.pop("drive_time_10")
+        if "drive_period" in data or not isinstance(timings, list) or not timings:
+            raise ValueError("强迫力矩周期请仅填写 10T 计时或单周期 T")
+        data["drive_period"] = [str(number(value, "强迫力矩 10T 计时", positive=True) / 10) for value in timings]
+        payload = {**payload, "data": data}
     if isinstance(payload, dict) and isinstance(payload.get("data"), dict) and "damped_time_10" in payload["data"]:
         data = dict(payload["data"])
         timings = data.pop("damped_time_10")
-        if "damped_period" in data or not isinstance(timings, list) or not 1 <= len(timings) <= 10:
-            raise ValueError("阻尼振动需要 1 至 10 次 10T 计时")
+        if "damped_period" in data or not isinstance(timings, list) or not timings:
+            raise ValueError("阻尼振动需要至少 1 次 10T 计时")
         data["damped_period"] = [str(number(value, "阻尼振动 10T 计时", positive=True) / 10) for value in timings]
         payload = {**payload, "data": data}
     spec = DATA_SPEC
     if isinstance(payload, dict) and isinstance(payload.get("data"), dict):
         data = payload["data"]
-        for keys, low, high in ((('free_angle', 'free_period'), 2, 300),
-                                (('drive_period', 'amplitude', 'phase'), 3, 100),
-                                (('damped_period',), 1, 10)):
+        for keys, low in ((('free_angle', 'free_period'), 2),
+                          (('drive_period', 'amplitude', 'phase'), 3),
+                          (('damped_period',), 1)):
             values = [data.get(key) for key in keys]
             if (any(not isinstance(value, list) for value in values)
-                    or not low <= len(values[0]) <= high
+                    or len(values[0]) < low
                     or any(len(value) != len(values[0]) for value in values)):
-                raise ValueError(f"{'、'.join(keys)} 需要数量一致的 {low} 至 {high} 组读数")
+                raise ValueError(f"{'、'.join(keys)} 需要数量一致的至少 {low} 组读数")
         if not isinstance(data.get('damped_peak'), list) or len(data['damped_peak']) != 10 * len(data['damped_period']):
             raise ValueError("每次阻尼测量需要 10 个峰值和一次计时")
         spec = {key: (len(data[key]), pattern if key != "damped_period" else "damped_period_{i:02d}")
@@ -67,9 +77,10 @@ def editable_source_tables(payload):
          "rows": [[str(trial + 1), str(data["damped_time_10"][trial]), str(row + 1),
                    str(data["damped_peak"][trial * 10 + row]), str(data["damped_peak"][trial * 10 + row + 5])]
                   for trial in range(len(data['damped_time_10'])) for row in range(5)]},
-        {"title": "波尔共振受迫振动记录", "headers": ["序号", "驱动单周期/s", "稳定振幅/°", "滞后角正读数/°"],
-         "rows": [[str(row + 1), *[str(data[key][row]) for key in ("drive_period", "amplitude", "phase")]]
-                  for row in range(len(data['drive_period']))]},
+        {"title": "波尔共振受迫振动记录", "headers": ["序号", "强迫力矩 10T/s", "稳定振幅/°", "滞后角正读数/°"],
+         "rows": [[str(row + 1), str(timing), str(data['amplitude'][row]), str(data['phase'][row])]
+                  for row, timing in enumerate(data.get('drive_time_10',
+                      [str(number(value, '驱动周期') * 10) for value in data.get('drive_period', [])]))]},
     ]
 
 
@@ -78,47 +89,10 @@ def uploaded_template(free_count=90, trial_count=3, forced_count=20):
     template = Path(__file__).resolve().parents[1] / "tex/templates/forced-vibration.tex"
     source = template.read_text(encoding="utf-8")
 
-    def field(key, index):
-        return rf"\Field[10mm]{{{key}_{index:02d}}}"
-
-    tables = [
-        ("free_angle_01", [r"$\theta$/°", "$T_0$/s"] * 3,
-         [[field(key, i+offset) for offset in (0, 30, 60) for key in ("free_angle", "free_period")]
-          for i in range(1, 31)]) if free_count == 90 else
-        ("free_angle_01", ["序号", r"$\theta$/°", "$T_0$/s"],
-         [[str(i), field("free_angle", i), field("free_period", i)] for i in range(1, free_count + 1)]),
-        ("damped_peak_01", ["组次", "$T_d$/s", "$i$", r"$\theta_i$/°", r"$\theta_{i+5}$/°", r"$\ln(\theta_i/\theta_{i+5})$"],
-         [[str(trial+1), field("damped_period", trial+1), str(i), field("damped_peak", trial*10+i),
-           field("damped_peak", trial*10+i+5), field("damped_log_ratio", trial*5+i)]
-          for trial in range(trial_count) for i in range(1, 6)]),
-        ("table_drive_period_01", ["强迫力矩周期 (s)", r"\shortstack{相位差 $\phi$ ($^\circ$)\\读取值}",
-                                  r"\shortstack{$\theta$ ($^\circ$)\\测量值}", r"$\omega/\omega_r$",
-                                  r"$\theta^2/\theta_r^2$", r"\shortstack{相位差 $\phi$ ($^\circ$)\\计算值}"],
-         [[field(key, i) for key in ("table_drive_period", "table_phase_reading", "amplitude", "table_frequency_ratio", "table_amplitude_ratio", "table_phase_calculated")]
-          for i in range(1, forced_count + 1)]),
-    ]
-    for marker, headers, rows in tables:
-        def replace(match):
-            if marker not in match.group():
-                return match.group()
-            head = " & ".join(headers) + r"\\\hline"
-            body = "\n".join(" & ".join(row) + r"\\\hline" for row in rows)
-            columns = "|" + "c|" * len(headers)
-            spacing = ""
-            if marker == "table_drive_period_01":
-                columns = "|" + "|".join(r">{\centering\arraybackslash}p{" + width + "cm}" for width in ("2.8", "2.25", "1.4", "1.8", "1.9", "2.25")) + "|"
-                spacing = r"\setlength{\tabcolsep}{3pt}"
-            style = (r"{\footnotesize\renewcommand{\arraystretch}{1}" if marker != "table_drive_period_01"
-                     else r"{\small\renewcommand{\arraystretch}{1.15}")
-            return "\n".join((style + spacing,
-                              r"\begin{longtable}{" + columns + r"}\hline",
-                              head, r"\endfirsthead\hline", head, r"\endhead", body,
-                              r"\end{longtable}}"))
-        source = re.sub(r"\\begin\{center\}\\small.*?\\end\{center\}", replace, source, flags=re.S)
-    source = source.replace("记录十组周期", f"记录 {free_count} 组周期")
-    source = source.replace("记录连续十个同侧阻尼峰值", f"分别记录 {trial_count} 次测量的十个同侧阻尼峰值")
-    source = source.replace("十五个设置点", f"{forced_count} 个设置点")
-    source = source.replace("阻尼振动单周期 $T_d=", "阻尼振动平均单周期 $\\bar T_d=")
+    for name, table in measurement_tables(free_count, trial_count, forced_count).items():
+        source = re.sub(r"% BEGIN " + name + r"_TABLE.*?% END " + name + r"_TABLE",
+                        lambda _: "% BEGIN " + name + "_TABLE\n" + table + "\n% END " + name + "_TABLE",
+                        source, flags=re.S)
     return source
 
 
@@ -127,4 +101,4 @@ def render_report(payload, progress, image_dir):
     return render(fields, EXPERIMENT_ID, TITLE, progress, image_dir,
                   template_source=uploaded_template(len(payload['data']['free_angle']),
                       len(payload['data'].get('damped_time_10', payload['data'].get('damped_period', []))),
-                      len(payload['data']['drive_period'])))
+                      len(payload['data'].get('drive_time_10', payload['data'].get('drive_period', [])))))

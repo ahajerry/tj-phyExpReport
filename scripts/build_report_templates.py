@@ -292,50 +292,8 @@ def young() -> str:
 
 
 def resonance() -> str:
-    free = [[str(i), f(f"free_angle_{i:02d}"), f(f"free_period_{i:02d}")] for i in range(1, 11)]
-    damp = [[str(i), f(f"damped_peak_{i:02d}"), str(i+5), f(f"damped_peak_{i+5:02d}"), f(f"damped_log_ratio_{i:02d}")] for i in range(1, 6)]
-    forced = [[f(f"{key}_{i:02d}") for key in
-               ("table_drive_period", "table_phase_reading", "amplitude", "table_frequency_ratio", "table_amplitude_ratio", "table_phase_calculated")]
-              for i in range(1, 16)]
-    return build("用波尔共振仪研究物体受迫振动", r"""\ReportSection{实验目的}
-测量自由振动、阻尼振动和受迫振动。
-\ReportSection{实验原理}
-受迫振动原理。
-\ReportSection{实验仪器}
-波尔共振仪。
-\ReportSection{实验内容}
-记录振幅、周期及相位。
-\clearpage
-\ReportSection{数据记录与处理}
-\ReportSubsection{自由振动}
-下表给出振幅与自由周期 $T_0$ 的对应关系。计算某一振幅下的理论相位时，取该振幅对应的 $T_0$；没有相同振幅时，用相邻两点内插。
-""" + tab(["序号", "振幅/°", "$T_0$/s"], free) + r"""
-\ReportSubsection{阻尼系数}
-阻尼档位：$\Field{damping_setting}$。阻尼振动单周期 $T_d=\Field{damped_period_s}$ s，由十周期总时间除以十得到。相隔五个周期的振幅按逐差法计算：
-\[
-\beta=\frac{1}{5T_d}\,\overline{\ln\frac{\theta_i}{\theta_{i+5}}},\qquad i=1,2,\ldots,5.
-\]
-先求五个振幅比的自然对数，再取平均，最后除以 $5T_d$。多次测量分别计算后取平均。
-""" + tab(["次数", r"$\theta_i$/°", "次数", r"$\theta_{i+5}$/°", r"$\ln(\theta_i/\theta_{i+5})$"], damp) + r"""
-\clearpage\ReportSubsection{幅频、相频特性}
-$T$ 为外力周期，$\theta$ 为稳定振幅。最大振幅记为 $\theta_r$，对应周期记为 $T_r$；若最大振幅有多个点，取这些点周期的平均值。本次 $\theta_r=\Field{peak_amplitude_deg}$°，$T_r=\Field{resonance_period_s}$ s。
-\[
-\frac{\omega}{\omega_r}=\frac{T_r}{T},\qquad
-\frac{\theta^2}{\theta_r^2}=\left(\frac{\theta}{\theta_r}\right)^2.
-\]
-相位计算使用该振幅对应的自由周期 $T_0$ 和测得的 $\beta$：
-\[
-\varphi=\tan^{-1}\!\left[\frac{-\beta T_0^2T}{\pi(T^2-T_0^2)}\right].
-\]
-按角度计算；若反正切结果为正，则减去 $180^\circ$；$T=T_0$ 时取 $-90^\circ$。下表“计算值”取其绝对值，与仪器正读数比较。若振幅超出自由振动表范围，标为“需补测”。
-""" + tab(["强迫力矩周期 (s)", r"\shortstack{相位差 $\phi$ ($^\circ$)\\读取值}",
-           r"\shortstack{$\theta$ ($^\circ$)\\测量值}", r"$\omega/\omega_r$", r"$\theta^2/\theta_r^2$",
-           r"\shortstack{相位差 $\phi$ ($^\circ$)\\计算值}"], forced, fit=True) + r"""
-\ReportSection{讨论与分析}
-分析实验误差。
-\ReportSection{实验结论}
-总结实验结果。""").replace(r"\ReportRecord", r"\ifreportimages\ReportRecord\fi").replace(
-        r"\ReportSection{数据记录与处理}", r"\clearpage\ReportSection{数据记录与处理}")
+    # This curated template follows the supplied laboratory instructions.
+    return (ARCHIVE / "forced-vibration.tex").read_text(encoding="utf-8")
 
 
 def lens() -> str:
@@ -443,7 +401,7 @@ def main() -> None:
         name = f"{experiment_id}.tex"
         # These tracked templates follow the official DOCX table layouts.
         # Preserve their extended explanations and figures when packaging.
-        if experiment_id in ("millikan", "moment-of-inertia", "young-modulus"):
+        if experiment_id in ("millikan", "moment-of-inertia", "young-modulus", "forced-vibration"):
             source = (ARCHIVE / name).read_text(encoding="utf-8")
         else:
             source = factory()

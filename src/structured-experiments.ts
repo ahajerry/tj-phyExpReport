@@ -123,13 +123,13 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "forced-vibration", title: "用波尔共振仪研究物体受迫振动",
-    note: "按实际测量数量增减输入框。上传 XLSX 可自动填入已有记录并继续修改；报告使用当前表格中的全部数据。",
+    note: "按表 3.4.1–3.4.3 记录自由振动、阻尼振动和受迫振动数据。阻尼与强迫力矩计时均填写 10T；报告计算逐差法与半峰宽作图法的阻尼系数，并按振幅查表校正理论相位。可上传 XLSX 后继续修改。",
     measurements: [
       { id: "free_angle", label: "自由振动振幅", unit: "°", count: 10 },
       { id: "free_period", label: "自由振动周期", unit: "s", count: 10 },
       { id: "damped_peak", label: "阻尼振动峰值", unit: "°", count: 10 },
       { id: "damped_time_10", label: "阻尼振动 10T 计时", unit: "s", count: 1 },
-      { id: "drive_period", label: "受迫振动驱动周期", unit: "s", count: 15 },
+      { id: "drive_time_10", label: "强迫力矩周期 10T", unit: "s", count: 15 },
       { id: "amplitude", label: "稳定振幅", unit: "°", count: 15 },
       { id: "phase", label: "相位滞后角读数 α", unit: "°", count: 15 },
     ], parameters: [{ id: "damping_setting", label: "阻尼档位", unit: "档" }],

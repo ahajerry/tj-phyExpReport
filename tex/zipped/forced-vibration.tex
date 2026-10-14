@@ -4,6 +4,7 @@
 % 后端以 \SetField{字段名}{值} 填入数据；缺省值保持空白。
 % 母模板封面字段：\Field{experiment} \Field{student} \Field{student_id} \Field{group} \Field{date}
 % ===== 数据输入区结束 =====
+\providecommand{\PlotCoordinates}[1]{(0,0)}
 \begin{document}\fontsize{10.5pt}{20pt}\selectfont
 \ReportCover{用波尔共振仪研究物体受迫振动}
 \ReportSection{实验目的}
@@ -11,103 +12,273 @@
 2. 研究受迫振动的幅频、相频特性，观察共振现象。\par
 3. 学习用频闪法测量相位差。
 \ReportSection{实验原理}
-摆轮在弹簧恢复力、阻尼力和周期外力作用下做受迫振动，其运动方程为
+\ReportSubsection{3.1 自由振动与阻尼振动}
+\textbf{单自由度振动系统}通常包括一个定向振动的物体，连接振动物体的弹性元件（如：弹性系数为 $k$ 的弹簧），以及运动中的阻尼这三个基本要素。实际的机械振动系统往往是复杂的，分析和计算中应抓住主要因素，省略次要因素，从而将实际系统简化和抽象为力学模型，研究系统的动态特征和外部激励等。
+
+单自由度无阻尼自由振动是指物体受到初始激励作用之后，不再受到外界的力或力矩激励作用的振动。自由振动一般指弹性系统偏离平衡状态后，在没有外界激励作用下发生的周期性振动，实验中简称为\textbf{自由振动}。
+
+如果考虑物体振动过程中，有黏性阻尼的存在，则为单自由度有黏性阻尼的自由振动，实验中简称为\textbf{阻尼振动}。
+
+本实验中，由铜质圆形摆轮在蜗卷弹簧提供的恢复力矩的作用下，可绕转轴往复摆动。在摆动过程中，摆轮如果只受到与角位移 $\theta$ 成正比、方向指向平衡位置的弹性恢复力矩的作用，则为自由振动。
+
+根据转动规律，摆轮作自由振动的运动方程为
+\begin{equation}
+J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}=-k\theta
+\tag{3.4.1}
+\end{equation}
+式中，$J$ 为摆轮的转动惯量，$-k\theta$ 为弹性力矩，$k$ 为弹性力矩系数。
+
+在实际的实验过程中，存在与角速度 $\mathrm{d}\theta/\mathrm{d}t$ 成正比、方向与摆轮运动方向相反的空气阻尼力矩的作用。由于空气阻尼力矩较小，相应的阻尼系数值比后续电磁阻尼振动的阻尼系数值要低一个数量级，摆轮振幅衰减缓慢。因而，实验中可近似地将此小阻尼振动视为自由振动。
+
+在摆轮的下方左右两侧放置有两个带铁芯的线圈，当线圈中通有励磁电流时，线圈之间及附近空间中形成磁场，摆轮往复摆动时收到电磁阻尼力矩的作用，即为阻尼振动。通过调节励磁电流值，可以使阻尼力矩和阻尼系数相应变化。
+
+设 $b$ 为电磁阻尼力矩系数，则摆轮作阻尼振动的运动方程为
+\begin{equation}
+J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}=-k\theta-b\frac{\mathrm{d}\theta}{\mathrm{d}t},
+\tag{3.4.2}
+\end{equation}
+令 $\omega_0^2=\dfrac{k}{J}$，$2\beta=\dfrac{b}{J}$，则（3.4.2）式为
+\begin{equation}
+\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}+2\beta\frac{\mathrm{d}\theta}{\mathrm{d}t}+\omega_0^2\theta=0
+\tag{3.4.3}
+\end{equation}
+实验中，可以采用对数逐差法计算阻尼系数 $\beta$。
+
+\ReportSubsection{3.2 受迫振动}
+单自由度有黏性阻尼的受迫振动，实验中简称为\textbf{受迫振动}，是指物体在周期外力的持续作用下发生的振动，这种周期性的外力称为\textbf{强迫力}。如果外力是按简谐振动规律变化，那么稳定状态时的受迫振动也是简谐振动，其振动频率与外力频率相同。此时，振幅保持恒定，振幅的大小与强迫力的频率，原振动系统小阻尼时的固有振动频率，以及阻尼系数有关。
+
+在受迫振动状态下，系统除了受到强迫力的作用外，同时还受到回复力和阻尼力的作用。所以在稳定状态时物体的位移、速度变化与强迫力变化不是同相位的，存在相位差。当强迫力频率与系统的固有频率相同时产生共振，此时振幅最大，相位差为 $90^\circ$。
+
+本实验中，由铜质圆形摆轮在蜗卷弹簧提供的恢复力矩的作用下，可绕转轴往复摆动。摆轮在摆动过程中受到与角位移 $\theta$ 成正比、方向指向平衡位置的弹性恢复力矩的作用；与角速度 $\mathrm{d}\theta/\mathrm{d}t$ 成正比、方向与摆轮运动方向相反的阻尼力矩的作用；以及按简谐规律变化的外力矩 $M_0\cos\omega t$ 的作用。根据转动规律，可列出摆轮的运动方程：
+\begin{equation}
+J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}=-k\theta-b\frac{\mathrm{d}\theta}{\mathrm{d}t}+M_0\cos\omega t
+\tag{3.4.4}
+\end{equation}
+式中，$J$ 为摆轮的转动惯量，$-k\theta$ 为弹性力矩，$k$ 为弹性力矩系数，$b$ 为电磁阻尼力矩系数，$M_0$ 为强迫力矩的幅值，$\omega$ 为强迫力的圆频率。
+
+令 $\omega_0^2=\dfrac{k}{J}$，$2\beta=\dfrac{b}{J}$，$m=\dfrac{M_0}{J}$，则（3.4.4）式变为
+\begin{equation}
+\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}+2\beta\frac{\mathrm{d}\theta}{\mathrm{d}t}+\omega_0^2\theta=m\cos\omega t
+\tag{3.4.5}
+\end{equation}
+当强迫外力为零，即（3.4.5）式等号右边为零时，方程（3.4.5）就变为了二阶常系数线性齐次微分方程，根据微分方程的相关理论，当 $\omega_0$ 远大于 $\beta$ 时，其解为
+\begin{equation}
+\theta=\theta_1 e^{-\beta t}\cos(\omega_1t+\alpha)
+\tag{3.4.6}
+\end{equation}
+此时摆轮作阻尼振动，振幅 $\theta_1 e^{-\beta t}$ 随时间 $t$ 衰减，振动频率为
 \[
-\ddot\theta+2\beta\dot\theta+\omega_0^2\theta=m\cos\omega t.
+\omega_1=\sqrt{\omega_0^2-\beta^2}
 \]
-其中，$\theta$ 为角位移，$\beta=b/(2J)$ 为阻尼系数，$\omega_0=\sqrt{k/J}$ 为固有圆频率，$\omega=2\pi/T$ 为外力圆频率，$m=M_0/J$。$J$ 为转动惯量，$k$ 为弹性力矩系数，$b$ 为阻尼力矩系数，$M_0$ 为外力矩幅值。
-稳定后，摆轮的振幅 $\theta_2$ 和相位差 $\varphi$ 满足
-\[
-\theta_2=\frac{m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}},\qquad
-\tan\varphi=-\frac{2\beta\omega}{\omega_0^2-\omega^2}.
-\]
-外力频率接近固有频率时，振幅明显增大，出现共振。摆轮的振动落后于外力，因此上式中的 $\varphi$ 为负；本报告的表格和相频图统一用它的大小 $\phi=|\varphi|$，即仪器的正读数。
+式中，$\omega_0$ 称为系统的固有频率，$\beta$ 为阻尼系数。当 $\beta$ 也为零时，摆轮以频率 $\omega_0$ 作简谐振动。
+
+当强迫外力不为零时，方程（3.4.5）为一阶常系数线性非齐次微分方程，其解为：
+\begin{equation}
+\theta=\theta_1 e^{-\beta t}\cos(\omega_1t+\alpha)+\theta_2\cos(\omega t+\varphi)
+\tag{3.4.7}
+\end{equation}
+式中，第一项表示阻尼振动，经过一段时间后衰减消失；第二项为稳态解。由式（3.4.7）可知振动系统在强迫力作用下，经过一段时间后即可达到稳定的振动状态。如果外力是按简谐振动规律变化，那么物体在稳定状态时的运动也是与强迫力同频率的简谐振动，具有稳定的振幅 $\theta_2$，并与强迫力之间有一个确定的相位差 $\varphi$。
+
+将 $\theta=\theta_2\cos(\omega t+\varphi)$ 带入方程（3.4.5），要使方程在任何时间 $t$ 恒成立，$\theta_2$ 与 $\varphi$ 需满足一定的条件，由此解得稳定受迫振动的幅频特性及相频特性表达式为
+\begin{equation}
+\theta_2=\frac{m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}}
+\tag{3.4.8}
+\end{equation}
+\begin{equation}
+\varphi=\tan^{-1}\!\left(\frac{-2\beta\omega}{\omega_0^2-\omega^2}\right)
+=\tan^{-1}\!\left(\frac{-\beta T_0^2T}{\pi(T^2-T_0^2)}\right)
+\tag{3.4.9}
+\end{equation}
+由（3.4.8）式和（3.4.9）式可以看出，在稳定状态时振幅和相位差保持恒定，振幅 $\theta_2$ 与相位差 $\varphi$ 的数值取决于 $\beta$、$\omega_0$、$m$ 和 $\omega$，也取决于 $J$、$b$、$k$、$M_0$ 和 $\omega$，而与振动的起始状态无关。当强迫力的频率 $\omega$ 与系统的固有频率 $\omega_0$ 相同时，相位差为 $-90^\circ$。
+
+由于受到阻尼力的作用，受迫振动的相位总是滞后于强迫力的相位，即（3.4.9）式中的 $\varphi$ 应为负值，而反正切函数的取值范围为 $(-90^\circ,\,90^\circ)$，当由（3.4.9）式计算得出的角度数值为正时，应减去 $180^\circ$ 将其换算成负值。
+
+图 3.4.1 和图 3.4.2 分别表示了在取不同的阻尼系数 $\beta$ 时，达到稳定状态的受迫振动的幅频特性曲线和相频特性曲线。
+% 按要求省略图 3.4.1、图 3.4.2，保留原文中的图号引用。
+
+由（3.4.8）式，将 $\theta_2$ 对 $\omega$ 求极值可得出：当强迫力的圆频率 $\omega=\sqrt{\omega_0^2-2\beta^2}$ 时，$\theta_2$ 有极大值，产生共振。若共振时圆频率和振幅分别用 $\omega_r$、$\theta_r$ 表示，则有
+\begin{equation}
+\omega_r=\sqrt{\omega_0^2-2\beta^2}
+\tag{3.4.10}
+\end{equation}
+\begin{equation}
+\theta_r=\frac{m}{2\beta\sqrt{\omega_0^2-\beta^2}}
+\tag{3.4.11}
+\end{equation}
+将（3.4.10）式代入（3.4.9）式，得到共振时的相位差为
+\begin{equation}
+\varphi_r=\tan^{-1}\!\left(\frac{-\sqrt{\omega_0^2-2\beta^2}}{\beta}\right)
+\tag{3.4.12}
+\end{equation}
+（3.4.10）、（3.4.11）、（3.4.12）式表明，阻尼系数 $\beta$ 越小，共振时的圆频率 $\omega_r$ 越接近系统的固有频率 $\omega_0$，振幅 $\theta_r$ 越大，共振时的相位差越接近 $-90^\circ$。
+
+由图 3.4.1 可见，$\beta$ 越小，$\theta_r$ 越大，$\theta_2$ 随 $\omega$ 偏离 $\omega_0$ 而衰减得越快，幅频特性曲线越陡峭。在峰值附近，$\omega\approx\omega_0$，$\omega_0^2-\omega^2\approx2\omega_0(\omega_0-\omega)$，而（3.4.8）式可近似表达为
+\begin{equation}
+\theta_2\approx\frac{m}{2\omega_0\sqrt{(\omega_0-\omega)^2+\beta^2}}
+\tag{3.4.13}
+\end{equation}
+由式（3.4.13）可见，当 $|\omega_0-\omega|=\beta$ 时，振幅降为峰值的 $\dfrac{1}{\sqrt{2}}$，根据幅频特性曲线的相应点可确定 $\beta$ 的值，即为作图法求得阻尼系数 $\beta$。对于由作图法和对数逐差法这两种方法得到的阻尼系数 $\beta$ 的值，可以进行比较和分析。
 \ReportSection{实验仪器}
 波尔共振仪、光电门、频闪相位读盘。
 \ReportSection{实验内容}
-1. 无电磁阻尼时，记录摆轮从约 $160^\circ$ 衰减至 $50^\circ$ 过程中的振幅及自由周期。\par
-2. 选择阻尼档位，记录十个连续振幅及十周期总时间，重复测量。\par
-3. 保持阻尼档位不变，调节外力周期；每次待振幅稳定后，记录周期、振幅和相位差。共振附近适当加密测量点。
+\ReportSubsection{5.1 自由振动——测量摆轮振幅 $\theta$ 与自由振动周期 $T_0$ 的对应关系}
+自由振动（自由震荡）实验的目的，是为了测量摆轮的振幅 $\theta$ 与自由振动周期 $T$ 的关系。
+
+用手转动摆轮 $160^\circ$ 左右，放开手后将仪器测量状态由“关”变为“开”，控制箱开始记录实验数据，振幅的有效数值范围为 $50^\circ\sim160^\circ$（振幅小于 $160^\circ$ 时测量开，小于 $50^\circ$ 时测量自动关闭）。测量显示“关”时，此时数据已保存并发送主机。进而可以通过“回查”功能查询数据记录，可得到振幅 $\theta$ 与周期 $T_0$ 的对应表，该对应表将在稍后的“幅频特性和相频特性”数据处理过程中使用。由于此时阻尼很小，测出的周期非常接近摆轮的固有周期 $T_0$。
+
+因电器控制箱只记录每次摆轮周期变化时所对应的振幅值，因此有时转盘转过光电门几次，测量才记录一次（其间能看到振幅变化）。当回查数据时，有的振幅数值被自动剔除了（当摆轮周期的第 5 位有效数字发生变化时，控制箱记录对应的振幅值。控制箱上只显示 4 位有效数字，故学生无法看到第 5 位有效数字的变化情况）。
+
+\ReportSubsection{5.2 阻尼振动——测定阻尼系数 $\beta$}
+选择阻尼电流的档位，三个档位中阻尼 1 最小，根据实验要求选择阻尼档。
+
+首先将角度盘指针 F 放在 $0^\circ$ 位置，用手转动摆轮 $160^\circ$ 左右，选取 $\theta_0$ 在 $150^\circ$ 左右，将测量由“关”变为“开”并记录数据，仪器记录 10 组数据后，测量自动关闭。此时，显示屏上的振幅值还在实时变化，但仪器已经停止记数。
+
+阻尼振动（阻尼震荡）的回查方法同自由振动类似，请参照上面操作。若改变阻尼档测量，重复阻尼 1 档的操作步骤即可。
+
+回查并读出摆轮作阻尼振动时的振幅数值 $\theta_1,\theta_2,\theta_3,\ldots,\theta_n$ 以及 $10T$，利用公式（3.4.14）
+\begin{equation}
+\ln\frac{\theta_i}{\theta_{i+n}}
+=\ln\frac{\theta_1 e^{-\beta t}}{\theta_1 e^{-\beta(t+n\bar T)}}
+=n\beta\bar T
+\tag{3.4.14}
+\end{equation}
+可以求出 $\beta$ 值，式中 $n$ 为阻尼振动的周期次数，$\theta_n$ 为第 $n$ 次振动时的振幅，$\bar T$ 为阻尼振动周期的平均值。此值可以测出 10 个摆轮振动周期值，然后取其平均值。
+
+由于测量中随着振幅取值范围的不同，阻尼系数值略有差异，一般建议测量 2--3 组数据，再求阻尼系数的平均值。
+
+\ReportSubsection{5.3 受迫振动——测定受迫振动的幅频特性和相频特性曲线}
+阻尼电流档不变。打开电机，就是将仪器选择在强迫振荡（受迫振动）工作状态，调节“强迫力周期”旋钮约在 4 到 6 左右，将闪光灯放在电机转盘下方，等待受迫振动稳定。可通过观察摆轮振幅是否不变以及摆轮周期与电机周期是否基本一致，然后打开闪光灯开关，在电机转盘上观察转动的挡光杆被闪光灯照亮的位置就是受迫振动与强迫力之间的相位差 $\varphi$。每一个稳定的受迫振动应测量其振幅 $\theta$、10 个周期 $10T$、相位差 $\varphi$ 三个物理量。最好第一个测量的稳定受迫振动相位差出现在 $30^\circ$ 或者 $150^\circ$ 左右。这样可以在测完第一个稳定的受迫振动后，让“强迫力周期”旋钮朝一个方向有序并逐个调节，测量完整的受迫振动曲线。实验时，应缓慢改变电机的转速，即改变强迫力周期，每调节改变强迫力周期后，都需等受迫振动稳定，才能测量受迫振动的振幅、周期与相应的相位差。在共振点（相位差约在 $90^\circ$）附近，调节更应缓慢，尽可能测到共振时振幅最大值位置。
+
+要求实验测量的相位差取值范围一般在 $30^\circ\sim150^\circ$ 之间，测量数据应在 15 组以上。
+
+\ReportSubsection{注意事项}
+1. 在作受迫振动实验时，须待电机与摆轮的周期相同（差值一般不大于 $0.003\,\mathrm{s}$），即系统稳定后，方可记录实验数据。每当改变了强迫力矩的周期值时，都需要等待系统重新稳定后，再进行数据测量。\par
+2. 因为闪光灯的电流脉冲及强光会干扰光电门采集数据，因此须待一次测量完成，显示测量状态为“关”后，才可使用闪光灯读取相位差。
+
 \clearpage\ReportSection{数据记录与处理}
-\ReportSubsection{自由振动}
-下表给出振幅与自由周期 $T_0$ 的对应关系。计算某一振幅下的理论相位时，取该振幅对应的 $T_0$；没有相同振幅时，用相邻两点内插。
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|c|c|c|}\hline
-序号 & 振幅/° & $T_0$/s\\\hline
-1 & \Field[10mm]{free_angle_01} & \Field[10mm]{free_period_01}\\\hline
-2 & \Field[10mm]{free_angle_02} & \Field[10mm]{free_period_02}\\\hline
-3 & \Field[10mm]{free_angle_03} & \Field[10mm]{free_period_03}\\\hline
-4 & \Field[10mm]{free_angle_04} & \Field[10mm]{free_period_04}\\\hline
-5 & \Field[10mm]{free_angle_05} & \Field[10mm]{free_period_05}\\\hline
-6 & \Field[10mm]{free_angle_06} & \Field[10mm]{free_period_06}\\\hline
-7 & \Field[10mm]{free_angle_07} & \Field[10mm]{free_period_07}\\\hline
-8 & \Field[10mm]{free_angle_08} & \Field[10mm]{free_period_08}\\\hline
-9 & \Field[10mm]{free_angle_09} & \Field[10mm]{free_period_09}\\\hline
-10 & \Field[10mm]{free_angle_10} & \Field[10mm]{free_period_10}\\\hline
-\end{tabular}
-\end{center}
-\ReportSubsection{阻尼系数}
-阻尼档位：$\Field{damping_setting}$。阻尼振动单周期 $T_d=\Field{damped_period_s}$ s，由十周期总时间除以十得到。相隔五个周期的振幅按逐差法计算：
-\[
-\beta=\frac{1}{5T_d}\,\overline{\ln\frac{\theta_i}{\theta_{i+5}}},\qquad i=1,2,\ldots,5.
-\]
-先求五个振幅比的自然对数，再取平均，最后除以 $5T_d$。多次测量分别计算后取平均。
-\begin{center}\small\renewcommand{\arraystretch}{1.35}
-\begin{tabular}{|c|c|c|c|c|}\hline
-次数 & $\theta_i$/° & 次数 & $\theta_{i+5}$/° & $\ln(\theta_i/\theta_{i+5})$\\\hline
-1 & \Field[10mm]{damped_peak_01} & 6 & \Field[10mm]{damped_peak_06} & \Field[10mm]{damped_log_ratio_01}\\\hline
-2 & \Field[10mm]{damped_peak_02} & 7 & \Field[10mm]{damped_peak_07} & \Field[10mm]{damped_log_ratio_02}\\\hline
-3 & \Field[10mm]{damped_peak_03} & 8 & \Field[10mm]{damped_peak_08} & \Field[10mm]{damped_log_ratio_03}\\\hline
-4 & \Field[10mm]{damped_peak_04} & 9 & \Field[10mm]{damped_peak_09} & \Field[10mm]{damped_log_ratio_04}\\\hline
-5 & \Field[10mm]{damped_peak_05} & 10 & \Field[10mm]{damped_peak_10} & \Field[10mm]{damped_log_ratio_05}\\\hline
-\end{tabular}
-\end{center}
-\clearpage\ReportSubsection{幅频、相频特性}
-$T$ 为外力周期，$\theta$ 为稳定振幅。最大振幅记为 $\theta_r$，对应周期记为 $T_r$；若最大振幅有多个点，取这些点周期的平均值。本次 $\theta_r=\Field{peak_amplitude_deg}$°，$T_r=\Field{resonance_period_s}$ s。
-\[
-\frac{\omega}{\omega_r}=\frac{T_r}{T},\qquad
-\frac{\theta^2}{\theta_r^2}=\left(\frac{\theta}{\theta_r}\right)^2.
-\]
-相位计算使用该振幅对应的自由周期 $T_0$ 和测得的 $\beta$：
-\[
-\varphi=\tan^{-1}\!\left[\frac{-\beta T_0^2T}{\pi(T^2-T_0^2)}\right].
-\]
-按角度计算；若反正切结果为正，则减去 $180^\circ$；$T=T_0$ 时取 $-90^\circ$。下表“计算值”取其绝对值，与仪器正读数比较。若振幅超出自由振动表范围，标为“需补测”。
+\ReportSubsection{7.1 摆轮振幅 $\theta$ 与近似自由振动周期 $T$ 的关系（存在空气阻尼力矩的影响）}
+表 3.4.1\quad 近似自由振动的振幅 $\theta$ 与周期 $T$ 的关系
+% BEGIN FREE_TABLE
 \begin{center}\small\renewcommand{\arraystretch}{1.35}
 \begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{|c|c|c|c|c|c|}\hline
-强迫力矩周期 (s) & \shortstack{相位差 $\phi$ ($^\circ$)\\读取值} & \shortstack{$\theta$ ($^\circ$)\\测量值} & $\omega/\omega_r$ & $\theta^2/\theta_r^2$ & \shortstack{相位差 $\phi$ ($^\circ$)\\计算值}\\\hline
-\Field[10mm]{table_drive_period_01} & \Field[10mm]{table_phase_reading_01} & \Field[10mm]{amplitude_01} & \Field[10mm]{table_frequency_ratio_01} & \Field[10mm]{table_amplitude_ratio_01} & \Field[10mm]{table_phase_calculated_01}\\\hline
-\Field[10mm]{table_drive_period_02} & \Field[10mm]{table_phase_reading_02} & \Field[10mm]{amplitude_02} & \Field[10mm]{table_frequency_ratio_02} & \Field[10mm]{table_amplitude_ratio_02} & \Field[10mm]{table_phase_calculated_02}\\\hline
-\Field[10mm]{table_drive_period_03} & \Field[10mm]{table_phase_reading_03} & \Field[10mm]{amplitude_03} & \Field[10mm]{table_frequency_ratio_03} & \Field[10mm]{table_amplitude_ratio_03} & \Field[10mm]{table_phase_calculated_03}\\\hline
-\Field[10mm]{table_drive_period_04} & \Field[10mm]{table_phase_reading_04} & \Field[10mm]{amplitude_04} & \Field[10mm]{table_frequency_ratio_04} & \Field[10mm]{table_amplitude_ratio_04} & \Field[10mm]{table_phase_calculated_04}\\\hline
-\Field[10mm]{table_drive_period_05} & \Field[10mm]{table_phase_reading_05} & \Field[10mm]{amplitude_05} & \Field[10mm]{table_frequency_ratio_05} & \Field[10mm]{table_amplitude_ratio_05} & \Field[10mm]{table_phase_calculated_05}\\\hline
-\Field[10mm]{table_drive_period_06} & \Field[10mm]{table_phase_reading_06} & \Field[10mm]{amplitude_06} & \Field[10mm]{table_frequency_ratio_06} & \Field[10mm]{table_amplitude_ratio_06} & \Field[10mm]{table_phase_calculated_06}\\\hline
-\Field[10mm]{table_drive_period_07} & \Field[10mm]{table_phase_reading_07} & \Field[10mm]{amplitude_07} & \Field[10mm]{table_frequency_ratio_07} & \Field[10mm]{table_amplitude_ratio_07} & \Field[10mm]{table_phase_calculated_07}\\\hline
-\Field[10mm]{table_drive_period_08} & \Field[10mm]{table_phase_reading_08} & \Field[10mm]{amplitude_08} & \Field[10mm]{table_frequency_ratio_08} & \Field[10mm]{table_amplitude_ratio_08} & \Field[10mm]{table_phase_calculated_08}\\\hline
-\Field[10mm]{table_drive_period_09} & \Field[10mm]{table_phase_reading_09} & \Field[10mm]{amplitude_09} & \Field[10mm]{table_frequency_ratio_09} & \Field[10mm]{table_amplitude_ratio_09} & \Field[10mm]{table_phase_calculated_09}\\\hline
-\Field[10mm]{table_drive_period_10} & \Field[10mm]{table_phase_reading_10} & \Field[10mm]{amplitude_10} & \Field[10mm]{table_frequency_ratio_10} & \Field[10mm]{table_amplitude_ratio_10} & \Field[10mm]{table_phase_calculated_10}\\\hline
-\Field[10mm]{table_drive_period_11} & \Field[10mm]{table_phase_reading_11} & \Field[10mm]{amplitude_11} & \Field[10mm]{table_frequency_ratio_11} & \Field[10mm]{table_amplitude_ratio_11} & \Field[10mm]{table_phase_calculated_11}\\\hline
-\Field[10mm]{table_drive_period_12} & \Field[10mm]{table_phase_reading_12} & \Field[10mm]{amplitude_12} & \Field[10mm]{table_frequency_ratio_12} & \Field[10mm]{table_amplitude_ratio_12} & \Field[10mm]{table_phase_calculated_12}\\\hline
-\Field[10mm]{table_drive_period_13} & \Field[10mm]{table_phase_reading_13} & \Field[10mm]{amplitude_13} & \Field[10mm]{table_frequency_ratio_13} & \Field[10mm]{table_amplitude_ratio_13} & \Field[10mm]{table_phase_calculated_13}\\\hline
-\Field[10mm]{table_drive_period_14} & \Field[10mm]{table_phase_reading_14} & \Field[10mm]{amplitude_14} & \Field[10mm]{table_frequency_ratio_14} & \Field[10mm]{table_amplitude_ratio_14} & \Field[10mm]{table_phase_calculated_14}\\\hline
-\Field[10mm]{table_drive_period_15} & \Field[10mm]{table_phase_reading_15} & \Field[10mm]{amplitude_15} & \Field[10mm]{table_frequency_ratio_15} & \Field[10mm]{table_amplitude_ratio_15} & \Field[10mm]{table_phase_calculated_15}\\\hline
-\end{tabular}
-\end{adjustbox}
-\end{center}
-\par\clearpage
-\ReportSection{实验曲线}
-两图均以 $\omega/\omega_r$ 为横轴，相位差取正值，与主要结果表一致。
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}\hline
+振幅 $\theta$/° & \Field[8mm]{free_angle_01} & \Field[8mm]{free_angle_02} & \Field[8mm]{free_angle_03} & \Field[8mm]{free_angle_04} & \Field[8mm]{free_angle_05} & \Field[8mm]{free_angle_06} & \Field[8mm]{free_angle_07} & \Field[8mm]{free_angle_08} & \Field[8mm]{free_angle_09} & \Field[8mm]{free_angle_10}\\\hline
+周期 $T_0$/s & \Field[8mm]{free_period_01} & \Field[8mm]{free_period_02} & \Field[8mm]{free_period_03} & \Field[8mm]{free_period_04} & \Field[8mm]{free_period_05} & \Field[8mm]{free_period_06} & \Field[8mm]{free_period_07} & \Field[8mm]{free_period_08} & \Field[8mm]{free_period_09} & \Field[8mm]{free_period_10}\\\hline
+\end{tabular}\end{adjustbox}\end{center}
+% END FREE_TABLE
+注意：\par
+（1）实验中，由于空气阻尼力矩的作用，致使摆轮振幅值缓慢衰减，测量范围为振幅 $160^\circ$ 衰减至 $50^\circ$，将此小阻尼振动近似为自由振动，振动周期 $T$ 近似于固有周期 $T_0$。可依据此表格中的数据，计算空气阻尼力矩的阻尼系数，并与电磁阻尼力矩的实验结果相比较。\par
+（2）在理想条件下，假定自由振动中回复力矩与角位移成正比，即振动周期（频率）与振幅无关，且弹簧的弹性系数在弹性限度范围内为常数。实际由于各种因素的影响，蜗卷弹簧的弹性力矩系数 $k$ 随角度不同而有微小变化，导致不同振幅取值状态下相应的周期值略有变化（相对误差在 $3\%$ 以内）。
+
+\Needspace{17\baselineskip}
+\ReportSubsection{7.2 阻尼系数 $\beta$ 的计算}
+表 3.4.2\quad 振幅衰减规律的对数逐差法计算表
+% BEGIN DAMPED_TABLE
+\Needspace{13\baselineskip}
+第 1 组\quad 阻尼档位：\Field{damping_setting}
+\begin{center}\small\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{|c|c|c|c|c|}\hline
+次数 & 振幅 $\theta_i$/° & 次数 & 振幅 $\theta_{i+5}$/° & $\ln(\theta_i/\theta_{i+5})$\\\hline
+1 & \Field[8mm]{damped_peak_01} & 6 & \Field[8mm]{damped_peak_06} & \Field[8mm]{damped_log_ratio_01}\\\hline
+2 & \Field[8mm]{damped_peak_02} & 7 & \Field[8mm]{damped_peak_07} & \Field[8mm]{damped_log_ratio_02}\\\hline
+3 & \Field[8mm]{damped_peak_03} & 8 & \Field[8mm]{damped_peak_08} & \Field[8mm]{damped_log_ratio_03}\\\hline
+4 & \Field[8mm]{damped_peak_04} & 9 & \Field[8mm]{damped_peak_09} & \Field[8mm]{damped_log_ratio_04}\\\hline
+5 & \Field[8mm]{damped_peak_05} & 10 & \Field[8mm]{damped_peak_10} & \Field[8mm]{damped_log_ratio_05}\\\hline
+\multicolumn{4}{|c|}{$\overline{\ln(\theta_i/\theta_{i+5})}$} & \Field[8mm]{damped_log_mean_01}\\\hline
+\end{tabular}\end{center}
+$10T=\Field[8mm]{damped_time_10_01}\,\mathrm{s}$，$\bar T=\Field[8mm]{damped_period_01}\,\mathrm{s}$，$\beta=\Field[8mm]{damped_beta_01}\,\mathrm{s^{-1}}$。\par
+% END DAMPED_TABLE
+表 3.4.2 中，$i$ 为阻尼振动的周期次数，$\theta_i$ 为第 $i$ 次振动时的振幅。利用（3.4.14）式对所测数据（表 3.4.2）按逐差法处理，求出 $\beta$ 值。
+\begin{equation}
+\beta=\frac{1}{5\bar T}\,\overline{\ln\frac{\theta_i}{\theta_{i+5}}},\qquad i=1,2,\ldots,5
+\tag{3.4.15}
+\end{equation}
+先求五个振幅比的自然对数，再取平均，最后除以 $5\bar T$；各组分别计算后取平均。本次逐差法结果为 $\beta=\MathField{damping_beta_s_inv}\,\mathrm{s^{-1}}$，统计标准不确定度为 $\MathField{damping_beta_u_s_inv}\,\mathrm{s^{-1}}$。\Field{beta_uncertainty_note}
+
+\clearpage\ReportSubsection{7.3 幅频特性和相频特性测量}
+\textbf{（1）实验数据记录}\par
+将记录的实验数据填入表 3.4.3。
+
+表 3.4.3\quad 幅频特性和相频特性测量数据记录表\par
+阻尼档位：\Field{damping_setting}
+% BEGIN FORCED_TABLE
+{\small\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|*{6}{>{\centering\arraybackslash}p{2.1cm}|}}\hline
+\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$ & \shortstack{理论相位\\$\varphi_m$/°}\\\hline
+\endfirsthead\hline
+\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$ & \shortstack{理论相位\\$\varphi_m$/°}\\\hline
+\endhead
+\Field[8mm]{table_drive_time_10_01} & \Field[8mm]{table_signed_phase_01} & \Field[8mm]{amplitude_01} & \Field[8mm]{table_frequency_ratio_01} & \Field[8mm]{table_amplitude_ratio_01} & \Field[8mm]{table_signed_theory_01}\\\hline
+\Field[8mm]{table_drive_time_10_02} & \Field[8mm]{table_signed_phase_02} & \Field[8mm]{amplitude_02} & \Field[8mm]{table_frequency_ratio_02} & \Field[8mm]{table_amplitude_ratio_02} & \Field[8mm]{table_signed_theory_02}\\\hline
+\Field[8mm]{table_drive_time_10_03} & \Field[8mm]{table_signed_phase_03} & \Field[8mm]{amplitude_03} & \Field[8mm]{table_frequency_ratio_03} & \Field[8mm]{table_amplitude_ratio_03} & \Field[8mm]{table_signed_theory_03}\\\hline
+\Field[8mm]{table_drive_time_10_04} & \Field[8mm]{table_signed_phase_04} & \Field[8mm]{amplitude_04} & \Field[8mm]{table_frequency_ratio_04} & \Field[8mm]{table_amplitude_ratio_04} & \Field[8mm]{table_signed_theory_04}\\\hline
+\Field[8mm]{table_drive_time_10_05} & \Field[8mm]{table_signed_phase_05} & \Field[8mm]{amplitude_05} & \Field[8mm]{table_frequency_ratio_05} & \Field[8mm]{table_amplitude_ratio_05} & \Field[8mm]{table_signed_theory_05}\\\hline
+\Field[8mm]{table_drive_time_10_06} & \Field[8mm]{table_signed_phase_06} & \Field[8mm]{amplitude_06} & \Field[8mm]{table_frequency_ratio_06} & \Field[8mm]{table_amplitude_ratio_06} & \Field[8mm]{table_signed_theory_06}\\\hline
+\Field[8mm]{table_drive_time_10_07} & \Field[8mm]{table_signed_phase_07} & \Field[8mm]{amplitude_07} & \Field[8mm]{table_frequency_ratio_07} & \Field[8mm]{table_amplitude_ratio_07} & \Field[8mm]{table_signed_theory_07}\\\hline
+\Field[8mm]{table_drive_time_10_08} & \Field[8mm]{table_signed_phase_08} & \Field[8mm]{amplitude_08} & \Field[8mm]{table_frequency_ratio_08} & \Field[8mm]{table_amplitude_ratio_08} & \Field[8mm]{table_signed_theory_08}\\\hline
+\Field[8mm]{table_drive_time_10_09} & \Field[8mm]{table_signed_phase_09} & \Field[8mm]{amplitude_09} & \Field[8mm]{table_frequency_ratio_09} & \Field[8mm]{table_amplitude_ratio_09} & \Field[8mm]{table_signed_theory_09}\\\hline
+\Field[8mm]{table_drive_time_10_10} & \Field[8mm]{table_signed_phase_10} & \Field[8mm]{amplitude_10} & \Field[8mm]{table_frequency_ratio_10} & \Field[8mm]{table_amplitude_ratio_10} & \Field[8mm]{table_signed_theory_10}\\\hline
+\Field[8mm]{table_drive_time_10_11} & \Field[8mm]{table_signed_phase_11} & \Field[8mm]{amplitude_11} & \Field[8mm]{table_frequency_ratio_11} & \Field[8mm]{table_amplitude_ratio_11} & \Field[8mm]{table_signed_theory_11}\\\hline
+\Field[8mm]{table_drive_time_10_12} & \Field[8mm]{table_signed_phase_12} & \Field[8mm]{amplitude_12} & \Field[8mm]{table_frequency_ratio_12} & \Field[8mm]{table_amplitude_ratio_12} & \Field[8mm]{table_signed_theory_12}\\\hline
+\Field[8mm]{table_drive_time_10_13} & \Field[8mm]{table_signed_phase_13} & \Field[8mm]{amplitude_13} & \Field[8mm]{table_frequency_ratio_13} & \Field[8mm]{table_amplitude_ratio_13} & \Field[8mm]{table_signed_theory_13}\\\hline
+\Field[8mm]{table_drive_time_10_14} & \Field[8mm]{table_signed_phase_14} & \Field[8mm]{amplitude_14} & \Field[8mm]{table_frequency_ratio_14} & \Field[8mm]{table_amplitude_ratio_14} & \Field[8mm]{table_signed_theory_14}\\\hline
+\Field[8mm]{table_drive_time_10_15} & \Field[8mm]{table_signed_phase_15} & \Field[8mm]{amplitude_15} & \Field[8mm]{table_frequency_ratio_15} & \Field[8mm]{table_amplitude_ratio_15} & \Field[8mm]{table_signed_theory_15}\\\hline
+\end{longtable}}
+% END FORCED_TABLE
+注：$\theta_r$ 为共振时测得的振幅值。取实测最大振幅 $\theta_r=\Field{peak_amplitude_deg}$°，对应周期 $T_r=\Field{resonance_period_s}\,\mathrm{s}$；最大振幅有多个点时，取对应周期的平均值。表中 $10T$ 为十周期总时间，计算时取 $T=(10T)/10$。
+
+理论相位按各点振幅对应的自由周期 $T_0$ 计算：
+\[
+\varphi_m=\tan^{-1}\!\left[\frac{-\beta T_0^2T}{\pi(T^2-T_0^2)}\right].
+\]
+受迫振动相位滞后于强迫力，相位差取负值；仪器的正读数 $\alpha$ 换算为 $\varphi=-\alpha$。反正切结果为正时减去 $180^\circ$，$T=T_0$ 时取 $-90^\circ$。\Field{phase_coverage_note}
+
+\textbf{（2）绘制幅频特性曲线与相频特性曲线}\par
+以 $\omega/\omega_r$ 为横轴，$(\theta/\theta_r)^2$（或 $\theta$）为纵轴，作出幅频特性曲线；以 $\omega/\omega_r$ 为横轴，相位差 $\varphi$ 为纵轴，作相频特性曲线。
+
+\Needspace{10\baselineskip}
+\textbf{（3）作图法求阻尼系数}\par
+在阻尼系数较小（满足 $\beta^2\ll\omega_0^2$）和共振位置附近（$\omega\approx\omega_0$），由于 $\omega_0+\omega\approx2\omega_0$，从（3.4.8）式和（3.4.11）式可得出
+\[
+\left(\frac{\theta}{\theta_r}\right)^2
+\approx\frac{4\beta^2\omega_0^2}{4\omega_0^2(\omega-\omega_0)^2+4\beta^2\omega_0^2}
+=\frac{\beta^2}{(\omega-\omega_0)^2+\beta^2}.
+\]
+据此可由幅频特性曲线求 $\beta$ 值：当 $\theta=\dfrac{1}{\sqrt{2}}\theta_r$，即 $\left(\dfrac{\theta}{\theta_r}\right)^2=\dfrac{1}{2}$ 时，由上式可得
+\[
+\omega-\omega_0=\pm\beta.
+\]
+此 $\omega$ 对应于曲线上 $\left(\dfrac{\theta}{\theta_r}\right)^2=\dfrac{1}{2}$ 处两个值 $\omega_1$、$\omega_2$，由此得出
+\[
+\beta_{\text{图}}=\frac{\omega_2-\omega_1}{2}.
+\]
+将此法与对数逐差法求得到的 $\beta$ 值作比较并讨论。
+
+本次 $\omega_1=\Field{half_power_omega_1}\,\mathrm{rad/s}$，$\omega_2=\Field{half_power_omega_2}\,\mathrm{rad/s}$，$\beta_{\text{图}}=\Field{graph_beta_s_inv}\,\mathrm{s^{-1}}$。以逐差法结果为参照，两法相对差异为 $\Field{graph_beta_difference_percent}\%$。\Field{graph_beta_note}
+
+\Needspace{17cm}\ReportSection{实验曲线}
+幅频曲线的虚线为半峰高 $(\theta/\theta_r)^2=1/2$。相频曲线采用滞后相位的负值，与表 3.4.3 一致；两图均按频率从小到大连接测量点。
 \begin{center}\begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=6.2cm,xlabel={$\omega/\omega_r$},ylabel={$(\theta/\theta_r)^2$},grid=both]
+\begin{axis}[width=.88\textwidth,height=7cm,xlabel={$\omega/\omega_r$},ylabel={$(\theta/\theta_r)^2$},grid=both,legend pos=north east]
 \addplot+[mark=*,blue] coordinates {\PlotCoordinates{normalized_amplitude_graph_points}};
+\addlegendentry{测量值}
+\addplot[gray,dashed] coordinates {\PlotCoordinates{half_power_line_points}};\addlegendentry{半峰高}
 \end{axis}\end{tikzpicture}\par
 \begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=6.2cm,xlabel={$\omega/\omega_r$},ylabel={相位差 $\phi$/$^\circ$},grid=both]
-\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{phase_magnitude_graph_points}};
+\begin{axis}[width=.88\textwidth,height=7cm,xlabel={$\omega/\omega_r$},ylabel={相位差 $\varphi$/$^\circ$},grid=both,ymin=-180,ymax=0]
+\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{phase_graph_points}};
 \end{axis}\end{tikzpicture}\end{center}
-\ReportSection{讨论与分析}
-自由周期随振幅略有变化，计算理论相位时应按振幅查表，避免统一取平均周期造成误差。相位读数还受稳态等待时间、读盘零点和读数判断影响。共振附近变化较快，测量点过少容易错过最大振幅。
+
+\clearpage\ReportSection{讨论与分析}
+\ReportSubsection{系统误差分析}
+因为本仪器中采用石英晶体作为计时部件，所以测量周期（圆频率）的误差可以忽略不计，误差主要来自阻尼系数 $\beta$ 的测定和无阻尼振动时系统的固有振动频率 $\omega_0$ 的确定。且后者对实验结果影响较大。
+
+在前面的原理部分中我们认为弹簧的弹性系数 $k$ 为常数，它与扭转的角度无关。实际上由于制造工艺及材料性能的影响，$k$ 值随着角度的改变而略有微小的变化（$3\%$ 左右），因而造成在不同振幅时系统的固有频率 $\omega_0$ 有变化。如果取 $\omega_0$ 的平均值，则将在共振点附近使相位差的理论值与实验值相差很大。为此可测出振幅与固有频率 $\omega_0$ 的对应数值，在公式
+\[
+\varphi=\tan^{-1}\!\left[\frac{-\beta T_0^2T}{\pi(T^2-T_0^2)}\right]
+\]
+中 $T_0$ 采用对应于某个振幅的数值代入（可查看自由振动实验中作出 $\theta$ 与 $T_0$ 的对应表，找出该振幅在自由振动实验时对应的摆轮固有周期。若此 $\theta$ 值在表中查不到，则可根据对应表中摆轮的运动趋势，用内查法，估计一个 $T_0$ 值），这样可使系统误差明显减小。振幅与共振频率 $\omega_0$ 相对应值可按照“实验内容与步骤”2 的方法来确定。
+
 \ReportSection{实验结论}
 逐差法测得阻尼系数 $\beta=\MathField{damping_beta_s_inv}\,\mathrm{s^{-1}}$。最大振幅为 $\MathField{peak_amplitude_deg}^{\circ}$，对应外力周期约 $T_r=\MathField{resonance_period_s}\,\mathrm{s}$。幅频、相频曲线反映了摆轮在共振附近振幅增大、相位差变化较快的特点。
 

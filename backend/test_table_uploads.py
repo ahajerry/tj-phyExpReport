@@ -38,6 +38,11 @@ def resonance_export(changes=None):
                         "C43": "10T", "D62": "强迫力矩周期(s)", "H62": "相位差φ",
                         "B4": "测试学生", "F3": "1234567", "F4": "2024-08-06 17:12:51"}.items():
         ws[cell] = value
+    for cell, value in {"A3": "班号:", "E3": "学号:", "A4": "姓名:", "E4": "时间:",
+                        "A8": "振幅θ", "B8": "周期T(s)", "D8": "振幅θ", "E8": "周期T(s)",
+                        "G8": "振幅θ", "H8": "周期T(s)", "D43": "n", "F43": "振幅θn",
+                        "H43": "振幅θ(n+5)", "A62": "序号", "F62": "振幅θ"}.items():
+        ws[cell] = value
     for row in range(9, 39):
         for col in "ADG":
             ws[f"{col}{row}"] = 160 - row
@@ -164,10 +169,11 @@ class TableUploadTests(unittest.TestCase):
             filled = fill_report({key: value for key, value in fields.items() if key in allowed},
                                  Path(directory) / "report.tex", template,
                                  source_tables=parsed["sourceTables"]).read_text(encoding="utf-8")
-        for marker in ("free_period_90", "damped_peak_30", "damped_period_03", "table_drive_period_20", "table_frequency_ratio_20", "table_phase_calculated_20"):
+        for marker in ("free_period_90", "damped_peak_30", "damped_period_03", "table_drive_time_10_20", "table_frequency_ratio_20", "table_signed_theory_20"):
             self.assertIn(r"\SetField{" + marker + "}", filled)
-        self.assertEqual(filled.count(r"\begin{longtable}"), 6)
-        self.assertNotIn(r"\PlotCoordinates", filled)
+        # One expandable forced-response table and three appended source tables.
+        self.assertEqual(filled.count(r"\begin{longtable}"), 4)
+        self.assertNotRegex(filled, r"\\PlotCoordinates\{")
 
     def test_resonance_user_sample(self):
         path = sample("BEGZ000001*.xlsx")

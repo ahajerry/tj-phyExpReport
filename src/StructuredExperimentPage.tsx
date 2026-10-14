@@ -38,7 +38,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   function resizeReadings(section: "free" | "damped" | "forced", count: number) {
     const keys = section === "free" ? ["free_angle", "free_period"]
-      : section === "damped" ? ["damped_peak", "damped_time_10"] : ["drive_period", "amplitude", "phase"]
+      : section === "damped" ? ["damped_peak", "damped_time_10"] : ["drive_time_10", "amplitude", "phase"]
     setData((current) => ({ ...current, ...Object.fromEntries(keys.map((key) => [key,
       Array.from({ length: key === "damped_peak" ? count * 10 : count }, (_, index) => current[key][index] ?? ""),
     ])) }))
@@ -46,14 +46,14 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   function validateCounts(readings: Record<string, string[]>) {
     if (!isForcedVibration) return
-    for (const [keys, min, max] of [
-      [["free_angle", "free_period"], 2, 300],
-      [["damped_time_10"], 1, 10],
-      [["drive_period", "amplitude", "phase"], 3, 100],
-    ] as [string[], number, number][]) {
+    for (const [keys, min] of [
+      [["free_angle", "free_period"], 2],
+      [["damped_time_10"], 1],
+      [["drive_time_10", "amplitude", "phase"], 3],
+    ] as [string[], number][]) {
       const count = readings[keys[0]]?.length ?? 0
-      if (count < min || count > max || keys.some((key) => readings[key]?.length !== count)) {
-        throw new Error(`${keys.map((key) => experiment.measurements.find((item) => item.id === key)?.label).join("、")}需填写数量一致的 ${min} 至 ${max} 组读数`)
+      if (count < min || keys.some((key) => readings[key]?.length !== count)) {
+        throw new Error(`${keys.map((key) => experiment.measurements.find((item) => item.id === key)?.label).join("、")}需填写数量一致的 至少 ${min} 组读数`)
       }
     }
     if (readings.damped_peak?.length !== readings.damped_time_10.length * 10) throw new Error("每次阻尼测量需要 10 个峰值和一次计时")
@@ -204,7 +204,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
       </header>
       {tableType && <section className="rounded-xl border bg-white p-4">
         <h2 className="mb-2 font-semibold">从 {tableType.toUpperCase()} 填入数据（选填）</h2>
-        <p className="mb-3 text-sm text-muted-foreground">{isForcedVibration ? "选择与提供的波尔共振 XLSX 相同版式的文件，将自动填入下方全部测量数据和阻尼档位。" : experiment.id === "millikan" ? "选择油滴仪 CSV 原始记录，每颗油滴连续 4 行，共 3 至 8 颗。支持 UTF-8 和 GB18030，逐行保留电压、时间和仪器电荷量。" : "选择与提供的扭摆实验 XLSX 相同版式的文件，将自动填入质量、三次尺寸和计时、两个滑块质量及两滑块自身惯量。"}导入会替换当前读数；封面信息仅补充空白项。文件上限 2 MiB。</p>
+        <p className="mb-3 text-sm text-muted-foreground">{isForcedVibration ? "按表头识别波尔共振 XLSX 的测量数据和阻尼档位，各表行数可自行增减；表 4 的计算结果不会重复导入。" : experiment.id === "millikan" ? "选择油滴仪 CSV 原始记录，每颗油滴连续 4 行，共 3 至 8 颗。支持 UTF-8 和 GB18030，逐行保留电压、时间和仪器电荷量。" : "选择与提供的扭摆实验 XLSX 相同版式的文件，将自动填入质量、三次尺寸和计时、两个滑块质量及两滑块自身惯量。"}导入会替换当前读数；封面信息仅补充空白项。文件上限 2 MiB。</p>
         <Input type="file" accept={tableType === "csv" ? ".csv,text/csv" : ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
           aria-label={`上传${tableType.toUpperCase()}原始数据表`} disabled={importingTable || generating} onChange={(event) => {
             const file = event.currentTarget.files?.[0]
@@ -247,7 +247,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         </div>
       </section>}
       {isForcedVibration && <ForcedVibrationReadings readingCell={readingCell} dampingSetting={parameters.damping_setting}
-        freeCount={data.free_angle.length} trialCount={data.damped_time_10.length} forcedCount={data.drive_period.length}
+        data={data}
+        freeCount={data.free_angle.length} trialCount={data.damped_time_10.length} forcedCount={data.drive_time_10.length}
         onResize={resizeReadings}
         onDampingSettingChange={(value) => setParameters((current) => ({ ...current, damping_setting: value }))}
         disabled={importingTable || generating} />}

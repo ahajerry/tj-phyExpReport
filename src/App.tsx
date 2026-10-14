@@ -276,7 +276,7 @@ function AppLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <header className="flex h-16 shrink-0 items-center gap-3 border-b px-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-4" />
@@ -346,16 +346,24 @@ function HomePage() {
           本网站使用cookie确认身份，无需注册账户，
           使用同一设备的同一浏览器时可查看原有数据和报告排队进度。<br />
           目前使用的服务器为1M带宽，可能无法支撑大量访问。<br />
-          当前版本：v261012（测试）<br />
+          当前版本：v261013（测试）<br />
           测试期间数据和图片可能保存到服务器便于调试和后续开发。<br />
           本项目预计上传github开源。
         </p>
         <p className="mb-4 text-sm text-muted-foreground">
           ChatGPT负责了一半以上的开发工作。<br />
           欢迎加入QQ群探讨大雾实验的奥秘:1127752706<br />
-          感谢支持本项目的所有人！
         </p>
         <img src="/qq_group.jpg" alt="qq群" className="w-64 h-80 rounded-lg object-cover" />
+      </section>
+      <section className="rounded-xl border bg-white p-5">
+        <h2 className="mb-2 text-lg font-semibold">
+          致谢
+        </h2>
+        <p className="mb-4 text-sm text-muted-foreground">
+          群管理员：阿！尔！及！利！亚！,怀梦,机械 金龙鱼,PPh3_O,Herbst,月,yiming564,nor
+          赞助者：H*t,l*n,*🤯,*韶,*鱼,大*n,*泡,*子,*晴
+        </p>
       </section>
     </div>
   )

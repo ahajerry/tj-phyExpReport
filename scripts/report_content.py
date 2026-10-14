@@ -115,28 +115,6 @@ u_{I_j}^2={}&\left(\frac{2I'_1T_ju_{T_j}}{\Delta}\right)^2+
 为何先施加预载？使钢丝和装置进入稳定受力状态。为何沿多个方向测直径？金属丝可能略呈椭圆，多方位测量有助于估计截面尺寸。""",
         "实验结论": r"""通过光杠杆和五级逐差法得到 $E=(\MathField{young_modulus_pa}\pm\MathField{young_uncertainty_pa})\,\mathrm{Pa}$，与输入参考值的百分差为 $\Field{young_error_percent}\%$。应结合加载卸载一致性与直径测量评价结果。""",
     },
-    "用波尔共振仪研究物体受迫振动": {
-        "实验目的": r"""1. 测量摆轮的自由周期和阻尼系数。\par
-2. 研究受迫振动的幅频、相频特性，观察共振现象。\par
-3. 学习用频闪法测量相位差。""",
-        "实验原理": r"""摆轮在弹簧恢复力、阻尼力和周期外力作用下做受迫振动，其运动方程为
-\[
-\ddot\theta+2\beta\dot\theta+\omega_0^2\theta=m\cos\omega t.
-\]
-其中，$\theta$ 为角位移，$\beta=b/(2J)$ 为阻尼系数，$\omega_0=\sqrt{k/J}$ 为固有圆频率，$\omega=2\pi/T$ 为外力圆频率，$m=M_0/J$。$J$ 为转动惯量，$k$ 为弹性力矩系数，$b$ 为阻尼力矩系数，$M_0$ 为外力矩幅值。
-稳定后，摆轮的振幅 $\theta_2$ 和相位差 $\varphi$ 满足
-\[
-\theta_2=\frac{m}{\sqrt{(\omega_0^2-\omega^2)^2+4\beta^2\omega^2}},\qquad
-\tan\varphi=-\frac{2\beta\omega}{\omega_0^2-\omega^2}.
-\]
-外力频率接近固有频率时，振幅明显增大，出现共振。摆轮的振动落后于外力，因此上式中的 $\varphi$ 为负；本报告的表格和相频图统一用它的大小 $\phi=|\varphi|$，即仪器的正读数。""",
-        "实验内容": r"""1. 无电磁阻尼时，记录摆轮从约 $160^\circ$ 衰减至 $50^\circ$ 过程中的振幅及自由周期。\par
-2. 选择阻尼档位，记录十个连续振幅及十周期总时间，重复测量。\par
-3. 保持阻尼档位不变，调节外力周期；每次待振幅稳定后，记录周期、振幅和相位差。共振附近适当加密测量点。""",
-        "实验仪器": r"""波尔共振仪、光电门、频闪相位读盘。""",
-        "讨论与分析": r"""自由周期随振幅略有变化，计算理论相位时应按振幅查表，避免统一取平均周期造成误差。相位读数还受稳态等待时间、读盘零点和读数判断影响。共振附近变化较快，测量点过少容易错过最大振幅。""",
-        "实验结论": r"""逐差法测得阻尼系数 $\beta=\MathField{damping_beta_s_inv}\,\mathrm{s^{-1}}$。最大振幅为 $\MathField{peak_amplitude_deg}^{\circ}$，对应外力周期约 $T_r=\MathField{resonance_period_s}\,\mathrm{s}$。幅频、相频曲线反映了摆轮在共振附近振幅增大、相位差变化较快的特点。""",
-    },
     "透镜焦距的测量": {
         "实验目的": r"""1. 理解薄透镜成像公式及实物、虚物的物距符号，掌握四种焦距测量方法。\par
 2. 用物像距法、共轭法和自准直法分别测凸透镜焦距，再用辅助成像测凹透镜焦距。\par
@@ -197,17 +175,6 @@ PLOTS = {
 \addplot+[mark=triangle*,black] coordinates {\PlotCoordinates{young_load_mean_points}};\addlegendentry{均值}
 \end{axis}\end{tikzpicture}\end{center}
 """,
-    "用波尔共振仪研究物体受迫振动": r"""\par\clearpage
-\ReportSection{实验曲线}
-两图均以 $\omega/\omega_r$ 为横轴，相位差取正值，与主要结果表一致。
-\begin{center}\begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=6.2cm,xlabel={$\omega/\omega_r$},ylabel={$(\theta/\theta_r)^2$},grid=both]
-\addplot+[mark=*,blue] coordinates {\PlotCoordinates{normalized_amplitude_graph_points}};
-\end{axis}\end{tikzpicture}\par
-\begin{tikzpicture}
-\begin{axis}[width=.82\textwidth,height=6.2cm,xlabel={$\omega/\omega_r$},ylabel={相位差 $\phi$/$^\circ$},grid=both]
-\addplot+[mark=square*,orange] coordinates {\PlotCoordinates{phase_magnitude_graph_points}};
-\end{axis}\end{tikzpicture}\end{center}
-""",
+
 }
 
