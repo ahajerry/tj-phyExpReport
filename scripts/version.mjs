@@ -1,7 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises'
 
 const packagePath = new URL('../package.json', import.meta.url)
-const lockPath = new URL('../package-lock.json', import.meta.url)
 const requested = process.argv[2]
 
 function parseRelease(label) {
@@ -16,9 +15,9 @@ function parseRelease(label) {
   return `${year}${month}${day}.${sequence}.0`
 }
 
-function releaseLabel(npmVersion) {
-  const match = /^(\d{6})\.([1-9]\d*)\.0$/.exec(npmVersion)
-  if (!match) throw new Error(`npm 版本号与项目规则不符：${npmVersion}`)
+function releaseLabel(packageVersion) {
+  const match = /^(\d{6})\.([1-9]\d*)\.0$/.exec(packageVersion)
+  if (!match) throw new Error(`包版本号与项目规则不符：${packageVersion}`)
   return `v${match[1]}.${match[2]}`
 }
 
@@ -32,19 +31,12 @@ async function saveJson(url, value) {
 }
 
 const packageFile = await readJson(packagePath)
-const lockFile = await readJson(lockPath)
 
 if (requested) {
-  const npmVersion = parseRelease(requested)
-  packageFile.data.version = npmVersion
-  lockFile.data.version = npmVersion
-  lockFile.data.packages[''].version = npmVersion
+  const packageVersion = parseRelease(requested)
+  packageFile.data.version = packageVersion
   await saveJson(packagePath, packageFile)
-  await saveJson(lockPath, lockFile)
 }
 
-const npmVersion = packageFile.data.version
-if (lockFile.data.version !== npmVersion || lockFile.data.packages[''].version !== npmVersion) {
-  throw new Error('package.json 与 package-lock.json 的项目版本号不一致')
-}
-console.log(`${releaseLabel(npmVersion)}（npm 内部版本 ${npmVersion}）`)
+const packageVersion = packageFile.data.version
+console.log(`${releaseLabel(packageVersion)}（SemVer ${packageVersion}）`)

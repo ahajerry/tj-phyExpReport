@@ -1,7 +1,9 @@
 """持久化的单工作线程报告队列。"""
 
 import json
+import os
 import sqlite3
+import sys
 import threading
 import uuid
 from datetime import datetime
@@ -10,7 +12,10 @@ from zoneinfo import ZoneInfo
 
 
 DAILY_LIMIT = 50
-DATA_DIR = Path(__file__).resolve().parents[1] / ".report-data"
+DATA_DIR = Path(os.environ.get("REPORT_DATA_DIR") or (
+    (Path(sys.executable).resolve().parent if getattr(sys, "frozen", False)
+     else Path(__file__).resolve().parents[1]) / ".report-data"
+))
 
 
 class QuotaExceeded(Exception):

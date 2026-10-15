@@ -1,0 +1,124 @@
+{
+  "heat-capacity-ratio": {
+    "title": "空气比热容比的测定",
+    "data": {
+      "diameter": 5,
+      "period": 5
+    },
+    "parameters": [
+      "mass_g",
+      "volume_l",
+      "pressure_start_kpa",
+      "pressure_end_kpa",
+      "diameter_zero_mm",
+      "diameter_error_mm",
+      "mass_error_g",
+      "period_error_s",
+      "pressure_error_kpa",
+      "volume_error_l"
+    ]
+  },
+  "millikan": {
+    "title": "密立根油滴实验",
+    "data": {
+      "voltage": 8,
+      "time_1": 8,
+      "time_2": 8,
+      "time_3": 8,
+      "time_4": 8
+    },
+    "parameters": []
+  },
+  "moment-of-inertia": {
+    "title": "用扭摆法测定物体转动惯量",
+    "data": {
+      "time_disk": 3,
+      "time_cylinder": 3,
+      "time_tube": 3,
+      "time_ball": 3,
+      "time_rod": 3,
+      "slider_time_5": 3,
+      "slider_time_10": 3,
+      "slider_time_15": 3,
+      "slider_time_20": 3
+    },
+    "parameters": [
+      "mass_cylinder_g",
+      "diameter_cylinder_mm",
+      "mass_tube_g",
+      "diameter_tube_outer_mm",
+      "diameter_tube_inner_mm",
+      "mass_ball_g",
+      "diameter_ball_mm",
+      "mass_rod_g",
+      "length_rod_mm",
+      "slider_mass_g",
+      "slider_self_inertia"
+    ]
+  },
+  "young-modulus": {
+    "title": "金属丝杨氏模量的测定",
+    "data": {
+      "load_up": 10,
+      "load_down": 10,
+      "diameter_initial": 5,
+      "diameter_final": 5
+    },
+    "parameters": [
+      "mass_step_kg",
+      "preload_kg",
+      "wire_length_cm",
+      "mirror_distance_cm",
+      "lever_arm_cm",
+      "gravity_ms2",
+      "reference_modulus_pa",
+      "diameter_error_mm",
+      "scale_error_cm"
+    ]
+  },
+  "forced-vibration": {
+    "title": "用波尔共振仪研究物体受迫振动",
+    "data": {
+      "free_angle": 10,
+      "free_period": 10,
+      "damped_peak": 10,
+      "damped_period": 1,
+      "drive_period": 15,
+      "amplitude": 15,
+      "phase": 15
+    },
+    "parameters": [
+      "damping_setting"
+    ]
+  },
+  "focal-length": {
+    "title": "透镜焦距的测量",
+    "data": {
+      "object_distance": 3,
+      "image_distance": 3,
+      "bessel_length": 5,
+      "bessel_separation": 5,
+      "auto_object": 5,
+      "auto_lens": 5,
+      "concave_object": 5,
+      "concave_lens": 5,
+      "concave_image": 5
+    },
+    "parameters": []
+  },
+  "oscilloscope": {
+    "title": "阴极射线示波器",
+    "data": {
+      "voltage_scale": 4,
+      "voltage_divisions": 4,
+      "time_scale": 4,
+      "period_divisions": 4,
+      "reference_frequency": 4,
+      "nx": 4,
+      "ny": 4
+    },
+    "parameters": [
+      "probe_factor"
+    ]
+  }
+}
