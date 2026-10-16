@@ -45,25 +45,28 @@
 
 ## 空气比热容比的测定（heat-capacity-ratio）
 
-按官方资料使用振动法；直径和周期各测量五次。压强用 kPa、容积用 L 输入。
+按所提供《空气比热容比》讲义记录五组直径初、末读数与 100T 总时长，直径为末减初，单周期为总时长除以 100。压强用 kPa、容积用 L 输入。
 
 | data 字段 | 含义 | 输入单位 | 初始数量 | 可选标记 |
 | --- | --- | --- | --- | --- |
-| `diameter` | 小球直径 | mm | 5 | 否 |
-| `period` | 小球振动周期 | s | 5 | 否 |
+| `diameter_initial` | 直径初读数 | mm | 5 | 否 |
+| `diameter_final` | 直径末读数 | mm | 5 | 否 |
+| `time_100` | 100T 总时长 | s | 5 | 否 |
 
 | parameters 字段 | 含义 | 单位 | 初始值 | 配置范围 |
 | --- | --- | --- | --- | --- |
-| `mass_g` | 小球质量 | g | 空 | 未声明 |
-| `volume_l` | 储气瓶容积 | L | `2.650` | 未声明 |
-| `pressure_start_kpa` | 起始大气压 | kPa | 空 | 未声明 |
-| `pressure_end_kpa` | 终止大气压 | kPa | 空 | 未声明 |
-| `diameter_zero_mm` | 直径零点修正 | mm | `0` | 未声明 |
-| `diameter_error_mm` | 直径仪器误差 | mm | 空 | 未声明 |
-| `mass_error_g` | 质量仪器误差 | g | 空 | 未声明 |
-| `period_error_s` | 周期仪器误差 | s | 空 | 未声明 |
-| `pressure_error_kpa` | 气压仪器误差 | kPa | 空 | 未声明 |
-| `volume_error_l` | 容积误差 | L | 空 | 未声明 |
+| `mass_g` | 小球质量 | g | 空 | 大于零 |
+| `volume_l` | 储气瓶容积 | L | `2.650` | 大于零 |
+| `pressure_start_kpa` | 起始大气压 | kPa | 空 | 大于零 |
+| `pressure_end_kpa` | 终止大气压 | kPa | 空 | 大于零 |
+| `mass_error_g` | 质量仪器误差 | g | 空 | 非负 |
+| `pressure_error_kpa` | 气压仪器误差 | kPa | 空 | 非负 |
+
+讲义常量：直径仪器误差 0.004 mm，按均匀分布除以 √3；周期 B 类标准不确定度直接取 0.1/100 = 0.001 s；容积标准不确定度直接取 0.002 L，后两者不再除以 √3。容器压力不确定度近似采用大气压不确定度，重力加速度沿用 9.794 m/s²。
+
+报告输出各组直径和单周期、均值、直径及周期的 A/B 类与合成标准不确定度，质量/容积/大气压/容器压力的标准不确定度，各量相对不确定度、比热容比、合成不确定度与相对理论值 1.402 的百分差。原始读数文本保持不变，计算时换算至 SI，最后统一修约。
+
+后端继续接受旧 `diameter`、`period` 各五项和原十个参数（另含 `diameter_zero_mm`、`diameter_error_mm`、`period_error_s`、`volume_error_l`），保留旧修正与不确定度规则。旧报告初读数未记录，显示横线；末读数列展示原净直径并附说明；100T 为原单周期乘以 100 的换算值。不得同时提交新旧字段。旧浏览器缓存迁移后初读数留空，需补填实际初读数并核对末读数，避免伪造测量记录。
 
 ## 密立根油滴实验（millikan）
 
@@ -152,19 +155,19 @@
 
 ## 透镜焦距的测量（focal-length）
 
-所有位置和距离均用 mm。凹透镜实验选填，未做时三项均留空即可；填写时需完成整组数据。
+各方法均记录三组数据，所有位置和距离均用 mm。凹透镜实验选填，未做时三项均留空即可；填写时需完成整组数据。
 
 | data 字段 | 含义 | 输入单位 | 初始数量 | 可选标记 |
 | --- | --- | --- | --- | --- |
 | `object_distance` | 单次成像物距 | mm | 3 | 否 |
 | `image_distance` | 单次成像像距 | mm | 3 | 否 |
-| `bessel_length` | 共轭法物屏距离 L | mm | 5 | 否 |
-| `bessel_separation` | 共轭法两透镜位置差 D | mm | 5 | 否 |
-| `auto_object` | 自准直法物位 | mm | 5 | 否 |
-| `auto_lens` | 自准直法透镜位 | mm | 5 | 否 |
-| `concave_object` | 凹透镜法虚物位（选填） | mm | 5 | 是 |
-| `concave_lens` | 凹透镜位（选填） | mm | 5 | 是 |
-| `concave_image` | 凹透镜法像位（选填） | mm | 5 | 是 |
+| `bessel_length` | 共轭法物屏距离 L | mm | 3 | 否 |
+| `bessel_separation` | 共轭法两透镜位置差 D | mm | 3 | 否 |
+| `auto_object` | 自准直法物位 | mm | 3 | 否 |
+| `auto_lens` | 自准直法透镜位 | mm | 3 | 否 |
+| `concave_object` | 凹透镜法虚物位（选填） | mm | 3 | 是 |
+| `concave_lens` | 凹透镜位（选填） | mm | 3 | 是 |
+| `concave_image` | 凹透镜法像位（选填） | mm | 3 | 是 |
 
 `parameters` 为 `{}`。
 

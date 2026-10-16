@@ -3179,5 +3179,401 @@
         "slider_pair_inertia_scaled": "-1"
       }
     }
+  },
+  {
+    "name": "focal-length-two-groups",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "200.0",
+          "200.0",
+          "200.0"
+        ],
+        "image_distance": [
+          "200",
+          "200",
+          "200"
+        ],
+        "bessel_length": [
+          "625",
+          "625"
+        ],
+        "bessel_separation": [
+          "375",
+          "375"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "199",
+          "200",
+          "201"
+        ],
+        "concave_object": [
+          "250",
+          "250",
+          "250"
+        ],
+        "concave_lens": [
+          "200",
+          "200",
+          "200"
+        ],
+        "concave_image": [
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {}
+    }
+  },
+  {
+    "name": "focal-length-four-groups",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "200.0",
+          "200.0",
+          "200.0"
+        ],
+        "image_distance": [
+          "200",
+          "200",
+          "200"
+        ],
+        "bessel_length": [
+          "625",
+          "625",
+          "625"
+        ],
+        "bessel_separation": [
+          "375",
+          "375",
+          "375"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "199",
+          "200",
+          "201",
+          "199"
+        ],
+        "concave_object": [
+          "250",
+          "250",
+          "250"
+        ],
+        "concave_lens": [
+          "200",
+          "200",
+          "200"
+        ],
+        "concave_image": [
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {}
+    }
+  },
+  {
+    "name": "focal-length-mismatched-groups",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "200.0",
+          "200.0",
+          "200.0"
+        ],
+        "image_distance": [
+          "200",
+          "200",
+          "200"
+        ],
+        "bessel_length": [
+          "625",
+          "625",
+          "625"
+        ],
+        "bessel_separation": [
+          "375",
+          "375",
+          "375",
+          "375",
+          "375"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "199",
+          "200",
+          "201"
+        ],
+        "concave_object": [
+          "250",
+          "250",
+          "250"
+        ],
+        "concave_lens": [
+          "200",
+          "200",
+          "200"
+        ],
+        "concave_image": [
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {}
+    }
+  },
+  {
+    "name": "focal-length-partial-concave-three",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "200.0",
+          "200.0",
+          "200.0"
+        ],
+        "image_distance": [
+          "200",
+          "200",
+          "200"
+        ],
+        "bessel_length": [
+          "625",
+          "625",
+          "625"
+        ],
+        "bessel_separation": [
+          "375",
+          "375",
+          "375"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "199",
+          "200",
+          "201"
+        ],
+        "concave_object": [
+          "250",
+          "250",
+          "250"
+        ],
+        "concave_lens": [
+          "200",
+          "200",
+          "200"
+        ],
+        "concave_image": [
+          "300",
+          "300",
+          ""
+        ]
+      },
+      "parameters": {}
+    }
+  },
+  {
+    "name": "heat-pdf-negative-net-diameter",
+    "payload": {
+      "experimentId": "heat-capacity-ratio",
+      "data": {
+        "diameter_initial": [
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010"
+        ],
+        "diameter_final": [
+          "0.001",
+          "12.012",
+          "12.008",
+          "12.011",
+          "12.009"
+        ],
+        "time_100": [
+          "60.00",
+          "60.10",
+          "59.90",
+          "60.05",
+          "59.95"
+        ]
+      },
+      "parameters": {
+        "mass_g": "6.50",
+        "volume_l": "2.650",
+        "pressure_start_kpa": "101.20",
+        "pressure_end_kpa": "101.40",
+        "mass_error_g": "0.01",
+        "pressure_error_kpa": "0.05"
+      },
+      "reportInfo": {
+        "student": "合成样例",
+        "student_id": "20260000",
+        "group": "1",
+        "date": "2026-10-16"
+      }
+    }
+  },
+  {
+    "name": "heat-pdf-missing-initial",
+    "payload": {
+      "experimentId": "heat-capacity-ratio",
+      "data": {
+        "diameter_initial": [
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010"
+        ],
+        "diameter_final": [
+          "12.010",
+          "12.012",
+          "12.008",
+          "12.011",
+          "12.009"
+        ],
+        "time_100": [
+          "60.00",
+          "60.10",
+          "59.90",
+          "60.05",
+          "59.95"
+        ]
+      },
+      "parameters": {
+        "mass_g": "6.50",
+        "volume_l": "2.650",
+        "pressure_start_kpa": "101.20",
+        "pressure_end_kpa": "101.40",
+        "mass_error_g": "0.01",
+        "pressure_error_kpa": "0.05"
+      },
+      "reportInfo": {
+        "student": "合成样例",
+        "student_id": "20260000",
+        "group": "1",
+        "date": "2026-10-16"
+      }
+    }
+  },
+  {
+    "name": "heat-pdf-zero-time100",
+    "payload": {
+      "experimentId": "heat-capacity-ratio",
+      "data": {
+        "diameter_initial": [
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010"
+        ],
+        "diameter_final": [
+          "12.010",
+          "12.012",
+          "12.008",
+          "12.011",
+          "12.009"
+        ],
+        "time_100": [
+          "60.00",
+          "0",
+          "59.90",
+          "60.05",
+          "59.95"
+        ]
+      },
+      "parameters": {
+        "mass_g": "6.50",
+        "volume_l": "2.650",
+        "pressure_start_kpa": "101.20",
+        "pressure_end_kpa": "101.40",
+        "mass_error_g": "0.01",
+        "pressure_error_kpa": "0.05"
+      },
+      "reportInfo": {
+        "student": "合成样例",
+        "student_id": "20260000",
+        "group": "1",
+        "date": "2026-10-16"
+      }
+    }
+  },
+  {
+    "name": "heat-pdf-mixed-period-input",
+    "payload": {
+      "experimentId": "heat-capacity-ratio",
+      "data": {
+        "diameter_initial": [
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010"
+        ],
+        "diameter_final": [
+          "12.010",
+          "12.012",
+          "12.008",
+          "12.011",
+          "12.009"
+        ],
+        "time_100": [
+          "60.00",
+          "60.10",
+          "59.90",
+          "60.05",
+          "59.95"
+        ],
+        "period": [
+          ".6",
+          ".6",
+          ".6",
+          ".6",
+          ".6"
+        ]
+      },
+      "parameters": {
+        "mass_g": "6.50",
+        "volume_l": "2.650",
+        "pressure_start_kpa": "101.20",
+        "pressure_end_kpa": "101.40",
+        "mass_error_g": "0.01",
+        "pressure_error_kpa": "0.05"
+      },
+      "reportInfo": {
+        "student": "合成样例",
+        "student_id": "20260000",
+        "group": "1",
+        "date": "2026-10-16"
+      }
+    }
   }
 ]

@@ -93,6 +93,10 @@ try {
   for (const c of cases) if (!unique.has(c.payload.experimentId)) unique.set(c.payload.experimentId, c.payload)
   for (const [id, payload] of unique) await complete(payload, id)
   await complete(cases.find(c => c.name === 'focal-length-optional').payload, 'focal-length-optional')
+  await complete(cases.find(c => c.name === 'heat-capacity-pdf-100-periods').payload, 'heat-capacity-pdf-100-periods')
+  for (const label of ['focal-length-three-groups', 'focal-length-three-groups-optional']) {
+    await complete(cases.find(c => c.name === label).payload, label)
+  }
   const imports = JSON.parse(await readFile(new URL('imports.json', fixtures), 'utf8'))
   const renderImports = new Set(['vibration-variable-2.xlsx', 'millikan.csv', 'torsion.xlsx'])
   for (const c of imports) {

@@ -32,6 +32,18 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
     const raw = localStorage.getItem(`phyexp_report_${experiment.id}`)
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SavedExperimentValues>
+      if (experiment.id === "heat-capacity-ratio" && parsed.data?.diameter && !parsed.data.diameter_final) {
+        // Legacy net diameters cannot recover the original micrometer readings.
+        const previous = parsed.data
+        const correction = Number(parsed.parameters?.diameter_zero_mm ?? "0")
+        parsed.data = {
+          diameter_initial: Array<string>(5).fill(""),
+          diameter_final: previous.diameter.map((value) => value.trim() && Number.isFinite(Number(value) + correction)
+            ? String(Number((Number(value) + correction).toPrecision(12))) : ""),
+          time_100: (previous.period ?? []).map((value) => value.trim() && Number.isFinite(Number(value))
+            ? String(Number((Number(value) * 100).toPrecision(12))) : ""),
+        }
+      }
       if (experiment.id === "young-modulus" && parsed.data?.diameter && !parsed.data.diameter_final) {
         // The old form stored net diameters, equivalent to zero initial readings.
         parsed.data.diameter_initial = Array<string>(5).fill("0")

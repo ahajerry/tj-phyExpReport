@@ -2,20 +2,17 @@
   "heat-capacity-ratio": {
     "title": "空气比热容比的测定",
     "data": {
-      "diameter": 5,
-      "period": 5
+      "diameter_initial": 5,
+      "diameter_final": 5,
+      "time_100": 5
     },
     "parameters": [
       "mass_g",
       "volume_l",
       "pressure_start_kpa",
       "pressure_end_kpa",
-      "diameter_zero_mm",
-      "diameter_error_mm",
       "mass_error_g",
-      "period_error_s",
-      "pressure_error_kpa",
-      "volume_error_l"
+      "pressure_error_kpa"
     ]
   },
   "millikan": {
@@ -96,13 +93,13 @@
     "data": {
       "object_distance": 3,
       "image_distance": 3,
-      "bessel_length": 5,
-      "bessel_separation": 5,
-      "auto_object": 5,
-      "auto_lens": 5,
-      "concave_object": 5,
-      "concave_lens": 5,
-      "concave_image": 5
+      "bessel_length": 3,
+      "bessel_separation": 3,
+      "auto_object": 3,
+      "auto_lens": 3,
+      "concave_object": 3,
+      "concave_lens": 3,
+      "concave_image": 3
     },
     "parameters": []
   },

@@ -112,19 +112,26 @@
   "heat-capacity-ratio": {
     "experimentId": "heat-capacity-ratio",
     "data": {
-      "diameter": [
+      "diameter_initial": [
+        "0.000",
+        "0.000",
+        "0.000",
+        "0.000",
+        "0.000"
+      ],
+      "diameter_final": [
         "8",
         "8.01",
         "7.99",
         "8.02",
         "8"
       ],
-      "period": [
-        "2.4",
-        "2.41",
-        "2.39",
-        "2.4",
-        "2.42"
+      "time_100": [
+        "240",
+        "241",
+        "239",
+        "240",
+        "242"
       ]
     },
     "parameters": {
@@ -132,12 +139,8 @@
       "volume_l": "2.650",
       "pressure_start_kpa": "101.2",
       "pressure_end_kpa": "101.3",
-      "diameter_zero_mm": "0",
-      "diameter_error_mm": "0.005",
       "mass_error_g": "0.01",
-      "period_error_s": "0.01",
-      "pressure_error_kpa": "0.1",
-      "volume_error_l": "0.01"
+      "pressure_error_kpa": "0.1"
     }
   },
   "millikan": {
@@ -540,20 +543,14 @@
       "bessel_length": [
         "500",
         "500",
-        "500",
-        "500",
         "500"
       ],
       "bessel_separation": [
         "220",
         "218",
-        "222",
-        "219",
-        "221"
+        "222"
       ],
       "auto_object": [
-        "100",
-        "100",
         "100",
         "100",
         "100"
@@ -561,13 +558,9 @@
       "auto_lens": [
         "200",
         "201",
-        "199",
-        "200",
-        "200"
+        "199"
       ],
       "concave_object": [
-        "240",
-        "240",
         "240",
         "240",
         "240"
@@ -575,16 +568,12 @@
       "concave_lens": [
         "200",
         "200",
-        "200",
-        "200",
         "200"
       ],
       "concave_image": [
         "300",
         "301",
-        "299",
-        "300",
-        "300"
+        "299"
       ]
     },
     "parameters": {}

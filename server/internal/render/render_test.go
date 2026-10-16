@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"phyexp/server/internal/domain"
 	"phyexp/server/internal/experiments"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -34,9 +35,33 @@ func TestAllTemplates(t *testing.T) {
 			if e != nil {
 				t.Fatal(e)
 			}
+			if p.ExperimentID == "focal-length" {
+				for _, key := range []string{"object_distance", "bessel_length", "auto_object", "concave_object"} {
+					for _, row := range []struct {
+						index string
+						count int
+					}{{"03", 3}, {"04", 4}, {"05", 5}} {
+						marker := `\Field[10mm]{` + key + "_" + row.index + "}"
+						if strings.Contains(source, marker) != (len(p.Data[key]) >= row.count) {
+							t.Errorf("table row %s does not match reading count", marker)
+						}
+					}
+				}
+			}
 			tex, e := Fill(source, f, p, nil)
 			if e != nil {
 				t.Fatal(e)
+			}
+			if p.ExperimentID == "heat-capacity-ratio" {
+				for _, match := range regexp.MustCompile(`\\(?:MathField|Field)(?:\[[^\]]*\])?\{([^}]+)\}`).FindAllStringSubmatch(source, -1) {
+					key := match[1]
+					if key == "experiment" || key == "student" || key == "student_id" || key == "group" || key == "date" {
+						continue
+					}
+					if _, ok := f[key]; !ok {
+						t.Errorf("uncomputed heat-capacity field %s", key)
+					}
+				}
 			}
 			if strings.Contains(tex, `\PlotCoordinates{`) || strings.Contains(tex, imageMarker) {
 				t.Fatal("unfilled marker")

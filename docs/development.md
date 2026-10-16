@@ -2,7 +2,9 @@
 
 ## 工具与包管理约束
 
-Node.js 24+、Go 1.26+、pnpm **11.28.5**。本项目只使用 pnpm，约束同时写在根目录 [AGENTS.md](../AGENTS.md)、`packageManager`、`engines`、安装前检查和 Dockerfile 中。
+前端需要 Node.js 24+、pnpm **11.28.5**；Linux/WSL 本机后端开发另需 Go 1.26+。Windows 使用 Docker 后端时，无需安装 Windows Go。本项目只使用 pnpm，约束同时写在根目录 [AGENTS.md](../AGENTS.md)、`packageManager`、`engines`、安装前检查和 Dockerfile 中。
+
+以下联合启动命令适用于 Linux/WSL，不适用于 Windows PowerShell。若已安装 pnpm，可跳过 `corepack enable`；未提供 Corepack 的 Node.js 安装可使用 pnpm 官方独立安装方式，版本必须为 11.28.5。
 
 ```bash
 corepack enable
@@ -16,6 +18,28 @@ pnpm dev
 
 ## 本地服务
 
+### Windows：本机 Vite + Docker 后端
+
+当前后端依赖 Unix 系统调用，不能直接在 PowerShell 运行 `pnpm dev`。缺少 Go 时会先出现 `spawn go ENOENT`；仅安装 Windows Go 也不能消除后端的平台限制。
+
+```powershell
+pnpm install --frozen-lockfile
+docker build --progress=plain -t phyexp-report:local .
+```
+
+仅在镜像构建成功后执行：
+
+```powershell
+$env:REPORT_PUBLIC_PORT = '8000'
+docker compose -p phyexpreport up -d --no-build
+Invoke-RestMethod http://127.0.0.1:8000/api/health
+pnpm exec vite
+```
+
+Vite 通常提供 `http://localhost:5173`，并将 `/api` 转发到本机 8000 端口。修改 Go 或模板后重新构建镜像，再运行同一 Compose 启动命令。Docker/WSL 配置及网络错误见 [Windows 开发与排错](windows-development.md)。
+
+### Linux / WSL：本机联合启动
+
 `pnpm dev` 计算 Go 源码、依赖和模板指纹，检查 8000 端口是否已有相同版本服务；需要时先编译到 `output/backend-go/reportd`，再启动后端和 Vite。修改 Go 后重启开发命令。前端热更新由 Vite 提供。
 
 ```bash
@@ -25,6 +49,8 @@ REPORT_HOST=127.0.0.1 REPORT_PORT=8000 ./output/backend-go/reportd
 ```
 
 以上命令从仓库根目录运行。Linux 是后端部署目标（进程组取消和文件锁使用 Unix 系统调用）；Windows 开发后端请用 WSL2 或 Docker。只有校验/计算/API 测试不要求 XeLaTeX；真实 PDF 和图片上传请在完整 Docker 环境验证。
+
+Windows 使用本机 Vite + Docker 后端的启动步骤、磁盘位置设置，以及引擎未启动、Compose Bake 退出和代理网络错误，见 [Windows 开发与排错](windows-development.md)。
 
 ## 检查
 

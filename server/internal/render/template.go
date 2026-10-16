@@ -144,6 +144,31 @@ func Template(dir string, p domain.Payload, fields map[string]string) (string, e
 		return "", e
 	}
 	s := string(b)
+	if p.ExperimentID == "heat-capacity-ratio" {
+		if _, current := p.Data["time_100"]; !current {
+			s = strings.ReplaceAll(s, `U_{TB}=\frac{0.1}{100}`, `U_{TB}=\frac{\MathField{period_error_s}}{\sqrt3}`)
+		}
+	}
+	if p.ExperimentID == "focal-length" {
+		// Current templates contain three rows; restore all rows for legacy jobs.
+		for _, key := range []string{"bessel_length", "auto_object", "concave_object"} {
+			if len(p.Data[key]) == 5 {
+				re := regexp.MustCompile(`(?m)^3 & .*\{` + key + `_03\}.*$`)
+				s = re.ReplaceAllStringFunc(s, func(row string) string {
+					return row + "\n" + strings.ReplaceAll("4"+row[1:], "_03}", "_04}") + "\n" + strings.ReplaceAll("5"+row[1:], "_03}", "_05}")
+				})
+			}
+		}
+		if len(p.Data["bessel_length"]) == 5 {
+			s = strings.ReplaceAll(s, "共轭法固定三组", "共轭法固定五组")
+		}
+		if len(p.Data["auto_object"]) == 5 {
+			s = strings.ReplaceAll(s, "记录三组位置", "记录五组位置")
+		}
+		if len(p.Data["concave_object"]) == 5 {
+			s = strings.ReplaceAll(s, "检查三组结果", "检查五组结果")
+		}
+	}
 	if p.ExperimentID == "forced-vibration" {
 		for key, table := range measurementTables(len(p.Data["free_angle"]), len(p.Data["damped_period"]), len(p.Data["drive_period"])) {
 			re := regexp.MustCompile(`(?s)% BEGIN ` + key + `_TABLE.*?% END ` + key + `_TABLE`)

@@ -84,6 +84,8 @@ docker compose start app
 
 ## 更新与排错
 
+Windows Docker Desktop 的引擎管道错误、Compose Bake 失败、Docker Hub 认证超时与容器内 pnpm ECONNRESET，见 [Windows 开发与排错](windows-development.md)。代理端口按个人环境填写，不属于项目部署参数。
+
 ```bash
 docker compose up -d --build
 ```

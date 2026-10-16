@@ -122,3 +122,35 @@ migratedTorsion.parameters.slider_mass_2_kg = '0.2387'
 saved.set('phyexp_report_moment-of-inertia', JSON.stringify(migratedTorsion))
 assert.deepEqual(readSavedExperimentValues(torsion), migratedTorsion)
 console.log('油滴逐行数据与扭摆法原始尺寸迁移和保存测试通过')
+
+const lens = structuredExperimentById.get('focal-length')
+assert.ok(lens)
+assert.ok(lens.measurements.every((field) => field.count === 3))
+saved.set('phyexp_report_focal-length', JSON.stringify({
+  data: Object.fromEntries(lens.measurements.map((field) => [field.id, ['100.00', '101.0', '99.00', '102', '98']])),
+}))
+const restoredLens = readSavedExperimentValues(lens)
+for (const field of lens.measurements) {
+  assert.deepEqual(restoredLens.data[field.id], ['100.00', '101.0', '99.00'])
+}
+console.log('透镜表单统一三组，旧本地缓存读取前三组并保留读数文本测试通过')
+
+const heat = structuredExperimentById.get('heat-capacity-ratio')
+assert.ok(heat)
+saved.set('phyexp_report_heat-capacity-ratio', JSON.stringify({
+  data: { diameter: ['12.00', '12.01', '12.02', '12.03', '12.04'], period: ['0.600', '0.601', '0.602', '0.603', '0.604'] },
+  parameters: { diameter_zero_mm: '0.002', mass_g: '6.50' },
+}))
+const migratedHeat = readSavedExperimentValues(heat)
+assert.deepEqual(migratedHeat.data.diameter_initial, ['', '', '', '', ''])
+assert.deepEqual(migratedHeat.data.diameter_final, ['12.002', '12.012', '12.022', '12.032', '12.042'])
+assert.deepEqual(migratedHeat.data.time_100, ['60', '60.1', '60.2', '60.3', '60.4'])
+assert.equal(migratedHeat.parameters.mass_g, '6.50')
+saved.set('phyexp_report_heat-capacity-ratio', JSON.stringify({
+  data: { diameter_initial: ['0.010'], diameter_final: ['12.010'], time_100: ['60.00'] },
+}))
+const currentHeat = readSavedExperimentValues(heat)
+assert.equal(currentHeat.data.diameter_initial[0], '0.010')
+assert.equal(currentHeat.data.diameter_final[0], '12.010')
+assert.equal(currentHeat.data.time_100[0], '60.00')
+console.log('比热容比旧缓存迁移、100T 换算和新读数文本保留测试通过')

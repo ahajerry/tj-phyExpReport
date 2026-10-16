@@ -138,47 +138,8 @@ def build(title: str, body: str) -> str:
 
 
 def heat() -> str:
-    diameter = [[str(i), f(f"diameter_{i:02d}"), f(f"diameter_corrected_{i:02d}")] for i in range(1, 6)]
-    period = [[str(i), f(f"period_{i:02d}"), f(f"period_deviation_{i:02d}")] for i in range(1, 6)]
-    return build("空气比热容比的测定", r"""\ReportSection{实验目的}
-测定空气的定压、定容比热容比，练习小球直径、质量、压强及振动周期的测量与不确定度处理。
-\ReportSection{实验原理}
-小球在储气瓶颈部作小幅振动，瓶内气体近似满足绝热关系 $PV^\gamma=\mathrm{const}$。
-平衡压强 $P=P_L+4mg/(\pi d^2)$，周期法给出
-\[\gamma=\frac{64mV}{T^2Pd^4}.\]
-此式要求振幅较小、漏气与摩擦可忽略。室温空气参考值取 $\gamma_0=1.402$。
-\ReportSection{实验内容}
-用螺旋测微计测备用小球直径五次，测量小球质量与实验前后大气压；按仪器要求测量五次振动周期，代入上式并估计不确定度。
-\ReportSection{实验仪器}
-网络型气体比热容比测试仪、螺旋测微计、物理天平、空盒气压计。
-\ReportSection{数据记录处理}
-小球直径（mm；修正值由后端计算）：
-""" + tab(["序号", "读数", "修正后"], diameter) + r"""
-周期（s）：
-""" + tab(["序号", "读数", "与均值之差"], period) + r"""
-\noindent 小球质量 $m=\Field{mass_g}$ g；瓶容积 $V=\Field{volume_l}$ L；
-大气压始末读数 $P_{L1}=\Field{pressure_start_kpa}$ kPa，$P_{L2}=\Field{pressure_end_kpa}$ kPa。
-\clearpage\ReportSection{数据记录处理（续）}
-\noindent 直径零点修正 $c_d=\Field{diameter_zero_mm}$ mm；直径、质量、周期、压强、容积的仪器误差依次为
-$\Field{diameter_error_mm}$ mm、$\Field{mass_error_g}$ g、$\Field{period_error_s}$ s、
-$\Field{pressure_error_kpa}$ kPa、$\Field{volume_error_l}$ L。
-\[\bar d=(\MathField{diameter_mean_mm}\pm\MathField{diameter_mean_u_mm})\,\mathrm{mm},\quad
-\bar T=(\MathField{period_mean_s}\pm\MathField{period_mean_u_s})\,\mathrm{s}.\]
-\[\bar P_L=(\MathField{pressure_mean_kpa}\pm\MathField{pressure_mean_u_kpa})\,\mathrm{kPa}.\]
-\[P=\MathField{pressure_inside_pa}\,\mathrm{Pa},\qquad
-\gamma=\MathField{gamma_result}.\]
-\[u_\gamma=\gamma\sqrt{\left(\frac{u_m}{m}\right)^2+
-\left(\frac{u_V}{V}\right)^2+
-\left(\frac{2u_T}{T}\right)^2+
-\left(\frac{u_P}{P}\right)^2+
-\left(\frac{4u_d}{d}\right)^2}
-=\MathField{gamma_uncertainty}.\]
-\noindent 结果：$\gamma=\MathField{gamma_result}\pm\MathField{gamma_uncertainty}$；
-与参考值百分差 $\Field{gamma_error_percent}\%$。
-\ReportSection{讨论与分析}
-直径在公式中为四次方，直径零点和玻璃管摩擦是主要误差来源；若相对偏差较大，应复查直径读数、气压换算及装置密封性。
-\ReportSection{实验结论}
-通过测量小球振动周期与相关参数，可用绝热振动模型求得空气比热容比；测量值应结合不确定度与参考值比较。""")
+    # Curated transcription of the supplied laboratory PDF.
+    return (ARCHIVE / "heat-capacity-ratio.tex").read_text(encoding="utf-8")
 
 
 def millikan() -> str:
@@ -300,12 +261,12 @@ def lens() -> str:
     single = [[str(i), f(f"object_distance_{i:02d}"), f(f"image_distance_{i:02d}"), f(f"single_focus_{i:02d}")]
               for i in range(1, 4)]
     bessel = [[str(i), f(f"bessel_length_{i:02d}"), f(f"bessel_separation_{i:02d}"), f(f"bessel_focus_{i:02d}")]
-              for i in range(1, 6)]
+              for i in range(1, 4)]
     auto = [[str(i), f(f"auto_object_{i:02d}"), f(f"auto_lens_{i:02d}"), f(f"auto_focus_{i:02d}")]
-            for i in range(1, 6)]
+            for i in range(1, 4)]
     concave = [[str(i), f(f"concave_object_{i:02d}"), f(f"concave_lens_{i:02d}"),
                 f(f"concave_image_{i:02d}"), f(f"concave_focus_{i:02d}")]
-               for i in range(1, 6)]
+               for i in range(1, 4)]
     return build("透镜焦距的测量", r"""\ReportSection{实验目的}
 理解薄透镜成像公式，分别用单次成像法、共轭法、自准直法测凸透镜焦距，并测凹透镜焦距。
 \ReportSection{实验原理}

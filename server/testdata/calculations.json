@@ -11929,5 +11929,233 @@
       "electron_charge_ls_u": "0.007e-19",
       "ls_error_percent": "1.2"
     }
+  },
+  {
+    "name": "focal-length-three-groups",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "200.0",
+          "200.0",
+          "200.0"
+        ],
+        "image_distance": [
+          "200",
+          "200",
+          "200"
+        ],
+        "bessel_length": [
+          "625",
+          "625",
+          "625"
+        ],
+        "bessel_separation": [
+          "375",
+          "375",
+          "375"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "199",
+          "200",
+          "201"
+        ],
+        "concave_object": [
+          "250",
+          "250",
+          "250"
+        ],
+        "concave_lens": [
+          "200",
+          "200",
+          "200"
+        ],
+        "concave_image": [
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {}
+    },
+    "fields": {
+      "object_distance_01": "200.0",
+      "focus_single_mean_mm": "100",
+      "focus_single_u_mm": "0",
+      "focus_bessel_mean_mm": "100",
+      "focus_bessel_u_mm": "0",
+      "focus_auto_mean_mm": "100.0",
+      "focus_auto_u_mm": "0.6",
+      "focus_concave_mean_mm": "-100",
+      "focus_concave_u_mm": "0"
+    }
+  },
+  {
+    "name": "focal-length-three-groups-optional",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "200.0",
+          "200.0",
+          "200.0"
+        ],
+        "image_distance": [
+          "200",
+          "200",
+          "200"
+        ],
+        "bessel_length": [
+          "625",
+          "625",
+          "625"
+        ],
+        "bessel_separation": [
+          "375",
+          "375",
+          "375"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "199",
+          "200",
+          "201"
+        ]
+      },
+      "parameters": {}
+    },
+    "fields": {
+      "object_distance_01": "200.0",
+      "focus_single_mean_mm": "100",
+      "focus_single_u_mm": "0",
+      "focus_bessel_mean_mm": "100",
+      "focus_bessel_u_mm": "0",
+      "focus_auto_mean_mm": "100.0",
+      "focus_auto_u_mm": "0.6"
+    }
+  },
+  {
+    "name": "heat-capacity-pdf-100-periods",
+    "payload": {
+      "experimentId": "heat-capacity-ratio",
+      "data": {
+        "diameter_initial": [
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010",
+          "0.010"
+        ],
+        "diameter_final": [
+          "12.010",
+          "12.012",
+          "12.008",
+          "12.011",
+          "12.009"
+        ],
+        "time_100": [
+          "60.00",
+          "60.10",
+          "59.90",
+          "60.05",
+          "59.95"
+        ]
+      },
+      "parameters": {
+        "mass_g": "6.50",
+        "volume_l": "2.650",
+        "pressure_start_kpa": "101.20",
+        "pressure_end_kpa": "101.40",
+        "mass_error_g": "0.01",
+        "pressure_error_kpa": "0.05"
+      },
+      "reportInfo": {
+        "student": "合成样例",
+        "student_id": "20260000",
+        "group": "1",
+        "date": "2026-10-16"
+      }
+    },
+    "fields": {
+      "mass_g": "6.50",
+      "volume_l": "2.650",
+      "pressure_start_kpa": "101.20",
+      "pressure_end_kpa": "101.40",
+      "mass_error_g": "0.01",
+      "pressure_error_kpa": "0.05",
+      "diameter_error_mm": "0.004",
+      "period_error_s": "0.1",
+      "volume_error_l": "0.002",
+      "heat_reading_note": "直径由末读数减初读数得到，单周期由 100T 总时长除以 100 得到。",
+      "diameter_initial_01": "0.010",
+      "diameter_initial_02": "0.010",
+      "diameter_initial_03": "0.010",
+      "diameter_initial_04": "0.010",
+      "diameter_initial_05": "0.010",
+      "diameter_final_01": "12.010",
+      "diameter_final_02": "12.012",
+      "diameter_final_03": "12.008",
+      "diameter_final_04": "12.011",
+      "diameter_final_05": "12.009",
+      "time_100_01": "60.00",
+      "time_100_02": "60.10",
+      "time_100_03": "59.90",
+      "time_100_04": "60.05",
+      "time_100_05": "59.95",
+      "diameter_corrected_01": "12",
+      "diameter_corrected_02": "12.002",
+      "diameter_corrected_03": "11.998",
+      "diameter_corrected_04": "12.001",
+      "diameter_corrected_05": "11.999",
+      "period_calculated_01": "0.6",
+      "period_calculated_02": "0.601",
+      "period_calculated_03": "0.599",
+      "period_calculated_04": "0.6005",
+      "period_calculated_05": "0.5995",
+      "period_deviation_01": "0",
+      "period_deviation_02": "0.001",
+      "period_deviation_03": "-0.001",
+      "period_deviation_04": "0.0005",
+      "period_deviation_05": "-0.0005",
+      "diameter_u_a_mm": "0.000707107",
+      "diameter_u_b_mm": "0.0023094",
+      "period_u_a_s": "0.000353553",
+      "period_u_b_s": "0.001",
+      "period_time_mean_s": "60",
+      "volume_m3": "0.00265",
+      "pressure_inside_pa": "101863",
+      "diameter_relative_u_percent": "0.0201269",
+      "period_relative_u_percent": "0.176777",
+      "mass_relative_u_percent": "0.0888231",
+      "volume_relative_u_percent": "0.0754717",
+      "pressure_atmos_relative_u_percent": "0.0284971",
+      "pressure_relative_u_percent": "0.0283396",
+      "gamma_relative_u_percent": "0.381929",
+      "diameter_mean_mm": "12.0000",
+      "diameter_mean_u_mm": "0.0024",
+      "period_mean_s": "0.6000",
+      "period_mean_u_s": "0.0011",
+      "pressure_mean_kpa": "101.300",
+      "pressure_mean_u_kpa": "0.029",
+      "pressure_inside_result_pa": "101863",
+      "pressure_inside_u_pa": "29",
+      "mass_result_g": "6.500",
+      "mass_u_g": "0.006",
+      "volume_result_m3": "0.0026500",
+      "volume_u_m3": "0.0000020",
+      "gamma_result": "1.450",
+      "gamma_uncertainty": "0.006",
+      "gamma_error_percent": "3.4",
+      "volume_standard_u_l": "0.002"
+    }
   }
 ]

@@ -103,11 +103,25 @@ func Calculate(input domain.Payload) (fields map[string]string, normalized domai
 	if !ok {
 		fail("不支持的实验")
 	}
+	if p.ExperimentID == "heat-capacity-ratio" {
+		if _, legacy := p.Data["diameter"]; legacy {
+			s.Data = map[string]int{"diameter": 5, "period": 5}
+			s.Parameters = append(append([]string{}, s.Parameters...), "diameter_zero_mm", "diameter_error_mm", "period_error_s", "volume_error_l")
+		}
+	}
 	counts := map[string]int{}
 	for k, v := range s.Data {
 		counts[k] = v
 	}
 	if p.ExperimentID == "focal-length" {
+		// Preserve complete legacy five-reading methods without truncating them.
+		for _, group := range [][]string{{"bessel_length", "bessel_separation"}, {"auto_object", "auto_lens"}, {"concave_object", "concave_lens", "concave_image"}} {
+			if len(p.Data[group[0]]) == 5 {
+				for _, k := range group {
+					counts[k] = 5
+				}
+			}
+		}
 		optional := true
 		for k := range counts {
 			if strings.HasPrefix(k, "concave_") {
