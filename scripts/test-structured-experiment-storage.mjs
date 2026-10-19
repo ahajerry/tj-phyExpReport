@@ -126,14 +126,16 @@ console.log('油滴逐行数据与扭摆法原始尺寸迁移和保存测试通�
 const lens = structuredExperimentById.get('focal-length')
 assert.ok(lens)
 assert.ok(lens.measurements.every((field) => field.count === 3))
-saved.set('phyexp_report_focal-length', JSON.stringify({
-  data: Object.fromEntries(lens.measurements.map((field) => [field.id, ['100.00', '101.0', '99.00', '102', '98']])),
+saved.set('phyexp_report_focal-length', JSON.stringify({ data: { object_distance: ['300', '300', '600'] } }))
+assert.ok(Object.values(readSavedExperimentValues(lens).data).every((values) => values.every((value) => value === '')))
+saved.set('phyexp_report_focal-length_positions', JSON.stringify({
+  data: Object.fromEntries(lens.measurements.map((field) => [field.id, ['100.00', '101.0', '99.00']])),
 }))
 const restoredLens = readSavedExperimentValues(lens)
 for (const field of lens.measurements) {
   assert.deepEqual(restoredLens.data[field.id], ['100.00', '101.0', '99.00'])
 }
-console.log('透镜表单统一三组，旧本地缓存读取前三组并保留读数文本测试通过')
+console.log('透镜位置表单三组读数文本保留，旧距离缓存不再加载测试通过')
 
 const heat = structuredExperimentById.get('heat-capacity-ratio')
 assert.ok(heat)

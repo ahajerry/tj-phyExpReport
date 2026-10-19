@@ -70,3 +70,14 @@ Go 回归样本位于 `server/testdata/`：45 个有效计算场景、31 个无�
 - 容器保持 UID 10001，无 Python 运行时；验收容器和临时卷已自动清理，未挂载或读取用户 `.report-data/`。结果见被忽略的 `output/docker-smoke/results.json`。
 
 本次仅验证隔离镜像 `phyexp-report:verification`，未替换正在使用的部署或 `phyexp-report:local` 标签。
+
+## 2026-10-19 透镜原始位置记录表
+
+按提供的记录单，将透镜改为物距像距法、共轭法、自准直法各三组原始位置（mm）。按用户要求删除旧距离/五组输入兼容和凹透镜选填项；透镜表单使用独立位置缓存键，不加载旧表单缓存。其他实验的兼容规则不变。
+
+- 前端与 Go 字段约束、JSON 识别提示、九列样例、报告原始位置表和距离计算表同步更新；末端修约和 A 类不确定度规则保持不变。
+- 合成参考样本覆盖放大/缩小像、原始尾零保留、坐标平移及负坐标；无效样本覆盖缺列、空值、非数字、组数、位置顺序、旧格式和已移除的凹透镜字段。
+- 已通过 `pnpm lint`、`pnpm test:experiment-data`、`pnpm test:storage`、`pnpm test:samples`、`pnpm test:precision` 和 `pnpm build`。构建需允许启动子进程，初次沙箱内遇到 spawn EPERM，放开构建子进程后通过；仅有既有的大 chunk 提示。
+- 浏览器检查确认三种方法、列顺序、各三行输入和凹透镜入口移除，预览截图为 `output/lens-positions-desktop.png`。预览仅启动前端，报告 API 未启动。
+- `pnpm test:backend` 未通过环境准备：本机找不到 `go` 命令。`docker build --progress=plain -t phyexp-report:lens-positions .` 及 `REPORT_TEST_IMAGE=phyexp-report:lens-positions pnpm test:docker` 均因 Docker Desktop Linux 引擎未运行（命名管道 dockerDesktopLinuxEngine 不存在）无法执行。尚未验证 Go 回归、镜像构建和实际 PDF 生成/分页；此前验收通过记录不代表本次已验证。
+- 未读取或修改用户 `.report-data/`。

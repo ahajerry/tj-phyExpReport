@@ -1969,74 +1969,6 @@
     }
   },
   {
-    "name": "invalid-20",
-    "payload": {
-      "experimentId": "focal-length",
-      "data": {
-        "object_distance": [
-          "200",
-          "210",
-          "220"
-        ],
-        "image_distance": [
-          "200",
-          "190",
-          "180"
-        ],
-        "bessel_length": [
-          "500",
-          "500",
-          "500",
-          "500",
-          "500"
-        ],
-        "bessel_separation": [
-          "220",
-          "218",
-          "222",
-          "219",
-          "221"
-        ],
-        "auto_object": [
-          "100",
-          "100",
-          "100",
-          "100",
-          "100"
-        ],
-        "auto_lens": [
-          "200",
-          "201",
-          "199",
-          "200",
-          "200"
-        ],
-        "concave_object": [
-          "100",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "concave_lens": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "concave_image": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ]
-      },
-      "parameters": {}
-    }
-  },
-  {
     "name": "invalid-21",
     "payload": {
       "experimentId": "forced-vibration",
@@ -3181,224 +3113,6 @@
     }
   },
   {
-    "name": "focal-length-two-groups",
-    "payload": {
-      "experimentId": "focal-length",
-      "data": {
-        "object_distance": [
-          "200.0",
-          "200.0",
-          "200.0"
-        ],
-        "image_distance": [
-          "200",
-          "200",
-          "200"
-        ],
-        "bessel_length": [
-          "625",
-          "625"
-        ],
-        "bessel_separation": [
-          "375",
-          "375"
-        ],
-        "auto_object": [
-          "100",
-          "100",
-          "100"
-        ],
-        "auto_lens": [
-          "199",
-          "200",
-          "201"
-        ],
-        "concave_object": [
-          "250",
-          "250",
-          "250"
-        ],
-        "concave_lens": [
-          "200",
-          "200",
-          "200"
-        ],
-        "concave_image": [
-          "300",
-          "300",
-          "300"
-        ]
-      },
-      "parameters": {}
-    }
-  },
-  {
-    "name": "focal-length-four-groups",
-    "payload": {
-      "experimentId": "focal-length",
-      "data": {
-        "object_distance": [
-          "200.0",
-          "200.0",
-          "200.0"
-        ],
-        "image_distance": [
-          "200",
-          "200",
-          "200"
-        ],
-        "bessel_length": [
-          "625",
-          "625",
-          "625"
-        ],
-        "bessel_separation": [
-          "375",
-          "375",
-          "375"
-        ],
-        "auto_object": [
-          "100",
-          "100",
-          "100",
-          "100"
-        ],
-        "auto_lens": [
-          "199",
-          "200",
-          "201",
-          "199"
-        ],
-        "concave_object": [
-          "250",
-          "250",
-          "250"
-        ],
-        "concave_lens": [
-          "200",
-          "200",
-          "200"
-        ],
-        "concave_image": [
-          "300",
-          "300",
-          "300"
-        ]
-      },
-      "parameters": {}
-    }
-  },
-  {
-    "name": "focal-length-mismatched-groups",
-    "payload": {
-      "experimentId": "focal-length",
-      "data": {
-        "object_distance": [
-          "200.0",
-          "200.0",
-          "200.0"
-        ],
-        "image_distance": [
-          "200",
-          "200",
-          "200"
-        ],
-        "bessel_length": [
-          "625",
-          "625",
-          "625"
-        ],
-        "bessel_separation": [
-          "375",
-          "375",
-          "375",
-          "375",
-          "375"
-        ],
-        "auto_object": [
-          "100",
-          "100",
-          "100"
-        ],
-        "auto_lens": [
-          "199",
-          "200",
-          "201"
-        ],
-        "concave_object": [
-          "250",
-          "250",
-          "250"
-        ],
-        "concave_lens": [
-          "200",
-          "200",
-          "200"
-        ],
-        "concave_image": [
-          "300",
-          "300",
-          "300"
-        ]
-      },
-      "parameters": {}
-    }
-  },
-  {
-    "name": "focal-length-partial-concave-three",
-    "payload": {
-      "experimentId": "focal-length",
-      "data": {
-        "object_distance": [
-          "200.0",
-          "200.0",
-          "200.0"
-        ],
-        "image_distance": [
-          "200",
-          "200",
-          "200"
-        ],
-        "bessel_length": [
-          "625",
-          "625",
-          "625"
-        ],
-        "bessel_separation": [
-          "375",
-          "375",
-          "375"
-        ],
-        "auto_object": [
-          "100",
-          "100",
-          "100"
-        ],
-        "auto_lens": [
-          "199",
-          "200",
-          "201"
-        ],
-        "concave_object": [
-          "250",
-          "250",
-          "250"
-        ],
-        "concave_lens": [
-          "200",
-          "200",
-          "200"
-        ],
-        "concave_image": [
-          "300",
-          "300",
-          ""
-        ]
-      },
-      "parameters": {}
-    }
-  },
-  {
     "name": "heat-pdf-negative-net-diameter",
     "payload": {
       "experimentId": "heat-capacity-ratio",
@@ -3574,6 +3288,601 @@
         "group": "1",
         "date": "2026-10-16"
       }
+    }
+  },
+  {
+    "name": "focal-length-two-groups",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100",
+          "100"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-four-groups",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300",
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-single-order",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "100",
+          "400",
+          "700"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-bessel-order",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "300",
+          "700",
+          "700"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-auto-order",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "100",
+          "301",
+          "299"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-not-numeric",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "abc",
+          "1000",
+          "1000"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-legacy-distances",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ],
+        "object_distance": [
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-removed-concave",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ],
+        "concave_object": [
+          "500",
+          "500",
+          "500"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-missing-column",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "bessel_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-blank-reading",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "single_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "single_lens": [
+          "400.00",
+          "400.00",
+          "700.00"
+        ],
+        "single_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_object": [
+          "",
+          "100.00",
+          "100.00"
+        ],
+        "bessel_image": [
+          "1000.00",
+          "1000.00",
+          "1000.00"
+        ],
+        "bessel_lens_large": [
+          "400.00",
+          "400.00",
+          "400.00"
+        ],
+        "bessel_lens_small": [
+          "700.00",
+          "700.00",
+          "700.00"
+        ],
+        "auto_object": [
+          "100.00",
+          "100.00",
+          "100.00"
+        ],
+        "auto_lens": [
+          "300.00",
+          "301.00",
+          "299.00"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
+    }
+  },
+  {
+    "name": "focal-length-legacy-only",
+    "payload": {
+      "experimentId": "focal-length",
+      "data": {
+        "object_distance": [
+          "300",
+          "300",
+          "300"
+        ],
+        "image_distance": [
+          "600",
+          "600",
+          "600"
+        ],
+        "bessel_length": [
+          "900",
+          "900",
+          "900"
+        ],
+        "bessel_separation": [
+          "300",
+          "300",
+          "300"
+        ],
+        "auto_object": [
+          "100",
+          "100",
+          "100"
+        ],
+        "auto_lens": [
+          "300",
+          "300",
+          "300"
+        ]
+      },
+      "parameters": {},
+      "reportInfo": {}
     }
   }
 ]

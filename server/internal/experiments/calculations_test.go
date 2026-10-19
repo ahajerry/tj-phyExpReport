@@ -47,7 +47,7 @@ func TestReferenceCalculations(t *testing.T) {
 					"moment-of-inertia":   "torsion_constant torsion_constant_u empty_inertia empty_inertia_u experiment_tube experiment_tube_u slider_experiment_5 slider_experiment_5_u",
 					"young-modulus":       "young_modulus_pa young_uncertainty_pa",
 					"forced-vibration":    "damping_beta_s_inv damping_beta_u_s_inv",
-					"focal-length":        "focus_single_mean_mm focus_single_u_mm focus_bessel_mean_mm focus_bessel_u_mm focus_auto_mean_mm focus_auto_u_mm focus_concave_mean_mm focus_concave_u_mm",
+					"focal-length":        "focus_single_mean_mm focus_single_u_mm focus_bessel_mean_mm focus_bessel_u_mm focus_auto_mean_mm focus_auto_u_mm",
 				}
 				if strings.Contains(" "+strict[c.Payload.ExperimentID]+" ", " "+k+" ") {
 					zeroUncertainty := false

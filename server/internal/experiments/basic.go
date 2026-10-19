@@ -124,6 +124,28 @@ func heat(f map[string]string, d map[string][]D, p map[string]D) {
 	f["gamma_error_percent"] = percent(div(gamma.Sub(dec("1.402")).Abs(), dec("1.402")).Mul(n(100)), ur)
 }
 func lens(f map[string]string, d map[string][]D) {
+	for i, o := range d["single_object"] {
+		l, image := d["single_lens"][i], d["single_image"][i]
+		u, v := pos(l.Sub(o), "物距（透镜位置须大于物屏位置）"), pos(image.Sub(l), "像距（像屏位置须大于透镜位置）")
+		d["object_distance"] = append(d["object_distance"], u)
+		d["image_distance"] = append(d["image_distance"], v)
+		f[fmt.Sprintf("object_distance_%02d", i+1)] = u.String()
+		f[fmt.Sprintf("image_distance_%02d", i+1)] = v.String()
+	}
+	for i, o := range d["bessel_object"] {
+		image, large, small := d["bessel_image"][i], d["bessel_lens_large"][i], d["bessel_lens_small"][i]
+		if !large.GreaterThan(o) || !small.GreaterThan(large) || !image.GreaterThan(small) {
+			fail("共轭法位置须满足：物屏 < 成大像时透镜 < 成小像时透镜 < 像屏")
+		}
+		l, separation := image.Sub(o), small.Sub(large)
+		d["bessel_length"] = append(d["bessel_length"], l)
+		d["bessel_separation"] = append(d["bessel_separation"], separation)
+		f[fmt.Sprintf("bessel_length_%02d", i+1)] = l.String()
+		f[fmt.Sprintf("bessel_separation_%02d", i+1)] = separation.String()
+	}
+	for i, o := range d["auto_object"] {
+		pos(d["auto_lens"][i].Sub(o), "自准直焦距（透镜位置须大于物屏位置）")
+	}
 	focus := map[string][]D{}
 	for i, u := range d["object_distance"] {
 		v := pos(d["image_distance"][i], "像距")
@@ -139,19 +161,7 @@ func lens(f map[string]string, d map[string][]D) {
 		focus["bessel"] = append(focus["bessel"], div(sq(l).Sub(sq(s)), n(4).Mul(l)))
 	}
 	for i, u := range d["auto_object"] {
-		focus["auto"] = append(focus["auto"], pos(d["auto_lens"][i].Sub(u).Abs(), "自准直焦距"))
-	}
-	for i, o := range d["concave_object"] {
-		l := d["concave_lens"][i]
-		u, v := l.Sub(o), d["concave_image"][i].Sub(l)
-		if !u.IsNegative() || !v.IsPositive() || u.Add(v).IsZero() {
-			fail("凹透镜位置顺序无效")
-		}
-		x := div(u.Mul(v), u.Add(v))
-		if !x.IsNegative() {
-			fail("凹透镜焦距应为负值")
-		}
-		focus["concave"] = append(focus["concave"], x)
+		focus["auto"] = append(focus["auto"], pos(d["auto_lens"][i].Sub(u), "自准直焦距"))
 	}
 	for k, a := range focus {
 		p := pair(f, "focus_"+k+"_mean_mm", "focus_"+k+"_u_mm", mean(a), sem(a))

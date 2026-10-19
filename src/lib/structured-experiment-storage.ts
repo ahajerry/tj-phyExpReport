@@ -14,6 +14,10 @@ export type SavedExperimentValues = {
   reportInfo: Record<string, string>
 }
 
+export function experimentStorageKey(id: string) {
+  return `phyexp_report_${id}${id === "focal-length" ? "_positions" : ""}`
+}
+
 export function readSavedExperimentValues(experiment: StructuredExperiment): SavedExperimentValues {
   const legacyReadings = Object.fromEntries(experiment.measurements.map((item) => [
     item.id, experiment.legacyCookieData ? readMeasurements(experiment.id, item.id)?.filter((value) => value.trim()) : null,
@@ -29,7 +33,7 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
   }
 
   try {
-    const raw = localStorage.getItem(`phyexp_report_${experiment.id}`)
+    const raw = localStorage.getItem(experimentStorageKey(experiment.id))
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SavedExperimentValues>
       if (experiment.id === "heat-capacity-ratio" && parsed.data?.diameter && !parsed.data.diameter_final) {

@@ -91,15 +91,15 @@
   "focal-length": {
     "title": "透镜焦距的测量",
     "data": {
-      "object_distance": 3,
-      "image_distance": 3,
-      "bessel_length": 3,
-      "bessel_separation": 3,
+      "single_object": 3,
+      "single_lens": 3,
+      "single_image": 3,
+      "bessel_object": 3,
+      "bessel_image": 3,
+      "bessel_lens_large": 3,
+      "bessel_lens_small": 3,
       "auto_object": 3,
-      "auto_lens": 3,
-      "concave_object": 3,
-      "concave_lens": 3,
-      "concave_image": 3
+      "auto_lens": 3
     },
     "parameters": []
   },

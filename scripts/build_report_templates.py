@@ -258,45 +258,8 @@ def resonance() -> str:
 
 
 def lens() -> str:
-    single = [[str(i), f(f"object_distance_{i:02d}"), f(f"image_distance_{i:02d}"), f(f"single_focus_{i:02d}")]
-              for i in range(1, 4)]
-    bessel = [[str(i), f(f"bessel_length_{i:02d}"), f(f"bessel_separation_{i:02d}"), f(f"bessel_focus_{i:02d}")]
-              for i in range(1, 4)]
-    auto = [[str(i), f(f"auto_object_{i:02d}"), f(f"auto_lens_{i:02d}"), f(f"auto_focus_{i:02d}")]
-            for i in range(1, 4)]
-    concave = [[str(i), f(f"concave_object_{i:02d}"), f(f"concave_lens_{i:02d}"),
-                f(f"concave_image_{i:02d}"), f(f"concave_focus_{i:02d}")]
-               for i in range(1, 4)]
-    return build("透镜焦距的测量", r"""\ReportSection{实验目的}
-理解薄透镜成像公式，分别用单次成像法、共轭法、自准直法测凸透镜焦距，并测凹透镜焦距。
-\ReportSection{实验原理}
-薄透镜满足 $\frac1u+\frac1v=\frac1f$。共轭法在物屏间距 $L>4f$ 时，两次清晰像的透镜位置间距为 $D$，
-$f=\frac{L^2-D^2}{4L}$。自准直法中物位于焦平面。凹透镜与凸透镜配合时应使用有符号物距和像距。
-\ReportSection{实验内容}
-调节物屏及光轴，分别记录单次成像、共轭、自准直和辅助成像的读数。
-\ReportSection{实验仪器}
-光学导轨、光源、物屏、凸透镜、凹透镜、平面镜及滑座。
-\ReportSection{数据记录处理}
-单次成像（mm）：
-""" + tab(["次数", "$u$", "$v$", "$f$"], single) + r"""
-\noindent 共轭法（mm）：
-""" + tab(["次数", "$L$", "$D$", "$f$"], bessel) + r"""
-\noindent 自准直法（位置读数，mm）：
-""" + tab(["次数", "物位", "凸透镜位", "$f$"], auto) + r"""
-\clearpage\ReportSection{凹透镜辅助成像}
-\noindent 凹透镜辅助成像（位置读数，mm）：
-""" + tab(["次数", "虚物位", "凹透镜位", "像位", "$f$"], concave) + r"""
-\[\begin{aligned}
-\bar f_{\rm single}&=(\MathField{focus_single_mean_mm}\pm\MathField{focus_single_u_mm})\,\mathrm{mm},\\
-\bar f_{\rm Bessel}&=(\MathField{focus_bessel_mean_mm}\pm\MathField{focus_bessel_u_mm})\,\mathrm{mm},\\
-\bar f_{\rm auto}&=(\MathField{focus_auto_mean_mm}\pm\MathField{focus_auto_u_mm})\,\mathrm{mm},\\
-\bar f_{\rm concave}&=(\MathField{focus_concave_mean_mm}\pm\MathField{focus_concave_u_mm})\,\mathrm{mm}.
-\end{aligned}\]
-\noindent $u_f$ 为各方法重复测量的 A 类标准不确定度，未计入导轨读数和成像判断的系统误差。
-\ReportSection{讨论与分析}
-各法的主要误差来自光轴未对准、像清晰位置的判断和透镜厚度；共轭法应检查 $L>4f$，凹透镜计算须保留距离符号。
-\ReportSection{实验结论}
-通过不同成像方法可交叉核对凸透镜焦距，并利用辅助实像测出凹透镜焦距。""")
+    # Curated three-method position-reading template.
+    return (ARCHIVE / "focal-length.tex").read_text(encoding="utf-8")
 
 
 def sound() -> str:

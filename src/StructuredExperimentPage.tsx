@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ForcedVibrationReadings } from "@/components/forced-vibration-readings"
+import { LensReadings } from "@/components/lens-readings"
 import { MillikanReadings, TorsionReadings } from "@/components/instrument-readings"
 import { buildImportPrompt, parseImportedMeasurements } from "@/lib/experiment-data"
-import { readSavedExperimentValues, REPORT_INFO_FIELDS } from "@/lib/structured-experiment-storage"
+import { experimentStorageKey, readSavedExperimentValues, REPORT_INFO_FIELDS } from "@/lib/structured-experiment-storage"
 import type { StructuredExperiment } from "@/structured-experiments"
 
 export function StructuredExperimentPage({ experiment }: { experiment: StructuredExperiment }) {
@@ -28,7 +29,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   useEffect(() => {
     try {
-      localStorage.setItem(`phyexp_report_${experiment.id}`, JSON.stringify({ data, parameters, reportInfo }))
+      localStorage.setItem(experimentStorageKey(experiment.id), JSON.stringify({ data, parameters, reportInfo }))
     } catch { /* Submitting the current form is still possible. */ }
   }, [experiment.id, data, parameters, reportInfo])
 
@@ -63,7 +64,6 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     try {
       const parsed = parseImportedMeasurements(importText, experiment.measurements.map((item) => ({
         id: item.id, showName: item.label, unit: item.unit, allowBlank: experiment.id === "millikan" || item.optional,
-        optionalCount: experiment.id === "focal-length" && item.optional ? item.count : undefined,
       })))
       for (const item of experiment.measurements) {
         if (experiment.id === "millikan" && parsed[item.id].length >= 12 && parsed[item.id].length <= item.count) {
@@ -120,7 +120,6 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
       setError(reason instanceof Error ? reason.message : "读数数量不正确")
       return
     }
-    const concaveUsed = experiment.id === "focal-length" && experiment.measurements.filter((item) => item.id.startsWith("concave_")).some((item) => data[item.id].some((value) => value.trim()))
     const lastDropRow = experiment.id === "millikan"
       ? Math.max(-1, ...experiment.measurements.flatMap((item) => data[item.id].flatMap((value, index) => value.trim() ? [index] : []))) : null
     const dropRows = lastDropRow === null ? null : (Math.floor(lastDropRow / 4) + 1) * 4
@@ -131,7 +130,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     for (const item of experiment.measurements) {
       const values = data[item.id]
       if ((dropRows === null ? values : values.slice(0, dropRows)).some((value) =>
-        (!value.trim() && (!item.optional || concaveUsed && item.id.startsWith("concave_"))) || (value.trim() && !Number.isFinite(Number(value))))) {
+        (!value.trim() && !item.optional) || (value.trim() && !Number.isFinite(Number(value))))) {
         setError(experiment.id === "millikan" ? `${item.label}的已使用行需填写有效数字` : `${item.label}需要 ${values.length} 个有效数字`)
         return
       }
@@ -173,7 +172,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
 
   const prompt = buildImportPrompt(experiment.title, experiment.measurements.map((item) => ({
     id: item.id, showName: `${item.label}（${isForcedVibration ? "按实际测量数量" : `${item.count} 个`}${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
-  }))) + (experiment.id === "millikan" ? "\n每颗油滴对应连续四行，各字段按相同的行顺序排列。选填项与未使用油滴的空白读数用空字符串表示。" : experiment.id === "focal-length" ? "\n未做凹透镜实验时可省略 concave_object、concave_lens、concave_image 三个字段。" : "")
+  }))) + (experiment.id === "millikan" ? "\n每颗油滴对应连续四行，各字段按相同的行顺序排列。选填项与未使用油滴的空白读数用空字符串表示。" : "")
 
   function readingCell(key: string, index: number) {
     const item = experiment.measurements.find((item) => item.id === key)!
@@ -254,7 +253,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         disabled={importingTable || generating} />}
       {experiment.id === "millikan" && <MillikanReadings readingCell={readingCell} disabled={importingTable || generating} />}
       {experiment.id === "moment-of-inertia" && <TorsionReadings readingCell={readingCell} parameterCell={parameterCell} disabled={importingTable || generating} />}
-      {!tableType && experiment.id !== "oscilloscope" && <section className="grid gap-4 lg:grid-cols-2">
+      {experiment.id === "focal-length" && <LensReadings readingCell={readingCell} />}
+      {!tableType && experiment.id !== "oscilloscope" && experiment.id !== "focal-length" && <section className="grid gap-4 lg:grid-cols-2">
         {experiment.measurements.map((item) => (
           <div key={item.id} className="rounded-xl border bg-white p-4">
             <h2 className="mb-3 font-semibold">{item.label} <span className="text-sm font-normal text-muted-foreground">({item.unit})</span></h2>

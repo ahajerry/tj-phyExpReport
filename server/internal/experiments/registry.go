@@ -113,34 +113,6 @@ func Calculate(input domain.Payload) (fields map[string]string, normalized domai
 	for k, v := range s.Data {
 		counts[k] = v
 	}
-	if p.ExperimentID == "focal-length" {
-		// Preserve complete legacy five-reading methods without truncating them.
-		for _, group := range [][]string{{"bessel_length", "bessel_separation"}, {"auto_object", "auto_lens"}, {"concave_object", "concave_lens", "concave_image"}} {
-			if len(p.Data[group[0]]) == 5 {
-				for _, k := range group {
-					counts[k] = 5
-				}
-			}
-		}
-		optional := true
-		for k := range counts {
-			if strings.HasPrefix(k, "concave_") {
-				for _, v := range p.Data[k] {
-					if v != "" {
-						optional = false
-					}
-				}
-			}
-		}
-		if optional {
-			for k := range counts {
-				if strings.HasPrefix(k, "concave_") {
-					delete(counts, k)
-					delete(p.Data, k)
-				}
-			}
-		}
-	}
 	if p.ExperimentID == "forced-vibration" {
 		for _, group := range [][]string{{"free_angle", "free_period"}, {"drive_period", "amplitude", "phase"}, {"damped_period"}} {
 			min := len(group)

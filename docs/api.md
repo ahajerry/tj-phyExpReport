@@ -1,6 +1,6 @@
 # API 与存储契约
 
-同源 `/api`，错误 JSON 为 `{"error":"说明"}`，API 响应为 `Cache-Control: no-store`。前端路由和字段兼容迁移前版本。
+同源 `/api`，错误 JSON 为 `{"error":"说明"}`，API 响应为 `Cache-Control: no-store`。前端路由和字段兼容迁移前版本，透镜实验仅接受当前三方法位置读数（见 [字段目录](fields.md#透镜焦距的测量focal-length)），不再接受旧距离或凹透镜字段。
 
 | 方法与路径 | 成功 | 失败 |
 | --- | --- | --- |

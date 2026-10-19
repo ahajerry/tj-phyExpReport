@@ -36,7 +36,7 @@ func TestAllTemplates(t *testing.T) {
 				t.Fatal(e)
 			}
 			if p.ExperimentID == "focal-length" {
-				for _, key := range []string{"object_distance", "bessel_length", "auto_object", "concave_object"} {
+				for _, key := range []string{"single_object", "single_lens", "single_image", "bessel_object", "bessel_image", "bessel_lens_large", "bessel_lens_small", "auto_object", "auto_lens"} {
 					for _, row := range []struct {
 						index string
 						count int
@@ -47,27 +47,27 @@ func TestAllTemplates(t *testing.T) {
 						}
 					}
 				}
+				if strings.Contains(source, "凹透镜") || strings.Contains(source, "concave") {
+					t.Fatal("removed concave experiment remains in template")
+				}
 			}
 			tex, e := Fill(source, f, p, nil)
 			if e != nil {
 				t.Fatal(e)
 			}
-			if p.ExperimentID == "heat-capacity-ratio" {
+			if p.ExperimentID == "heat-capacity-ratio" || p.ExperimentID == "focal-length" {
 				for _, match := range regexp.MustCompile(`\\(?:MathField|Field)(?:\[[^\]]*\])?\{([^}]+)\}`).FindAllStringSubmatch(source, -1) {
 					key := match[1]
 					if key == "experiment" || key == "student" || key == "student_id" || key == "group" || key == "date" {
 						continue
 					}
 					if _, ok := f[key]; !ok {
-						t.Errorf("uncomputed heat-capacity field %s", key)
+						t.Errorf("uncomputed %s field %s", p.ExperimentID, key)
 					}
 				}
 			}
 			if strings.Contains(tex, `\PlotCoordinates{`) || strings.Contains(tex, imageMarker) {
 				t.Fatal("unfilled marker")
-			}
-			if c.Name == "focal-length-optional" && strings.Contains(tex, `\Field{focus_concave`) {
-				t.Fatal("optional concave not removed")
 			}
 			if os.Getenv("REPORT_TEST_PDF") == "1" {
 				r := Renderer{TemplateDir: dir, WorkDir: t.TempDir()}

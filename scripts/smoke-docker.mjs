@@ -92,9 +92,8 @@ try {
   // Keep the first standard baseline; later cases exercise compatibility variants.
   for (const c of cases) if (!unique.has(c.payload.experimentId)) unique.set(c.payload.experimentId, c.payload)
   for (const [id, payload] of unique) await complete(payload, id)
-  await complete(cases.find(c => c.name === 'focal-length-optional').payload, 'focal-length-optional')
   await complete(cases.find(c => c.name === 'heat-capacity-pdf-100-periods').payload, 'heat-capacity-pdf-100-periods')
-  for (const label of ['focal-length-three-groups', 'focal-length-three-groups-optional']) {
+  for (const label of ['focal-length-translated']) {
     await complete(cases.find(c => c.name === label).payload, label)
   }
   const imports = JSON.parse(await readFile(new URL('imports.json', fixtures), 'utf8'))
