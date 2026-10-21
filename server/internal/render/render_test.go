@@ -55,10 +55,14 @@ func TestAllTemplates(t *testing.T) {
 			if e != nil {
 				t.Fatal(e)
 			}
-			if p.ExperimentID == "heat-capacity-ratio" || p.ExperimentID == "focal-length" {
+			if p.ExperimentID == "heat-capacity-ratio" || p.ExperimentID == "focal-length" || p.ExperimentID == "moment-of-inertia" {
 				for _, match := range regexp.MustCompile(`\\(?:MathField|Field)(?:\[[^\]]*\])?\{([^}]+)\}`).FindAllStringSubmatch(source, -1) {
 					key := match[1]
 					if key == "experiment" || key == "student" || key == "student_id" || key == "group" || key == "date" {
+						continue
+					}
+					// Legacy torsion payloads only contain mean dimensions, not raw geometry.
+					if p.ExperimentID == "moment-of-inertia" && strings.HasPrefix(key, "geometry_") && len(p.Geometry) == 0 {
 						continue
 					}
 					if _, ok := f[key]; !ok {
