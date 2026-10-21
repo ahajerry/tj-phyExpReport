@@ -132,6 +132,10 @@ saved.set('phyexp_report_focal-length_positions', JSON.stringify({
   data: Object.fromEntries(lens.measurements.map((field) => [field.id, ['100.00', '101.0', '99.00']])),
 }))
 const restoredLens = readSavedExperimentValues(lens)
+assert.equal(restoredLens.parameters.position_direction, '1')
+restoredLens.parameters.position_direction = '-1'
+saved.set('phyexp_report_focal-length_positions', JSON.stringify(restoredLens))
+assert.deepEqual(readSavedExperimentValues(lens), restoredLens)
 for (const field of lens.measurements) {
   assert.deepEqual(restoredLens.data[field.id], ['100.00', '101.0', '99.00'])
 }

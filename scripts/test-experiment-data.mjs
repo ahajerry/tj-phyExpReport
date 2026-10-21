@@ -33,6 +33,22 @@ assert.throws(() => parseImportedMeasurements('{"mass":[1]}', quantities), /体�
 assert.throws(() => parseImportedMeasurements('{"mass":[1],"volume":["oops"]}', quantities), /无效/)
 assert.throws(() => parseImportedMeasurements('{"mass":[1],"volume":[2],"other":[3]}', quantities), /未识别/)
 assert.throws(() => parseImportedMeasurements('{"mass":[""]}', quantities.slice(0, 1)), /无效/)
+// Screenshot regression: all four oscilloscope time scales can be imported.
+assert.deepEqual(parseImportedMeasurements(JSON.stringify({ time_scale: ['5×10⁻²', '5×10⁻³', '5×10⁻³', '5×10⁻²'] }),
+  [{ id: 'time_scale', showName: '波形时基档位 Sx', unit: 'ms/div' }]),
+{ time_scale: ['5e-2', '5e-3', '5e-3', '5e-2'] })
+for (const [input, expected] of [
+  [' 5.00 × 10⁻² ', '5.00e-2'], ['1.20×10⁺³', '1.20e+3'],
+  ['-2.00x10^−12', '-2.00e-12'], ['+.50 * 10 ^ +2', '+.50e+2'],
+  ['3X10⁰', '3e0'], ['2×10¹²', '2e12'], ['5.00E-2', '5.00E-2'], ['0.0500', '0.0500'],
+]) {
+  const result = parseImportedMeasurements(JSON.stringify({ mass: [input] }), quantities.slice(0, 1))
+  assert.deepEqual(result, { mass: [expected] })
+  assert.ok(Number.isFinite(Number(result.mass[0])))
+}
+for (const input of ['5×10', '5×10⁻', '5×10^-2junk', '5×10².³', '5×10^2+1', '5×10⁻² ms', '5×10⁹⁹⁹', 'NaN', 'Infinity', '0x10']) {
+  assert.throws(() => parseImportedMeasurements(JSON.stringify({ mass: [input] }), quantities.slice(0, 1)), /无效/)
+}
 assert.deepEqual(parseImportedMeasurements('{"mass":["0.0",""]}', [{ ...quantities[0], allowBlank: true }]), { mass: ['0.0', ''] })
 assert.deepEqual(parseImportedMeasurements('{"mass":["3.0"]}', quantities.slice(0, 1)), { mass: ['3.0'] })
 assert.deepEqual(parseImportedMeasurements('{"mass":["3.0"]}', [quantities[0], { ...quantities[1], optionalCount: 5 }]),

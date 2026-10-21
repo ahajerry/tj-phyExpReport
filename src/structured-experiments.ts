@@ -144,7 +144,7 @@ export const structuredExperiments: StructuredExperiment[] = [
       { id: "bessel_lens_small", label: "共轭法成小像时透镜位置", unit: "mm", count: 3 },
       { id: "auto_object", label: "自准直法物屏位置", unit: "mm", count: 3 },
       { id: "auto_lens", label: "自准直法透镜位置", unit: "mm", count: 3 },
-    ], parameters: [],
+    ], parameters: [{ id: "position_direction", label: "物屏位置方向", unit: "", initial: "1" }],
   },
 ]
 

@@ -81,3 +81,11 @@ Go 回归样本位于 `server/testdata/`：45 个有效计算场景、31 个无�
 - 浏览器检查确认三种方法、列顺序、各三行输入和凹透镜入口移除，预览截图为 `output/lens-positions-desktop.png`。预览仅启动前端，报告 API 未启动。
 - `pnpm test:backend` 未通过环境准备：本机找不到 `go` 命令。`docker build --progress=plain -t phyexp-report:lens-positions .` 及 `REPORT_TEST_IMAGE=phyexp-report:lens-positions pnpm test:docker` 均因 Docker Desktop Linux 引擎未运行（命名管道 dockerDesktopLinuxEngine 不存在）无法执行。尚未验证 Go 回归、镜像构建和实际 PDF 生成/分页；此前验收通过记录不代表本次已验证。
 - 未读取或修改用户 `.report-data/`。
+
+## 2026-10-21 透镜物屏左右切换
+
+- 三种方法共用“物屏在左侧（坐标最小）／右侧（坐标最大）”选择，保存到现有表单缓存；切换不修改原始坐标。后端按方向计算正距离和校验位置顺序，缺省方向沿用旧行为。
+- 新增 Go 合成回归测试：将左侧样本映射为 1200 − x 和 −x，检查距离、焦距、均值、不确定度相同及原始读数文本保留，并检查方向错误和位置越界。
+- 已通过 `pnpm test:storage`、`pnpm test:samples`、`pnpm test:experiment-data`、`pnpm lint` 和 `pnpm build`。构建在沙箱内遇到 spawn EPERM，允许启动构建子进程后通过，仅有既有的大 chunk 提示。
+- 浏览器交互检查通过：左右切换不改坐标、刷新恢复右侧选择和读数、三种方法公式提示更新、提交包含 `position_direction: "-1"`。提交检查拦截请求并返回测试响应，未创建报告。
+- `pnpm test:backend` 因本机没有 Go 无法执行，gofmt 同样不可用；WSL 仅列出 docker-desktop，Docker Desktop Linux 引擎命名管道不存在。Go 回归测试和实际报告生成尚未验证。未修改模板或容器配置，未读取或修改用户 `.report-data/`。

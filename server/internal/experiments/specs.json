@@ -101,7 +101,7 @@
       "auto_object": 3,
       "auto_lens": 3
     },
-    "parameters": []
+    "parameters": ["position_direction"]
   },
   "oscilloscope": {
     "title": "阴极射线示波器",

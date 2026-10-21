@@ -23,6 +23,7 @@ JSON 数字和字符串均直接解析十进制，保留原始读数文本。代
 
 ## 导入
 
+- JSON 读数支持普通十进制、`5e-2`，以及 `5×10⁻²`、`5×10^-2` 形式的科学计数法（乘号可用 `×`、`x`、`X`、`*`，指数支持上标数字或 `^` 后的整数）。导入时后两种写法转换为 `e` 格式，保留系数的小数位和末尾零，例如 `5.00×10⁻²` 转为 `5.00e-2`；普通十进制与已有 `e/E` 文本保持原样。不接受附带单位或算式的读数，数值仍按字段标注的单位填写，不自动换算。
 - 油滴：UTF-8（含 BOM）或 GB18030 CSV，要求平衡电压和时间表头，每颗连续四行，3–8 颗；每次电压和仪器电荷保留可编辑。
 - 扭摆：按仪器 XLSX 固定单元格读取；质量 kg、尺寸 cm、两滑块惯量单位转换，保留三次尺寸读数。
 - 波尔共振：只读取“学生实验数据”工作表，识别表头及合并单元格旁的值，支持移动列、续接自由周期列和独立数量的阻尼/受迫表；优先原始测量表，拒绝不完整行和不连续序号。
@@ -39,4 +40,6 @@ XLSX 公式读取已有缓存值，不在服务端重新计算。未保存缓存
 
 ## 透镜位置读数
 
-透镜位置差：u = single_lens − single_object，v = single_image − single_lens，L = bessel_image − bessel_object，D = bessel_lens_small − bessel_lens_large；分别使用 f = uv/(u+v)、f = (L²−D²)/(4L)、f = auto_lens − auto_object。各方法均输出均值与 A 类标准不确定度，末端修约规则不变。
+透镜表单可切换物屏在左侧（坐标最小）或右侧（坐标最大）。方向参数 s = `parameters.position_direction`，左侧为 1（省略时默认），右侧为 −1。位置差为 u = s × (single_lens − single_object)，v = s × (single_image − single_lens)，L = s × (bessel_image − bessel_object)，D = s × (bessel_lens_small − bessel_lens_large)；分别使用 f = uv/(u+v)、f = (L²−D²)/(4L)、f = s × (auto_lens − auto_object)。按所选方向检查位置顺序，拒绝零距离、透镜在物像屏之外或共轭位置颠倒，不用绝对值掩盖录入错误。各方法均输出均值与 A 类标准不确定度，末端修约规则不变。
+
+回归样本取 `server/testdata/web-samples.json` 的左侧读数，将每个坐标 x 映射为 1200 − x 或 −x，选择右侧后，三种方法的各次距离、焦距、均值与不确定度应与原样本一致；原始坐标文本仍保留在报告中。

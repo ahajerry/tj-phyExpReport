@@ -5,6 +5,18 @@ const COOKIE_CHUNK_SIZE = 3000
 const COOKIE_AGE = 365 * 24 * 60 * 60
 const MAX_IMPORT_VALUES = 300
 const DECIMAL_NUMBER = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
+const SCIENTIFIC_PRODUCT = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*[×xX*]\s*10\s*(?:\^\s*([+\-−]?\d+)|([⁺⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹]+))$/
+const SUPERSCRIPT_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+
+function normalizeImportedReading(value: string): string {
+  const match = SCIENTIFIC_PRODUCT.exec(value)
+  if (!match) return value
+  const exponent = match[2]?.replace("−", "-") ?? [...match[3]].map((character) =>
+    character === "⁺" ? "+" : character === "⁻" ? "-" : String(SUPERSCRIPT_DIGITS.indexOf(character)),
+  ).join("")
+  // Keep the coefficient text (including trailing zeros); never round via Number.
+  return `${match[1]}e${exponent}`
+}
 
 function cookieBase(experimentId: string, quantityId: string): string {
   const experiment = encodeURIComponent(experimentId)
@@ -95,10 +107,11 @@ export function parseImportedMeasurements(text: string, quantities: MeasurementQ
       }
       const value = String(reading).trim()
       if (quantity.allowBlank && value === "") return ""
-      if (!DECIMAL_NUMBER.test(value) || !Number.isFinite(Number(value))) {
+      const normalized = normalizeImportedReading(value)
+      if (!DECIMAL_NUMBER.test(normalized) || !Number.isFinite(Number(normalized))) {
         throw new Error(`${quantity.showName}第 ${index + 1} 个读数无效：${value}`)
       }
-      return value
+      return normalized
     })
     return [quantity.id, values]
   }))

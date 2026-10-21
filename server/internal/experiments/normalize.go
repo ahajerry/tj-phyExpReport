@@ -13,6 +13,13 @@ var oilColumns = []string{"current_voltage", "balance_voltage", "fall_time", "in
 func scalar(v D) domain.Scalar { return domain.Scalar(v.String()) }
 func normalize(p *domain.Payload) {
 	switch p.ExperimentID {
+	case "focal-length":
+		if p.Parameters == nil {
+			p.Parameters = map[string]domain.Scalar{}
+		}
+		if _, ok := p.Parameters["position_direction"]; !ok {
+			p.Parameters["position_direction"] = "1"
+		}
 	case "young-modulus":
 		if a, ok := p.Data["diameter"]; ok && len(p.Data) == 3 {
 			p.Data["diameter_initial"] = []domain.Scalar{"0", "0", "0", "0", "0"}

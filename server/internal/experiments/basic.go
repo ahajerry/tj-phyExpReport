@@ -123,10 +123,14 @@ func heat(f map[string]string, d map[string][]D, p map[string]D) {
 	pair(f, "gamma_result", "gamma_uncertainty", gamma, gamma.Mul(ur))
 	f["gamma_error_percent"] = percent(div(gamma.Sub(dec("1.402")).Abs(), dec("1.402")).Mul(n(100)), ur)
 }
-func lens(f map[string]string, d map[string][]D) {
+func lens(f map[string]string, d map[string][]D, direction D) {
+	if !direction.Equal(one) && !direction.Equal(n(-1)) {
+		fail("物屏位置方向必须为 1（坐标最小）或 -1（坐标最大）")
+	}
+	distance := func(to, from D) D { return to.Sub(from).Mul(direction) }
 	for i, o := range d["single_object"] {
 		l, image := d["single_lens"][i], d["single_image"][i]
-		u, v := pos(l.Sub(o), "物距（透镜位置须大于物屏位置）"), pos(image.Sub(l), "像距（像屏位置须大于透镜位置）")
+		u, v := pos(distance(l, o), "物距（请检查物屏所在侧和透镜位置）"), pos(distance(image, l), "像距（请检查物屏所在侧和像屏位置）")
 		d["object_distance"] = append(d["object_distance"], u)
 		d["image_distance"] = append(d["image_distance"], v)
 		f[fmt.Sprintf("object_distance_%02d", i+1)] = u.String()
@@ -134,17 +138,20 @@ func lens(f map[string]string, d map[string][]D) {
 	}
 	for i, o := range d["bessel_object"] {
 		image, large, small := d["bessel_image"][i], d["bessel_lens_large"][i], d["bessel_lens_small"][i]
-		if !large.GreaterThan(o) || !small.GreaterThan(large) || !image.GreaterThan(small) {
+		if !distance(large, o).IsPositive() || !distance(small, large).IsPositive() || !distance(image, small).IsPositive() {
+			if direction.IsNegative() {
+				fail("共轭法位置须满足：物屏 > 成大像时透镜 > 成小像时透镜 > 像屏")
+			}
 			fail("共轭法位置须满足：物屏 < 成大像时透镜 < 成小像时透镜 < 像屏")
 		}
-		l, separation := image.Sub(o), small.Sub(large)
+		l, separation := distance(image, o), distance(small, large)
 		d["bessel_length"] = append(d["bessel_length"], l)
 		d["bessel_separation"] = append(d["bessel_separation"], separation)
 		f[fmt.Sprintf("bessel_length_%02d", i+1)] = l.String()
 		f[fmt.Sprintf("bessel_separation_%02d", i+1)] = separation.String()
 	}
 	for i, o := range d["auto_object"] {
-		pos(d["auto_lens"][i].Sub(o), "自准直焦距（透镜位置须大于物屏位置）")
+		pos(distance(d["auto_lens"][i], o), "自准直焦距（请检查物屏所在侧和透镜位置）")
 	}
 	focus := map[string][]D{}
 	for i, u := range d["object_distance"] {
@@ -161,7 +168,7 @@ func lens(f map[string]string, d map[string][]D) {
 		focus["bessel"] = append(focus["bessel"], div(sq(l).Sub(sq(s)), n(4).Mul(l)))
 	}
 	for i, u := range d["auto_object"] {
-		focus["auto"] = append(focus["auto"], pos(d["auto_lens"][i].Sub(u), "自准直焦距"))
+		focus["auto"] = append(focus["auto"], pos(distance(d["auto_lens"][i], u), "自准直焦距"))
 	}
 	for k, a := range focus {
 		p := pair(f, "focus_"+k+"_mean_mm", "focus_"+k+"_u_mm", mean(a), sem(a))

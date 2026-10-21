@@ -180,7 +180,7 @@ func Calculate(input domain.Payload) (fields map[string]string, normalized domai
 	case "heat-capacity-ratio":
 		heat(f, d, params)
 	case "focal-length":
-		lens(f, d)
+		lens(f, d, params["position_direction"])
 	case "millikan":
 		millikan(f, d)
 	case "moment-of-inertia":

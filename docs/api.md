@@ -2,6 +2,8 @@
 
 同源 `/api`，错误 JSON 为 `{"error":"说明"}`，API 响应为 `Cache-Control: no-store`。前端路由和字段兼容迁移前版本，透镜实验仅接受当前三方法位置读数（见 [字段目录](fields.md#透镜焦距的测量focal-length)），不再接受旧距离或凹透镜字段。
 
+透镜请求可通过 `parameters.position_direction` 指定物屏坐标方向：`"1"` 为物屏坐标最小，`"-1"` 为物屏坐标最大。省略时默认 `"1"`，兼容已有请求；原始坐标不变，服务端按所选方向计算距离并校验位置顺序。
+
 | 方法与路径 | 成功 | 失败 |
 | --- | --- | --- |
 | `GET /api/health` | 200，service/revision/backend | 不创建身份，不检查 PDF 能力 |

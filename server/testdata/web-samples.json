@@ -576,7 +576,7 @@
         "299.00"
       ]
     },
-    "parameters": {},
+    "parameters": {"position_direction": "1"},
     "reportInfo": {}
   }
 }
