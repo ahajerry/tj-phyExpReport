@@ -67,13 +67,16 @@ func TestLensPositionDirection(t *testing.T) {
 			for _, key := range []string{"single_lens", "bessel_lens_large", "auto_lens"} {
 				bad := clone(right)
 				bad.Data[key][0] = "2000"
+				if key == "auto_lens" {
+					bad.Data[key][0] = bad.Data["auto_object"][0]
+				}
 				if _, _, err := Calculate(bad); err == nil {
 					t.Errorf("accepted invalid right-side position: %s", key)
 				}
 			}
 			right.Parameters["position_direction"] = "1"
-			if _, _, err := Calculate(right); err == nil {
-				t.Error("accepted coordinates for opposite direction")
+			if got, _, err := Calculate(right); err != nil || got["focus_single_mean_mm"] != want["focus_single_mean_mm"] {
+				t.Errorf("absolute distances depend on saved direction: %v", err)
 			}
 		})
 	}
@@ -83,5 +86,28 @@ func TestLensPositionDirection(t *testing.T) {
 		if _, _, err := Calculate(bad); err == nil {
 			t.Errorf("accepted invalid direction %q", direction)
 		}
+	}
+}
+
+func TestLensScreenshotCoordinates(t *testing.T) {
+	b, err := os.ReadFile("../../testdata/lens-reversed.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var p domain.Payload
+	if err := json.Unmarshal(b, &p); err != nil {
+		t.Fatal(err)
+	}
+	f, normalized, err := Calculate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for key, want := range map[string]string{"object_distance_01": "220", "image_distance_01": "180", "bessel_length_01": "500", "bessel_separation_01": "228", "focus_auto_mean_mm": "100.0"} {
+		if f[key] != want {
+			t.Errorf("%s: got %s want %s", key, f[key], want)
+		}
+	}
+	if normalized.Data["single_object"][0] != "930.0" {
+		t.Fatal("raw reading text changed")
 	}
 }

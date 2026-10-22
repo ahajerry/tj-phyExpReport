@@ -184,15 +184,16 @@ func Calculate(input domain.Payload) (fields map[string]string, normalized domai
 	case "millikan":
 		millikan(f, d)
 	case "moment-of-inertia":
-		torsion(f, d, params)
 		for k, a := range p.Geometry {
 			if len(a) != 3 {
 				fail("几何尺寸读数格式错误")
 			}
 			for i, v := range a {
 				f[fmt.Sprintf("geometry_%s_%02d", k, i+1)] = string(v)
+				d["size_"+k+"_cm"] = append(d["size_"+k+"_cm"], pos(number(v), "尺寸"))
 			}
 		}
+		torsion(f, d, params)
 	case "young-modulus":
 		d["diameter"] = nil
 		for i, x := range d["diameter_final"] {

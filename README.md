@@ -20,25 +20,18 @@ docker compose up -d --build
 
 需要 Node.js 24+ 和 pnpm **11.28.5**。项目仅允许 pnpm，约束见 [AGENTS.md](AGENTS.md) 与 [开发文档](docs/development.md)。按操作系统选择以下启动方式。
 
-### Windows：本机前端 + Docker 后端
+### Windows：一条命令启动开发
 
-当前 Go 后端使用 Unix 专属调用，Windows PowerShell 不支持直接运行 `pnpm dev`；仅安装 Windows Go 也无法解决平台兼容问题。使用 Docker Desktop 的 Linux 容器提供后端及完整报告生成环境：
+先启动 Docker Desktop 的 Linux 引擎，再运行：
 
 ```powershell
 pnpm install --frozen-lockfile
-docker build --progress=plain -t phyexp-report:local .
+pnpm dev
 ```
 
-镜像构建成功后运行：
+首次自动准备 `phyexp-report:dev` 开发镜像（Go + TeX 环境），以后启动直接复用。Vite 在本机运行，API 转发到容器的 8000 端口；前端热更新，Go 源码保存后自动增量编译并重启，模板保存后下一次生成报告直接生效。日常修改不运行生产镜像构建。Ctrl+C 停止本次开发服务，保留独立开发数据与 Go 缓存卷。
 
-```powershell
-$env:REPORT_PUBLIC_PORT = '8000'
-docker compose -p phyexpreport up -d --no-build
-Invoke-RestMethod http://127.0.0.1:8000/api/health
-pnpm exec vite
-```
-
-访问 Vite 显示的地址（通常为 `http://localhost:5173`）；API 代理到本机 8000 端口。修改前端自动热更新，修改 Go 或报告模板后重新构建镜像并运行同一 Compose 启动命令。WSL、Docker 数据位置和网络代理排错见 [Windows 开发与排错](docs/windows-development.md)。
+只开发页面可运行 `pnpm dev:frontend`，不要求 Docker；需要 API 功能时仍需启动后端。`pnpm dev:setup` 用于提前准备或更新开发镜像，只有 Dockerfile、系统依赖或工具链改变时才需要重建。网络和 Docker 排错见 [Windows 开发与排错](docs/windows-development.md)。
 
 ### Linux / WSL：本机前后端
 
@@ -49,7 +42,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-开发脚本构建并启动 Go 后端，再启动 Vite。PDF 生成与图片上传还需要同一环境中的 XeLaTeX、宏包、字体和 ImageMagick/libheif，推荐通过 Docker 验证这些功能。
+开发脚本启动 Vite 和 Go 自动编译监听器，Go 编译失败时保留旧服务，修复并保存后自动重试。开发数据默认位于 `output/dev-data/`。PDF 生成与图片上传还需要同一环境中的 XeLaTeX、宏包、字体和 ImageMagick/libheif，也可用 `pnpm dev:docker` 使用与 Windows 相同的容器开发环境。
 
 以下后端检查和构建命令在 Linux/WSL 开发环境执行；前端测试、lint 和 build 也可在 Windows 执行：
 

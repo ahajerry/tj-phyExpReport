@@ -34,7 +34,7 @@ CONTENT = {
 3. 分别用反向验证、图解拟合和过原点最小二乘法估计元电荷，比较三种处理方式。\par
 4. 练习识别布朗运动、油滴蒸发和计时误差对结果的影响。\par""",
         "实验原理": r"""关闭电场时，油滴达到终端速度，重力与黏滞阻力平衡；加电场后，调节极板电压可使油滴悬浮，电场力与有效重力平衡。结合斯托克斯阻力、坎宁安修正及本实验仪器常数，油滴电荷量可写为
-\[q_i=\frac{0.928\times10^{-14}}{U_i\bar t_i(1+0.0226\sqrt{\bar t_i})^{3/2}}\,\mathrm C.\]
+\[q_i=\frac{0.928\times10^{-14}}{U_i\left[\bar t_i(1+0.0226\sqrt{\bar t_i})\right]^{3/2}}\,\mathrm C.\]
 $U_i$ 是平衡电压，$\bar t_i$ 是同一油滴在固定路程内四次自由下降时间的均值。若电荷量子化成立，则 $q_i=n_i e$，其中 $n_i$ 应接近正整数。可将 $q_i$ 对 $n_i$ 作图，以斜率估计 $e$；截距可提示系统偏差。
 \begin{center}\includegraphics[width=7.2cm]{figures/millikan-chamber.png}\par
 {\small 油滴盒结构示意图。}\end{center}""",

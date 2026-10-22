@@ -3,6 +3,7 @@ package render
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"phyexp/server/internal/domain"
@@ -35,6 +36,24 @@ func TestAllTemplates(t *testing.T) {
 			if e != nil {
 				t.Fatal(e)
 			}
+			if p.ExperimentID == "millikan" {
+				for _, title := range []string{"7.1 静态平衡法", "表 8.3.2", "（1）模糊统计法", "（2）反向验证法", "（3）图解法", "（4）最小二乘法"} {
+					if !strings.Contains(source, title) {
+						t.Errorf("missing lecture content %s", title)
+					}
+				}
+				if strings.Contains(source, "$t_5$") || strings.Contains(source, "charge_per_e_") {
+					t.Fatal("extra table column")
+				}
+				for i := 1; i <= 8; i++ {
+					if !strings.Contains(source, fmt.Sprintf("{voltage_%02d}", i)) {
+						t.Errorf("missing drop %d", i)
+					}
+				}
+				if !strings.Contains(source, `\PlotCoordinates{charge_graph_points}`) || f["charge_graph_points"] == "" {
+					t.Fatal("missing graph data")
+				}
+			}
 			if p.ExperimentID == "focal-length" {
 				for _, key := range []string{"single_object", "single_lens", "single_image", "bessel_object", "bessel_image", "bessel_lens_large", "bessel_lens_small", "auto_object", "auto_lens"} {
 					for _, row := range []struct {
@@ -51,9 +70,39 @@ func TestAllTemplates(t *testing.T) {
 					t.Fatal("removed concave experiment remains in template")
 				}
 			}
+			if p.ExperimentID == "moment-of-inertia" {
+				for _, title := range []string{"7. 数据记录与处理", "表 3.5.1", "表 3.5.2"} {
+					if !strings.Contains(source, title) {
+						t.Errorf("missing lecture table heading %s", title)
+					}
+				}
+				// Each merged object block must still include all three
+				// period readings and all available raw geometry readings.
+				for _, object := range []string{"disk", "cylinder", "tube", "ball", "rod"} {
+					for _, index := range []string{"01", "02", "03"} {
+						if !strings.Contains(source, "{period_"+object+"_"+index+"}") {
+							t.Errorf("missing raw period %s %s", object, index)
+						}
+					}
+				}
+				for geometry := range p.Geometry {
+					for _, index := range []string{"01", "02", "03"} {
+						if !strings.Contains(source, "{geometry_"+geometry+"_"+index+"}") {
+							t.Errorf("missing raw geometry %s %s", geometry, index)
+						}
+					}
+				}
+			}
 			tex, e := Fill(source, f, p, nil)
 			if e != nil {
 				t.Fatal(e)
+			}
+			if p.ExperimentID == "millikan" {
+				for _, key := range []string{"electron_charge_reverse_u95", "electron_charge_ls_u95"} {
+					if !strings.Contains(tex, `\SetField{math_`+key+`}{`+mathNumber(f[key])+`}`) || f[key] == "" {
+						t.Errorf("missing filled lecture uncertainty %s", key)
+					}
+				}
 			}
 			if p.ExperimentID == "heat-capacity-ratio" || p.ExperimentID == "focal-length" || p.ExperimentID == "moment-of-inertia" {
 				for _, match := range regexp.MustCompile(`\\(?:MathField|Field)(?:\[[^\]]*\])?\{([^}]+)\}`).FindAllStringSubmatch(source, -1) {

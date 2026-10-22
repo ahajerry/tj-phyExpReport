@@ -253,9 +253,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         disabled={importingTable || generating} />}
       {experiment.id === "millikan" && <MillikanReadings readingCell={readingCell} disabled={importingTable || generating} />}
       {experiment.id === "moment-of-inertia" && <TorsionReadings readingCell={readingCell} parameterCell={parameterCell} disabled={importingTable || generating} />}
-      {experiment.id === "focal-length" && <LensReadings readingCell={readingCell}
-        direction={parameters.position_direction} disabled={generating}
-        onDirectionChange={(value) => setParameters((current) => ({ ...current, position_direction: value }))} />}
+      {experiment.id === "focal-length" && <LensReadings readingCell={readingCell} />}
       {!tableType && experiment.id !== "oscilloscope" && experiment.id !== "focal-length" && <section className="grid gap-4 lg:grid-cols-2">
         {experiment.measurements.map((item) => (
           <div key={item.id} className="rounded-xl border bg-white p-4">

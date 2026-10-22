@@ -1,4 +1,5 @@
 \input{physics_report_base.tex}
+\usepackage{multirow}
 % ===== 数据输入区开始 =====
 \SetField{experiment}{用扭摆法测定物体转动惯量}
 % 后端以 \SetField{字段名}{值} 填入数据；缺省值保持空白。
@@ -39,71 +40,63 @@ u_{I_j}^2={}&\left(\frac{2I'_1T_ju_{T_j}}{\Delta}\right)^2+
 5. 将实验惯量与理论惯量对照，并以 $x^2$ 为横轴作图，检查线性关系。
 \ReportSection{实验仪器}
 扭摆实验仪、电子天平、游标卡尺、刻度尺和秒表。按计时周期数换算单周期，空盘、规则物体与滑块的周期数不同，不可混用。
-\ReportSection{数据记录处理}
-\ReportSubsection{弹簧扭转常数和转动惯量的测定}
-\noindent 表1\quad 测量转动惯量实验数据表（周期由原始计时换算）
-{\footnotesize\renewcommand{\arraystretch}{1.15}\setlength{\tabcolsep}{2.5pt}
-\begin{longtable}{|p{1.8cm}|p{1.3cm}|p{2.25cm}|p{1.35cm}|p{2.25cm}|p{2.25cm}|p{1.7cm}|}\hline
-物体名称 & 质量 $m$/kg & 几何尺寸/$10^{-2}$ m & 周期 $T$/s & 转动惯量理论值/kg m$^2$ & 转动惯量实验值/kg m$^2$ & 百分差 $E_0$/\%\\\hline
-\endfirsthead\hline
-物体名称 & 质量 $m$/kg & 几何尺寸/$10^{-2}$ m & 周期 $T$/s & 转动惯量理论值/kg m$^2$ & 转动惯量实验值/kg m$^2$ & 百分差 $E_0$/\%\\\hline
-\endhead
-载物圆盘 &  & — & \Field[8mm]{period_disk_01} & — & — & \\\hline
- &  & — & \Field[8mm]{period_disk_02} & — & — & —\\\hline
- &  & — & \Field[8mm]{period_disk_03} & — & — & —\\\hline
-平均值 &  & — & \Field[8mm]{period_disk} & — & $\MathField{empty_inertia}$ & —\\\hline
-实心圆柱体 & \Field[8mm]{mass_cylinder_kg} & \Field[8mm]{geometry_cylinder_01} & \Field[8mm]{period_cylinder_01} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_cylinder_02} & \Field[8mm]{period_cylinder_02} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_cylinder_03} & \Field[8mm]{period_cylinder_03} & — & — & —\\\hline
-平均值 &  & \Field[8mm]{diameter_cylinder_cm} & \Field[8mm]{period_cylinder} & $\MathField{theory_cylinder}$ & $\MathField{experiment_cylinder}$ & \Field[8mm]{error_cylinder}\\\hline
-空心金属圆筒 & \Field[8mm]{mass_tube_kg} & \Field[8mm]{geometry_tube_outer_01}/\Field[8mm]{geometry_tube_inner_01} & \Field[8mm]{period_tube_01} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_tube_outer_02}/\Field[8mm]{geometry_tube_inner_02} & \Field[8mm]{period_tube_02} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_tube_outer_03}/\Field[8mm]{geometry_tube_inner_03} & \Field[8mm]{period_tube_03} & — & — & —\\\hline
-平均值 &  & \Field[8mm]{diameter_tube_outer_cm}/\Field[8mm]{diameter_tube_inner_cm} & \Field[8mm]{period_tube} & $\MathField{theory_tube}$ & $\MathField{experiment_tube}$ & \Field[8mm]{error_tube}\\\hline
-木球 & \Field[8mm]{mass_ball_kg} & \Field[8mm]{geometry_ball_01} & \Field[8mm]{period_ball_01} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_ball_02} & \Field[8mm]{period_ball_02} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_ball_03} & \Field[8mm]{period_ball_03} & — & — & —\\\hline
-平均值 &  & \Field[8mm]{diameter_ball_cm} & \Field[8mm]{period_ball} & $\MathField{theory_ball}$ & $\MathField{experiment_ball}$ & \Field[8mm]{error_ball}\\\hline
-金属细杆 & \Field[8mm]{mass_rod_kg} & \Field[8mm]{geometry_rod_01} & \Field[8mm]{period_rod_01} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_rod_02} & \Field[8mm]{period_rod_02} & — & — & —\\\hline
- &  & \Field[8mm]{geometry_rod_03} & \Field[8mm]{period_rod_03} & — & — & —\\\hline
-平均值 &  & \Field[8mm]{length_rod_cm} & \Field[8mm]{period_rod} & $\MathField{theory_rod}$ & $\MathField{experiment_rod}$ & \Field[8mm]{error_rod}\\\hline
-\end{longtable}}
-\noindent 几何尺寸栏：圆柱和木球为直径，圆筒为外径/内径，细杆为长度。空盘计时 20 周期，其余物体计时 10 周期，每种状态重复三次。
-\noindent 理论惯量按平均尺寸计算，实验惯量按平均周期计算，结果和百分差统一列在“平均值”行；前三行为重复读数，“—”表示该行不单独计算。载物圆盘未输入质量和尺寸，因此不列理论惯量和百分差。
-\par\noindent 重复计时传播得到的标准不确定度如下：
-\begin{center}\small
-\begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{|c|c|c|c|c|c|}\hline
-物体 & 载物圆盘 & 实心圆柱体 & 空心金属圆筒 & 木球 & 金属细杆\\\hline
-$u_T$/s & $\MathField{period_disk_u}$ & $\MathField{period_cylinder_u}$ & $\MathField{period_tube_u}$ & $\MathField{period_ball_u}$ & $\MathField{period_rod_u}$\\\hline
-$u_I$/kg m$^2$ & $\MathField{empty_inertia_u}$ & $\MathField{experiment_cylinder_u}$ & $\MathField{experiment_tube_u}$ & $\MathField{experiment_ball_u}$ & $\MathField{experiment_rod_u}$\\\hline
-\end{tabular}\end{adjustbox}\end{center}
+\clearpage
+\ReportSection{7. 数据记录与处理}
+1. 弹簧扭转常数和转动惯量的测定，数据记录见表 3.5.1。
+\begin{center}
+表 3.5.1\quad 刚体转动惯量测量实验数据记录表\par\smallskip
+{\fontsize{9}{13}\selectfont\renewcommand{\arraystretch}{1.35}\setlength{\tabcolsep}{2pt}
+\begin{tabular}{|m{1.35cm}|m{1.0cm}|m{1.05cm}|m{1.35cm}|m{.6cm}|m{1.35cm}|m{2.95cm}|m{2.85cm}|m{.85cm}|}\hline
+\centering 物体名称 & \centering 质量 $m$\\（kg） & \multicolumn{2}{c|}{\shortstack{几何尺寸\\（$10^{-2}$ m）}} & \multicolumn{2}{c|}{周期（s）} & \centering 转动惯量\\理论值（kg$\cdot$m$^2$） & \centering 转动惯量\\实验值（kg$\cdot$m$^2$） & \centering 百分差\\$E_0$（\%）\tabularnewline\hline
+\multirow{4}{1.35cm}{\centering 载物圆盘} & \multirow{4}{1.0cm}{\centering \begin{tikzpicture}[baseline=0pt]\draw (0,1.65) -- (.7,0);\end{tikzpicture}} & \multicolumn{2}{c|}{\multirow{4}{1.7cm}{\centering \begin{tikzpicture}[baseline=0pt]\draw (0,1.65) -- (1.6,0);\end{tikzpicture}}} & \multirow{3}{.6cm}{\centering $T_0$} & \Field[6mm]{period_disk_01} & \multirow{4}{2.95cm}{\centering \begin{tikzpicture}[baseline=0pt]\draw (0,1.65) -- (2.5,0);\end{tikzpicture}} & \multirow{2}{2.85cm}{\centering $I_0=I'_1\dfrac{\overline T_0^2}{\overline T_1^2-\overline T_0^2}$} & \multirow{4}{.85cm}{\centering \begin{tikzpicture}[baseline=0pt]\draw (0,1.65) -- (.75,0);\end{tikzpicture}}\tabularnewline\cline{6-6}
+ &  & \multicolumn{2}{c|}{} &  & \Field[6mm]{period_disk_02} &  &  & \tabularnewline\cline{6-6}\cline{8-8}
+ &  & \multicolumn{2}{c|}{} &  & \Field[6mm]{period_disk_03} &  & \multirow{2}{2.85cm}{\centering $\MathField{empty_inertia}$} & \tabularnewline\cline{5-6}
+ &  & \multicolumn{2}{c|}{} & $\overline T_0$ & \Field[6mm]{period_disk} &  &  & \tabularnewline\hline
+\multirow{4}{1.35cm}{\centering 实心圆柱体} & \multirow{4}{1.0cm}{\centering \Field[6mm]{mass_cylinder_kg}} & \multirow{3}{1.05cm}{\centering $D_1$} & \Field[6mm]{geometry_cylinder_01} & \multirow{3}{.6cm}{\centering $T_1$} & \Field[6mm]{period_cylinder_01} & \multirow{2}{2.95cm}{\centering $I'_1=\dfrac18m_1\overline D_1^2$} & \multirow{2}{2.85cm}{\centering $I_1=\dfrac K{4\pi^2}\overline T_1^2-I_0$} & \multirow{4}{.85cm}{\centering \Field[6mm]{error_cylinder}}\tabularnewline\cline{4-4}\cline{6-6}
+ &  &  & \Field[6mm]{geometry_cylinder_02} &  & \Field[6mm]{period_cylinder_02} &  &  & \tabularnewline\cline{4-4}\cline{6-8}
+ &  &  & \Field[6mm]{geometry_cylinder_03} &  & \Field[6mm]{period_cylinder_03} & \multirow{2}{2.95cm}{\centering $\MathField{theory_cylinder}$} & \multirow{2}{2.85cm}{\centering $\MathField{experiment_cylinder}$} & \tabularnewline\cline{3-6}
+ &  & 平均值 & \Field[6mm]{diameter_cylinder_cm} & $\overline T_1$ & \Field[6mm]{period_cylinder} &  &  & \tabularnewline\hline
+\multirow{8}{1.35cm}{\centering 空心金属圆筒} & \multirow{8}{1.0cm}{\centering \Field[6mm]{mass_tube_kg}} & \multirow{3}{1.05cm}{\centering $D_{\text{外}}$} & \Field[6mm]{geometry_tube_outer_01} & \multirow{3}{.6cm}{\centering $T_2$} & \Field[6mm]{period_tube_01} & \multirow{4}{2.95cm}{\centering $I'_2=\dfrac18m_2(\overline D_{\text{外}}^2+\overline D_{\text{内}}^2)$} & \multirow{4}{2.85cm}{\centering $I_2=\dfrac K{4\pi^2}\overline T_2^2-I_0$} & \multirow{8}{.85cm}{\centering \Field[6mm]{error_tube}}\tabularnewline\cline{4-4}\cline{6-6}
+ &  &  & \Field[6mm]{geometry_tube_outer_02} &  & \Field[6mm]{period_tube_02} &  &  & \tabularnewline\cline{4-4}\cline{6-6}
+ &  &  & \Field[6mm]{geometry_tube_outer_03} &  & \Field[6mm]{period_tube_03} &  &  & \tabularnewline\cline{3-4}\cline{5-6}
+ &  & 平均值 & \Field[6mm]{diameter_tube_outer_cm} & \multirow{5}{.6cm}{\centering $\overline T_2$} & \multirow{5}{1.35cm}{\centering \Field[6mm]{period_tube}} &  &  & \tabularnewline\cline{3-4}\cline{7-8}
+ &  & \multirow{3}{1.05cm}{\centering $D_{\text{内}}$} & \Field[6mm]{geometry_tube_inner_01} &  &  & \multirow{4}{2.95cm}{\centering $\MathField{theory_tube}$} & \multirow{4}{2.85cm}{\centering $\MathField{experiment_tube}$} & \tabularnewline\cline{4-4}
+ &  &  & \Field[6mm]{geometry_tube_inner_02} &  &  &  &  & \tabularnewline\cline{4-4}
+ &  &  & \Field[6mm]{geometry_tube_inner_03} &  &  &  &  & \tabularnewline\cline{3-4}
+ &  & 平均值 & \Field[6mm]{diameter_tube_inner_cm} &  &  &  &  & \tabularnewline\hline
+\multirow{4}{1.35cm}{\centering 木球} & \multirow{4}{1.0cm}{\centering \Field[6mm]{mass_ball_kg}} & \multirow{3}{1.05cm}{\centering $D_{\text{球}}$} & \Field[6mm]{geometry_ball_01} & \multirow{3}{.6cm}{\centering $T_3$} & \Field[6mm]{period_ball_01} & \multirow{2}{2.95cm}{\centering $I'_3=\dfrac1{10}m_3\overline D_{\text{球}}^2$} & \multirow{2}{2.85cm}{\centering $I_3=\dfrac K{4\pi^2}\overline T_3^2$} & \multirow{4}{.85cm}{\centering \Field[6mm]{error_ball}}\tabularnewline\cline{4-4}\cline{6-6}
+ &  &  & \Field[6mm]{geometry_ball_02} &  & \Field[6mm]{period_ball_02} &  &  & \tabularnewline\cline{4-4}\cline{6-8}
+ &  &  & \Field[6mm]{geometry_ball_03} &  & \Field[6mm]{period_ball_03} & \multirow{2}{2.95cm}{\centering $\MathField{theory_ball}$} & \multirow{2}{2.85cm}{\centering $\MathField{experiment_ball}$} & \tabularnewline\cline{3-6}
+ &  & 平均值 & \Field[6mm]{diameter_ball_cm} & $\overline T_3$ & \Field[6mm]{period_ball} &  &  & \tabularnewline\hline
+\multirow{4}{1.35cm}{\centering 金属细杆} & \multirow{4}{1.0cm}{\centering \Field[6mm]{mass_rod_kg}} & \multirow{3}{1.05cm}{\centering $l$} & \Field[6mm]{geometry_rod_01} & \multirow{3}{.6cm}{\centering $T_4$} & \Field[6mm]{period_rod_01} & \multirow{2}{2.95cm}{\centering $I'_4=\dfrac1{12}m_4\overline l^2$} & \multirow{2}{2.85cm}{\centering $I_4=\dfrac K{4\pi^2}\overline T_4^2$} & \multirow{4}{.85cm}{\centering \Field[6mm]{error_rod}}\tabularnewline\cline{4-4}\cline{6-6}
+ &  &  & \Field[6mm]{geometry_rod_02} &  & \Field[6mm]{period_rod_02} &  &  & \tabularnewline\cline{4-4}\cline{6-8}
+ &  &  & \Field[6mm]{geometry_rod_03} &  & \Field[6mm]{period_rod_03} & \multirow{2}{2.95cm}{\centering $\MathField{theory_rod}$} & \multirow{2}{2.85cm}{\centering $\MathField{experiment_rod}$} & \tabularnewline\cline{3-6}
+ &  & 平均值 & \Field[6mm]{length_rod_cm} & $\overline T_4$ & \Field[6mm]{period_rod} &  &  & \tabularnewline\hline
+\end{tabular}}
+\end{center}
 \noindent 计算弹簧扭转常数：
-\[K=\frac{4\pi^2 I'_1}{T_1^2-T_0^2}=(\MathField{torsion_constant}\pm\MathField{torsion_constant_u})\,\mathrm{N\,m}.\]
-\noindent 载物圆盘惯量 $I_0=(\MathField{empty_inertia}\pm\MathField{empty_inertia_u})\,\mathrm{kg\,m^2}$。
-\noindent 上述不确定度仅包括重复计时贡献；质量和尺寸的仪器不确定度尚未计入。
-\ReportSubsection{验证平行轴定理}
-\noindent 两个滑块的平均质量 $m_s=\Field{slider_mass_g}$ g；
-两个滑块绕各自质心转轴的总惯量 $I_5=\Field{slider_pair_inertia}$ kg m$^2$。
-\noindent 按官方记录单：$I_5$ 由滑块尺寸和质量计算，理论式为
-$I'=I'_4+2m_sx^2+I_5$；这里 $x$ 为滑块质心到轴的距离。
-\par\medskip\noindent 表2\quad 验证平行轴定理实验数据表
-\begin{center}\small\renewcommand{\arraystretch}{1.3}
-\begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{|c|c|c|c|c|}\hline
-$x/10^{-2}$ m & 5.00 & 10.00 & 15.00 & 20.00\\\hline
-第 1 次计时/s & \Field[12mm]{slider_time_5_01} & \Field[12mm]{slider_time_10_01} & \Field[12mm]{slider_time_15_01} & \Field[12mm]{slider_time_20_01}\\\hline
-第 2 次计时/s & \Field[12mm]{slider_time_5_02} & \Field[12mm]{slider_time_10_02} & \Field[12mm]{slider_time_15_02} & \Field[12mm]{slider_time_20_02}\\\hline
-第 3 次计时/s & \Field[12mm]{slider_time_5_03} & \Field[12mm]{slider_time_10_03} & \Field[12mm]{slider_time_15_03} & \Field[12mm]{slider_time_20_03}\\\hline
-平均周期 $T$/s & \Field[12mm]{slider_period_5} & \Field[12mm]{slider_period_10} & \Field[12mm]{slider_period_15} & \Field[12mm]{slider_period_20}\\\hline
-实验值 $I$/kg m$^2$ & \Field[12mm]{slider_experiment_5} & \Field[12mm]{slider_experiment_10} & \Field[12mm]{slider_experiment_15} & \Field[12mm]{slider_experiment_20}\\\hline
-理论值 $I\prime$/kg m$^2$ & \Field[12mm]{slider_theory_5} & \Field[12mm]{slider_theory_10} & \Field[12mm]{slider_theory_15} & \Field[12mm]{slider_theory_20}\\\hline
-百分差 $E_0$/\% & \Field[12mm]{slider_error_5} & \Field[12mm]{slider_error_10} & \Field[12mm]{slider_error_15} & \Field[12mm]{slider_error_20}\\\hline
-\end{tabular}\end{adjustbox}\end{center}
-\noindent 滑块每组均计时 5 周期。各组周期与实验惯量的不确定度依次为：
-$u_T=\Field{slider_period_5_u},\allowbreak \Field{slider_period_10_u},\allowbreak \Field{slider_period_15_u},\allowbreak \Field{slider_period_20_u}$ s；
-$u_I=\Field{slider_experiment_5_u},\allowbreak \Field{slider_experiment_10_u},\allowbreak \Field{slider_experiment_15_u},\allowbreak \Field{slider_experiment_20_u}$ kg m$^2$。
+\[K=4\pi^2\frac{I'_1}{\overline T_1^2-\overline T_0^2}=\MathField{torsion_constant}\,\mathrm{N\,m}.\]
+\clearpage
+2. 转动惯量平行轴定理的验证，数据记录见表 3.5.2。滑块质量
+$m_{\text{滑}}=\MathField{slider_mass_g}\,\mathrm g$（两个滑块的平均质量）。\par
+表中 $I_5$ 为两个滑块绕通过滑块质心转轴的转动惯量
+\[I_5=\frac18m_{\text{滑}}(D_{\text{内}1}^2+D_{\text{外}1}^2)+\frac16m_{\text{滑}}l_1^2.\]
+式中，$m_{\text{滑}}$ 为滑块质量；$D_{\text{内}1}$、$D_{\text{外}1}$ 为滑块的内径和外径；$l_1$ 为其长度。\par
+本次实验取\hfill $I_5=\MathField{slider_pair_inertia}\,\mathrm{kg\,m^2}$。\par
+\begin{center}
+表 3.5.2\quad 验证平行轴定理实验数据记录表\par\smallskip
+{\small\renewcommand{\arraystretch}{1.6}\setlength{\tabcolsep}{5pt}
+\begin{tabular}{|m{5.2cm}|*{4}{>{\centering\arraybackslash}m{1.65cm}|}}\hline
+$x$（$10^{-2}$ m） & 5.00 & 10.00 & 15.00 & 20.00\tabularnewline\hline
+\multirow{3}{5.2cm}{\centering $T$（s）} & \Field[6mm]{slider_period_5_01} & \Field[6mm]{slider_period_10_01} & \Field[6mm]{slider_period_15_01} & \Field[6mm]{slider_period_20_01}\tabularnewline\cline{2-5}
+ & \Field[6mm]{slider_period_5_02} & \Field[6mm]{slider_period_10_02} & \Field[6mm]{slider_period_15_02} & \Field[6mm]{slider_period_20_02}\tabularnewline\cline{2-5}
+ & \Field[6mm]{slider_period_5_03} & \Field[6mm]{slider_period_10_03} & \Field[6mm]{slider_period_15_03} & \Field[6mm]{slider_period_20_03}\tabularnewline\hline
+$\overline T$（s） & $\MathField{slider_period_5}$ & $\MathField{slider_period_10}$ & $\MathField{slider_period_15}$ & $\MathField{slider_period_20}$\tabularnewline\hline
+\shortstack[l]{实验值（kg$\cdot$m$^2$）\\[4pt]$I=\dfrac K{4\pi^2}\overline T^2$} & $\MathField{slider_experiment_5}$ & $\MathField{slider_experiment_10}$ & $\MathField{slider_experiment_15}$ & $\MathField{slider_experiment_20}$\tabularnewline\hline
+\shortstack[l]{理论值（kg$\cdot$m$^2$）\\[4pt]$I'=I_4+2mx^2+I_5$} & $\MathField{slider_theory_5}$ & $\MathField{slider_theory_10}$ & $\MathField{slider_theory_15}$ & $\MathField{slider_theory_20}$\tabularnewline\hline
+百分差 $E_0=\dfrac{|I'-I|}{I'}\times100\%$ & $\MathField{slider_error_5}$ & $\MathField{slider_error_10}$ & $\MathField{slider_error_15}$ & $\MathField{slider_error_20}$\tabularnewline\hline
+\end{tabular}}
+\end{center}
 \ReportSection{平行轴定理的数据图}
 横轴取滑块距离平方 $x^2$（cm$^2$），纵轴取总惯量的 $10^{-3}\,\mathrm{kg\,m^2}$ 数值。散点是周期换算的实验结果，直线连接对应理论值；两条序列均来自本次读数和输入的滑块质量。
 \begin{center}\begin{tikzpicture}
@@ -116,10 +109,21 @@ $u_I=\Field{slider_experiment_5_u},\allowbreak \Field{slider_experiment_10_u},\a
 \ReportSection{讨论与分析}
 \ReportSubsection{图形与模型}
 若平行轴定理适用，$I$ 对 $x^2$ 的点应近似落在直线上，斜率由两个滑块的质量决定。若图中随位置出现系统偏离，应检查距离是否从滑块质心量起、两个滑块是否对称，以及滑块本身惯量是否计入。\par
+\ReportSubsection{重复计时的不确定度}
+下列标准不确定度仅计重复计时贡献，未计质量、尺寸等仪器不确定度。
+\begin{center}\small\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{|c|c|c|c|c|c|}\hline
+物体 & 载物圆盘 & 实心圆柱体 & 空心金属圆筒 & 木球 & 金属细杆\\\hline
+$u_T$/s & $\MathField{period_disk_u}$ & $\MathField{period_cylinder_u}$ & $\MathField{period_tube_u}$ & $\MathField{period_ball_u}$ & $\MathField{period_rod_u}$\\\hline
+$u_I$/kg m$^2$ & $\MathField{empty_inertia_u}$ & $\MathField{experiment_cylinder_u}$ & $\MathField{experiment_tube_u}$ & $\MathField{experiment_ball_u}$ & $\MathField{experiment_rod_u}$\\\hline
+\end{tabular}\end{adjustbox}\end{center}
+滑块四种位置的 $u_T$ 依次为
+$\MathField{slider_period_5_u}$、$\MathField{slider_period_10_u}$、$\MathField{slider_period_15_u}$、$\MathField{slider_period_20_u}$ s；
+$u_I$ 依次为 $\MathField{slider_experiment_5_u}$、$\MathField{slider_experiment_10_u}$、$\MathField{slider_experiment_15_u}$、$\MathField{slider_experiment_20_u}$ kg m$^2$。
 \ReportSubsection{主要误差}
 计时起止点不一致、转轴摩擦、振幅过大和物体偏心都会改变周期。圆柱用于标定 $\kappa$，其质量和直径误差会传递到所有实验惯量。仅圆柱、圆筒扣除空盘惯量 $I_0$；木球、细杆及细杆加滑块不扣除。\par
 \ReportSection{实验结论}
-由圆柱与空盘的周期差标定扭转常数 $\kappa=(\MathField{torsion_constant}\pm\MathField{torsion_constant_u})\,\mathrm{N\,m}$，再求其他物体惯量。这里的不确定度只计重复计时的贡献。滑块位置变化所得散点应与 $I=I_{\rm rod}+2I_s+2m_sx^2$ 的平方关系比较，不能只凭周期随距离变大作结论。
+由圆柱与空盘的周期差标定扭转常数 $\kappa=(\MathField{torsion_constant}\pm\MathField{torsion_constant_u})\,\mathrm{N\,m}$，再求其他物体惯量。这里的不确定度只计重复计时的贡献。滑块位置变化所得散点应与 $I'=I_4+I_5+2m_sx^2$ 的平方关系比较，不能只凭周期随距离变大作结论。
 \ReportSection{思考题}
 为何空盘计时二十周期，而物体只计十周期？空盘周期较短，扩大总计时长度可以减小启停反应时间的相对影响。为何使用两个对称滑块？对称布置可以减少质心偏离转轴引起的附加晃动。
 

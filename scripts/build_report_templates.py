@@ -152,7 +152,7 @@ def millikan() -> str:
 \ReportSection{实验原理}
 静态平衡时油滴重力与电场力平衡；结合自由下落速度、斯托克斯阻力及坎宁安修正，可由下降时间与平衡电压求出电荷量。
 本仪器给定参数化简为
-\[q_i=\frac{0.928\times10^{-14}}{U_i\bar t_i(1+0.0226\sqrt{\bar t_i})^{3/2}}\,\mathrm{C},
+\[q_i=\frac{0.928\times10^{-14}}{U_i\left[\bar t_i(1+0.0226\sqrt{\bar t_i})\right]^{3/2}}\,\mathrm{C},
 \qquad q_i\approx n_i e.\]
 注意 $\bar t_i$ 为固定路程的下降时间，$U_i$ 为平衡电压。
 \ReportSection{实验内容}

@@ -96,6 +96,7 @@ try {
   for (const label of ['focal-length-translated']) {
     await complete(cases.find(c => c.name === label).payload, label)
   }
+  await complete(JSON.parse(await readFile(new URL('lens-reversed.json', fixtures), 'utf8')), 'focal-length-reversed')
   const imports = JSON.parse(await readFile(new URL('imports.json', fixtures), 'utf8'))
   const renderImports = new Set(['vibration-variable-2.xlsx', 'millikan.csv', 'torsion.xlsx'])
   for (const c of imports) {

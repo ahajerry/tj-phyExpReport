@@ -38,6 +38,13 @@ func TestReferenceCalculations(t *testing.T) {
 				if v == want {
 					continue
 				}
+				if c.Payload.ExperimentID == "moment-of-inertia" && !strings.HasSuffix(k, "_u") &&
+					(k == "torsion_constant" || k == "slider_pair_inertia" || strings.HasPrefix(k, "empty_inertia") ||
+						strings.HasPrefix(k, "theory_") || strings.HasPrefix(k, "experiment_") || strings.HasPrefix(k, "error_") ||
+						strings.HasPrefix(k, "slider_theory_") || strings.HasPrefix(k, "slider_experiment_") || strings.HasPrefix(k, "slider_error_")) {
+					t.Errorf("torsion final precision %s: got %q want %q", k, v, want)
+					continue
+				}
 				// Final result strings must retain the uncertainty's decimal place.
 				strict := map[string]string{
 					"oscilloscope":        "lissajous_mean_khz lissajous_u_khz",

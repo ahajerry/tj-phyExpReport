@@ -1,6 +1,6 @@
 # Windows 开发环境与 Docker 网络排错
 
-本文记录 2026-10-16 的 Windows 本地配置过程。目标是 Windows 编辑代码、Vite 提供前端热更新、Linux 容器运行 Go 后端及 PDF 工具，最终在 Linux 服务器使用仓库 Dockerfile 和 Compose 部署。
+本文包含当前开发流程和 2026-10-16 起的 Windows 本地排错记录。目标是 Windows 编辑代码、Vite 提供前端热更新、Linux 容器运行 Go 后端及 PDF 工具，最终在 Linux 服务器使用仓库 Dockerfile 和 Compose 部署。
 
 ## 环境与存储
 
@@ -9,11 +9,36 @@
 - WSL 基础组件由 Windows 管理。Docker 的镜像、构建缓存和数据卷较占空间，可在构建前通过 Docker Desktop 的 Settings → Resources → Advanced → Disk image location 指向 D 盘。
 - 需要独立 Ubuntu 时，较新版 WSL 可用 `wsl --install -d Ubuntu --location D:\WSL\Ubuntu` 指定发行版位置；该选项不移动 WSL 基础组件，也不设置 Docker 数据位置。
 - Windows 已有的 XeLaTeX 可供 Windows 工具使用，但 Linux 容器不能直接使用 Windows 版可执行文件。容器内的 LaTeX、字体和图片工具由 Dockerfile 安装并缓存，无需手动在 WSL 配置一遍。
-- 当前 Go 后端包含 Unix 专属进程组及文件锁调用。Windows PowerShell 中使用 `pnpm exec vite` 启动前端；`pnpm dev` 会尝试本机编译后端，完整使用该命令应在 Linux/WSL 环境中进行。
+- 当前 Go 后端包含 Unix 专属进程组及文件锁调用。Windows 的 `pnpm dev` 自动使用 Docker 开发后端，同时在本机启动 Vite；无需安装 Windows Go。
 
 ## 错误、原因与处理
 
-### PowerShell 运行 pnpm dev 报 spawn go ENOENT
+### Vite 启动报 listen EACCES ::1:5173
+
+本次检查中，Windows 的 IPv4 和 IPv6 TCP 排除范围都包含 5141–5240，Vite 默认端口 5173 因此无法绑定；这与 Compose 后端的 8000 端口无关。仅把 localhost 换成 IPv4 不能避开同样的 IPv4 保留范围。
+
+项目已将 Vite 默认监听地址改为 `127.0.0.1:15173`，API 仍代理到 `127.0.0.1:8000`。已有后端运行时直接执行：
+
+```powershell
+pnpm dev:frontend
+```
+
+打开终端实际显示的地址（通常为 `http://127.0.0.1:15173`）。也可以显式指定：
+
+```powershell
+pnpm exec vite --host 127.0.0.1 --port 15173
+```
+
+如新端口也被当前机器保留，可用以下命令核对并选择范围外的空闲端口，无需删除系统保留范围或修改防火墙：
+
+```powershell
+netsh interface ipv4 show excludedportrange protocol=tcp
+netsh interface ipv6 show excludedportrange protocol=tcp
+```
+
+`docker compose up --no-build` 只启动已有生产镜像，不包含尚未构建进该镜像的 Go 或模板修改。前端连接该镜像时，前端修改热更新，后端和报告模板仍以该镜像为准。日常同时修改后端/模板应使用后文的 `pnpm dev` 开发流程，并先停止占用 8000 的生产容器。
+
+### 旧启动脚本运行 pnpm dev 报 spawn go ENOENT
 
 ```text
 开发服务启动失败：Error: spawn go ENOENT
@@ -22,7 +47,7 @@ syscall: 'spawn go'
 
 直接原因是启动脚本调用 `go build` 时找不到本机 Go 命令。当前后端还使用 Unix 专属调用，因此安装 Windows Go 不能解决完整的平台兼容问题。旧版 README 没有区分平台，容易让 Windows 用户误用联合启动命令；现已分别列出 Windows 和 Linux/WSL 的步骤。
 
-Windows + Docker 方案先完成镜像构建，将后端映射到本机 8000 端口，再用 `pnpm exec vite` 启动前端，详见本文“镜像构建成功后的前端开发”。`pnpm dev` 用于具备 Go 和相应依赖的 Linux/WSL 本机环境。
+该问题属于旧启动脚本。当前 Windows 直接使用 `pnpm dev`：脚本自动准备专用开发镜像并启动开发容器，不再调用 Windows Go。Linux/WSL 默认保留本机 Go 自动编译流程。
 
 ### 找不到 dockerDesktopLinuxEngine 管道
 
@@ -148,60 +173,26 @@ docker build --progress=plain -t phyexp-report:local .
 
 如果再次超时或解析异常，应恢复可用代理或排查 DNS，而非反复修改 Dockerfile。Docker Hub、npm、Go 模块及 Debian 软件源需要各自可达。
 
-## 镜像构建成功后的前端开发
+## 当前日常开发流程
 
-### 每次启动开发
-
-先启动 Docker Desktop，等待 Linux 引擎就绪。以下命令均在项目根目录的 PowerShell 执行；首次使用需要先成功构建 `phyexp-report:local` 镜像。日常启动不需要重新安装依赖或重建镜像。
-
-Vite 的 `/api` 代理目标是本机 8000 端口，因此每次打开新终端后，在启动 Compose 前设置宿主映射：
+Docker Desktop Linux 引擎就绪后，在仓库根目录运行：
 
 ```powershell
-$env:REPORT_PUBLIC_PORT = '8000'
-docker compose -p phyexpreport up -d --no-build
-Invoke-RestMethod http://127.0.0.1:8000/api/health
-pnpm exec vite
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-浏览器访问 Vite 显示的地址（通常为 `http://localhost:5173`）。前端进程占用当前终端，后端容器在后台运行。修改 `src/` 自动热更新，继续使用 `pnpm exec vite`，不要在 Windows PowerShell 改用 `pnpm dev`。
+第一次自动准备 `phyexp-report:dev`（只包含 Go、Node 运行时和报告工具，不执行前端安装/打包）；以后复用镜像与 Go 模块、编译缓存。前端由本机 Vite 热更新，Go 源码保存后自动增量编译并重启，模板保存后新报告直接读取。编译失败保留旧服务，修复并保存后重试。开发数据使用独立命名卷，不挂载 `.report-data/`，不使用生产数据卷。
 
-不设端口变量时，Compose 默认提供 `http://localhost:8080`，可直接使用镜像内已构建的前端；Vite 开发仍需上面的 8000 端口映射。
+`pnpm dev:frontend` 只启动 Vite，可用于不需要 API 的页面开发或连接现有 8000 端口的后端。`pnpm dev:setup` 提前准备/更新开发镜像，仅在 Dockerfile、系统工具链或依赖改变后使用。应用源码和模板修改不用执行 `docker build`。`pnpm dev:docker` 在 Linux/WSL 也使用相同容器环境。
 
-### 修改后端或模板后重新构建
-
-修改 `server/`、`tex/templates/` 或 Dockerfile 后，在另一个 PowerShell 终端的项目根目录执行：
+Ctrl+C 停止 Vite、日志跟随和本次开发容器，保留数据与缓存。查看后端日志：
 
 ```powershell
-docker build --progress=plain -t phyexp-report:local .
+docker compose -f compose.dev.yaml -p phyexpreport-dev logs -f --tail=100 backend
 ```
 
-需要代理时，沿用本文前述终端代理与构建参数，填写自己的端口。仅在构建成功后执行以下命令，更新运行中的后端：
-
-```powershell
-$env:REPORT_PUBLIC_PORT = '8000'
-docker compose -p phyexpreport up -d --no-build
-Invoke-RestMethod http://127.0.0.1:8000/api/health
-```
-
-Vite 可以继续运行。仅修改前端源码时不需要重建后端镜像；需要查看镜像内前端的更新时才重新构建镜像。
-
-### 查看后端日志
-
-```powershell
-docker compose -p phyexpreport logs -f --tail=100 app
-```
-
-按 `Ctrl+C` 退出日志跟踪不会停止后端。
-
-### 停止开发
-
-先在运行 Vite 的终端按 `Ctrl+C` 停止前端，再执行：
-
-```powershell
-docker compose -p phyexpreport down
-```
-
-普通 `down` 保留报告数据卷，不要添加 `-v`，除非明确要删除数据。本流程不挂载或操作用户现有 `.report-data/`。
+若曾按旧流程启动生产镜像后端，它可能占用 8000 端口；请先手动停止旧服务，脚本不会关闭其他项目。首次准备仍需要下载基础镜像和系统依赖，下面的网络排错仍适用。生产部署继续使用 `compose.yaml`，开发参数见 [开发与验证](development.md)。
 
 ## 本次确认的结果与限制
 
@@ -210,6 +201,16 @@ docker compose -p phyexpreport down
 - 直接构建绕过了 Compose Bake 故障，并进入容器依赖安装阶段。
 - 尚未收到完整 Docker 构建、服务启动、PDF 生成或 `pnpm test:docker` 成功的结果。容器 pnpm 的 ECONNRESET 是否已解决，不能仅凭本地安装成功认定。
 - 本次 Compose Bake 的根因尚未确认；`COMPOSE_BAKE=false` 在此环境未解决问题。
+
+## 项目默认的国内镜像源
+
+Dockerfile 默认使用[毫秒镜像官方教程](https://1ms.run/guide)提供的 `docker.1ms.run`，基础镜像按 `docker.1ms.run/library/<名称>:<标签>` 拉取；同时使用内置 Dockerfile 前端，避免启动构建时拉取 `docker/dockerfile:1`。重新执行 `docker build --progress=plain -t phyexp-report:local .` 即可。若仍报错，先验证 `docker pull docker.1ms.run/library/debian:bookworm-slim`，根据报错检查镜像服务、代理或 DNS。
+
+容器内 Corepack/pnpm、Go 模块及 apt 也已默认切换为 npmmirror、Goproxy.cn 和阿里云 Debian 镜像源，均可用构建参数覆盖。上文基于官方源的历史错误仍可作为网络排查参考，实际请求地址以当前构建日志为准。切回 Docker Hub 可用 `docker build --build-arg DOCKER_REGISTRY=docker.io -t phyexp-report:local .`；各软件源参数与官方教程见 [Docker 部署](deployment.md)。
+
+2026-10-21 本机验证中，毫秒镜像成功返回 Node、Go、Debian 镜像元数据并下载镜像层；npmmirror 成功提供 pnpm 11.28.5 和全部 500 个依赖包，但后续元数据请求持续出现超过百秒的延迟，单独前端构建验证已停止，未确认 build 通过。完整镜像构建在运行阶段的 apt 索引下载失败：`http://mirrors.tuna.tsinghua.edu.cn/debian/dists/bookworm/main/binary-amd64/Packages` 多次报告 `Connection failed [IP: 101.6.15.130 80]`，apt 退出码为 100。因此本次尚未完成最终镜像及 `pnpm test:docker` 验证，不能把源配置生效等同于完整构建成功。
+
+随后已将默认 Debian 源改为阿里云。临时 `debian-base` 镜像构建成功，但阿里云主包索引同样连接失败；关闭 apt HTTP 流水线与按哈希路径下载后仍失败，尚不能认定是 TUNA 特有问题。检查发现 Docker Desktop 保存的代理模式仍为 manual，地址为本机 7897 端口，`docker info` 也显示内部代理 `http.docker.internal:3128`。镜像域名替换并不会自动关闭 Docker Desktop 代理；要验证完整直连，应在 Desktop 的 Proxies 中把 Docker Desktop proxy 和 Containers proxy（若显示）都设为 No proxy 并应用，同时清除当前终端代理变量。仅清空容器环境变量不足以证明 Desktop 的代理已关闭。配置入口见 [Docker 官方代理设置](https://docs.docker.com/desktop/settings-and-maintenance/settings/#proxies)。
 
 ## 参考
 

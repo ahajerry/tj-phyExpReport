@@ -5,29 +5,29 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const root = fileURLToPath(new URL('../', import.meta.url))
-export const binary = path.join(root, 'output', 'backend-go', process.platform === 'win32' ? 'reportd.exe' : 'reportd')
-export async function expectedRevision() {
+export const binary = process.env.REPORT_DEV_BINARY || path.join(root, 'output', 'backend-go', process.platform === 'win32' ? 'reportd.exe' : 'reportd')
+export async function expectedRevision(sourceDir = path.join(root, 'server')) {
   const digest = createHash('sha256')
   async function walk(dir) {
     for (const entry of (await readdir(dir, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (entry.name === 'testdata' || entry.name === '.git' || entry.name.endsWith('_test.go')) continue
       const filename = path.join(dir, entry.name)
       if (entry.isDirectory()) await walk(filename)
       else {
-        digest.update(path.relative(root, filename)).update('\0')
+        digest.update(path.relative(sourceDir, filename).split(path.sep).join('/')).update('\0')
         digest.update(await readFile(filename)).update('\0')
       }
     }
   }
-  await walk(path.join(root, 'server'))
-  await walk(path.join(root, 'tex', 'templates'))
+  await walk(sourceDir)
   return digest.digest('hex')
 }
-export async function buildBackend(revision) {
+export async function buildBackend(revision, { signal } = {}) {
   revision ??= await expectedRevision()
   await mkdir(path.dirname(binary), { recursive: true })
   await new Promise((resolve, reject) => {
     const child = spawn('go', ['build', '-trimpath', '-ldflags', `-X main.revision=${revision}`, '-o', binary, './cmd/reportd'], {
-      cwd: path.join(root, 'server'), stdio: 'inherit',
+      cwd: path.join(root, 'server'), stdio: 'inherit', signal, windowsHide: true,
     })
     child.on('error', reject)
     child.on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Go 构建失败：${code}`)))

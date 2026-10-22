@@ -9,6 +9,7 @@ import (
 var sizes = []string{"cylinder", "tube_inner", "tube_outer", "ball", "rod"}
 var objects = []string{"cylinder", "disk", "tube", "ball", "rod"}
 var oilColumns = []string{"current_voltage", "balance_voltage", "fall_time", "instrument_charge"}
+var oilHeaders = []string{"当前电压Uc(V)", "平衡电压U(V)", "时间t(s)", "电荷量(C)"}
 
 func scalar(v D) domain.Scalar { return domain.Scalar(v.String()) }
 func normalize(p *domain.Payload) {
@@ -89,7 +90,7 @@ func normalize(p *domain.Payload) {
 				}
 				k := fmt.Sprintf("time_%d", trial+1)
 				d[k] = append(d[k], p.Data["fall_time"][i])
-				row := []string{fmt.Sprint(drop + 1), fmt.Sprint(trial + 1)}
+				row := []string{}
 				for _, k := range oilColumns {
 					row = append(row, strings.TrimSpace(string(p.Data[k][i])))
 				}
@@ -104,7 +105,7 @@ func normalize(p *domain.Payload) {
 			d[k] = a
 		}
 		p.Data = d
-		p.SourceTables = []domain.Table{{Title: "密立根油滴原始记录（当前表格）", Headers: []string{"油滴", "次数", "当前电压/V", "平衡电压/V", "时间/s", "仪器电荷量/C"}, Rows: rows}}
+		p.SourceTables = []domain.Table{{Title: "密立根油滴原始记录（当前表格）", Headers: oilHeaders, Rows: rows}}
 	case "moment-of-inertia":
 		if _, ok := p.Data["size_cylinder_cm"]; !ok {
 			return
@@ -186,10 +187,11 @@ func Editable(input domain.Payload) (out domain.Payload, err error) {
 		d := map[string][]domain.Scalar{}
 		for j, k := range oilColumns {
 			for _, row := range p.SourceTables[0].Rows {
-				if len(row) != 6 {
+				if len(row) != 4 && len(row) != 6 {
 					fail("油滴表格行无效")
 				}
-				d[k] = append(d[k], domain.Scalar(row[j+2]))
+				// Older saved imports included drop and trial index columns.
+				d[k] = append(d[k], domain.Scalar(row[j+len(row)-4]))
 			}
 			if len(d[k]) > 32 {
 				fail("油滴行数过多")

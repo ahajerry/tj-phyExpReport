@@ -4,7 +4,7 @@
 
 前端需要 Node.js 24+、pnpm **11.28.5**；Linux/WSL 本机后端开发另需 Go 1.26+。Windows 使用 Docker 后端时，无需安装 Windows Go。本项目只使用 pnpm，约束同时写在根目录 [AGENTS.md](../AGENTS.md)、`packageManager`、`engines`、安装前检查和 Dockerfile 中。
 
-以下联合启动命令适用于 Linux/WSL，不适用于 Windows PowerShell。若已安装 pnpm，可跳过 `corepack enable`；未提供 Corepack 的 Node.js 安装可使用 pnpm 官方独立安装方式，版本必须为 11.28.5。
+以下联合启动命令在 Windows 自动使用 Docker 开发后端，在 Linux/WSL 默认使用本机 Go 后端。若已安装 pnpm，可跳过 `corepack enable`；未提供 Corepack 的 Node.js 安装可使用 pnpm 官方独立安装方式，版本必须为 11.28.5。
 
 ```bash
 corepack enable
@@ -18,29 +18,40 @@ pnpm dev
 
 ## 本地服务
 
-### Windows：本机 Vite + Docker 后端
+### Windows：Vite + 自动编译的 Docker 开发后端
 
-当前后端依赖 Unix 系统调用，不能直接在 PowerShell 运行 `pnpm dev`。缺少 Go 时会先出现 `spawn go ENOENT`；仅安装 Windows Go 也不能消除后端的平台限制。
+Docker Desktop Linux 引擎就绪后：
 
 ```powershell
 pnpm install --frozen-lockfile
-docker build --progress=plain -t phyexp-report:local .
+pnpm dev
 ```
 
-仅在镜像构建成功后执行：
+Vite 默认地址为 `http://127.0.0.1:15173`，避开本机 Windows 保留的 5173 端口范围；API 仍代理到 `http://127.0.0.1:8000`。端口被占用时以终端实际显示的地址为准。
 
-```powershell
-$env:REPORT_PUBLIC_PORT = '8000'
-docker compose -p phyexpreport up -d --no-build
-Invoke-RestMethod http://127.0.0.1:8000/api/health
-pnpm exec vite
-```
+脚本先启动本机 Vite，后端准备期间可先开发页面。首次缺少 `phyexp-report:dev` 时，脚本直接调用 `docker build --target development` 准备环境；该目标不安装前端依赖、不打包前端、不预编译应用。以后只启动 `compose.dev.yaml` 中的后端和本机 Vite。无需 Windows Go，也不再使用生产镜像作为开发前提。
 
-Vite 通常提供 `http://localhost:5173`，并将 `/api` 转发到本机 8000 端口。修改 Go 或模板后重新构建镜像，再运行同一 Compose 启动命令。Docker/WSL 配置及网络错误见 [Windows 开发与排错](windows-development.md)。
+首次自动准备时，如果本机已有 `phyexp-report:local`，会通过 `DEV_RUNTIME=phyexp-report:local` 复用其中的 TeX 工具，避免重新下载系统包；应用始终编译挂载的当前源码，不启动旧二进制。没有现成报告镜像时构建共享的 `render-runtime`。显式执行 `pnpm dev:setup` 则按当前 Dockerfile 更新完整环境，不复用旧报告镜像。
+
+`server/`、`scripts/`、`tex/templates/` 只读挂载。监听器每 750 ms 检查 Go 源码、模块文件及内嵌资源，变化后增量编译，成功后优雅停止旧进程并启动新进程；编译错误时保留旧服务，保存修复后再试。模板由每个新报告任务直接读取，不触发 Go 编译。测试文件和 `server/testdata/` 不触发开发重编译。
+
+开发 Compose 项目固定为 `phyexpreport-dev`，仅绑定 `127.0.0.1:8000`，使用独立的 `dev-data`、`go-mod`、`go-build` 命名卷，不连接生产卷或宿主 `.report-data/`。Ctrl+C 停止开发后端并保留卷。切换分支后重新运行 `pnpm dev`，启动时会检查并编译当前源码。
+
+| 命令 | 用途 |
+| --- | --- |
+| `pnpm dev` | Windows 默认 Docker，Linux/WSL 默认本机 Go，均启动本机 Vite |
+| `pnpm dev:docker` | 任意平台使用 Docker 开发后端 |
+| `pnpm dev:local` | Linux/WSL 本机 Go 自动编译与 Vite |
+| `pnpm dev:frontend` | 仅 Vite，不要求后端或 Docker；API 仍依赖 8000 端口的服务 |
+| `pnpm dev:setup` | 首次预热或更新开发镜像，不启动服务 |
+
+`pnpm test:dev` 检查监听器的错误恢复、源码指纹和优雅停止。准备好开发镜像后运行 `pnpm test:dev:docker`，会使用临时源码副本、临时容器和临时卷验证真实编译/重启、编译失败保留旧服务、模板实时读取及退出清理；不会修改工作区源码或使用开发/生产数据卷。
+
+仅 Dockerfile、Go/Node 工具链或系统依赖变更后运行 `pnpm dev:setup`，然后重启 `pnpm dev`。应用代码、模板变化不需要重建开发镜像。第一次下载 Go 模块、编译 Go 和安装 TeX 仍可能耗时；后续复用命名卷、Go 编译缓存和 BuildKit 下载缓存。8000 端口被生产后端占用时先停止那个服务，或只运行前端；脚本不主动停止其他项目。
 
 ### Linux / WSL：本机联合启动
 
-`pnpm dev` 计算 Go 源码、依赖和模板指纹，检查 8000 端口是否已有相同版本服务；需要时先编译到 `output/backend-go/reportd`，再启动后端和 Vite。修改 Go 后重启开发命令。前端热更新由 Vite 提供。
+`pnpm dev` 启动 Go 源码监听器和 Vite。Go 二进制输出到 `output/backend-go/reportd`，开发数据默认写入 `output/dev-data/`；保存源码自动增量编译和重启，修改模板无需重启。已有服务占用 8000 端口时使用 `pnpm dev:frontend` 或先停止该服务。
 
 ```bash
 pnpm backend
@@ -56,6 +67,8 @@ Windows 使用本机 Vite + Docker 后端的启动步骤、磁盘位置设置，
 
 ```bash
 pnpm lint
+pnpm test:dev
+pnpm test:dev:docker
 pnpm test:backend
 pnpm test:backend:race
 pnpm test:experiment-data

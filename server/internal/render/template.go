@@ -108,6 +108,23 @@ func Fill(source string, fields map[string]string, p domain.Payload, images []st
 	}
 	pages := []string{}
 	for _, table := range p.SourceTables {
+		if p.ExperimentID == "millikan" && len(table.Headers) == 4 {
+			emptyCharge := true
+			for _, cells := range table.Rows {
+				if strings.TrimSpace(cells[3]) != "" {
+					emptyCharge = false
+					break
+				}
+			}
+			if emptyCharge {
+				table.Headers = table.Headers[:3]
+				rows := make([][]string, len(table.Rows))
+				for i, cells := range table.Rows {
+					rows[i] = cells[:3]
+				}
+				table.Rows = rows
+			}
+		}
 		width := fmt.Sprintf("%.2f", (14.3-.45*float64(len(table.Headers)))/float64(len(table.Headers)))
 		row := func(cells []string) string {
 			v := []string{}

@@ -22,8 +22,8 @@ func millikan(f map[string]string, d map[string][]D) {
 			ts = append(ts, pos(d[fmt.Sprintf("time_%d", j)][i], "下降时间"))
 		}
 		t := mean(ts)
-		base := one.Add(dec(".0226").Mul(sqrt(t)))
-		charge := div(dec(".928e-14"), v.Mul(t).Mul(base).Mul(sqrt(base)))
+		base := t.Mul(one.Add(dec(".0226").Mul(sqrt(t))))
+		charge := div(dec(".928e-14"), v.Mul(base).Mul(sqrt(base)))
 		c := div(charge, ref).RoundBank(0)
 		if c.LessThan(one) {
 			c = one
@@ -81,6 +81,25 @@ func millikan(f map[string]string, d map[string][]D) {
 	f["charge_graph_points"] = strings.Join(points, " ")
 	f["charge_graph_fit_points"] = point(low, div(graph.Mul(low).Add(intercept), scale)) + " " + point(high, div(graph.Mul(high).Add(intercept), scale))
 	reverse, ru := mean(reverseSamples), sem(reverseSamples)
+	// Lecture section 7.1 uses Student's t times the standard error of
+	// Q_i/n_i, including for the least-squares estimate. Keep the historical
+	// standard-uncertainty fields available for saved consumers.
+	t95 := map[int]string{3: "4.303", 4: "3.182", 5: "2.776", 6: "2.571", 7: "2.447", 8: "2.365"}[count]
+	if t95 == "" {
+		fail("油滴需填写 3 至 8 组")
+	}
+	lsSpread := zero
+	for _, sample := range reverseSamples {
+		lsSpread = lsSpread.Add(sq(sample.Sub(ls)))
+	}
+	f["oil_drop_count"] = fmt.Sprint(count)
+	f["student_t_95"] = t95
+	pair(f, "electron_charge_reverse_95", "electron_charge_reverse_u95", reverse, ru.Mul(dec(t95)))
+	pair(f, "electron_charge_ls_95", "electron_charge_ls_u95", ls, sqrt(div(lsSpread, n(count*(count-1)))).Mul(dec(t95)))
+	put(f, "electron_charge_reference", ref)
+	put(f, "electron_charge_common", ls)
+	f["common_error_percent"] = percent(div(ls.Sub(ref).Abs(), ref).Mul(n(100)), div(lsu, ls))
+	f["graph_error_percent"] = percent(div(graph.Sub(ref).Abs(), ref).Mul(n(100)), div(gu, ref))
 	pair(f, "electron_charge_reverse", "electron_charge_reverse_u", reverse, ru)
 	gp := pair(f, "electron_charge_graph", "electron_charge_graph_u", graph, gu)
 	var ex *int

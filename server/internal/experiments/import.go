@@ -78,11 +78,9 @@ func importOil(content []byte) domain.Payload {
 			vs = append(vs, dec(v))
 			key := fmt.Sprintf("time_%d", j+1)
 			p.Data[key] = append(p.Data[key], domain.Scalar(t))
-			charge := ""
-			if len(row) > 3 {
-				charge = strings.TrimSpace(row[3])
-			}
-			source = append(source, []string{fmt.Sprint(i/4 + 1), fmt.Sprint(j + 1), strings.TrimSpace(row[0]), v, t, charge})
+			original := make([]string, 4)
+			copy(original, row)
+			source = append(source, original)
 		}
 		p.Data["voltage"] = append(p.Data["voltage"], scalar(mean(vs)))
 	}
@@ -92,7 +90,11 @@ func importOil(content []byte) domain.Payload {
 		}
 		p.Data[k] = a
 	}
-	p.SourceTables = []domain.Table{{Title: "密立根油滴仪 CSV 原始记录", Headers: []string{"油滴", "次数", "当前电压/V", "平衡电压/V", "时间/s", "电荷量/C"}, Rows: source}}
+	headers := oilHeaders
+	if len(rows[0]) == 4 {
+		headers = rows[0]
+	}
+	p.SourceTables = []domain.Table{{Title: "密立根油滴仪 CSV 原始记录", Headers: headers, Rows: source}}
 	return p
 }
 func importTorsion(content []byte) domain.Payload {

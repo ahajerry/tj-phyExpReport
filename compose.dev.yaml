@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: .
+      target: development
+    image: phyexp-report:dev
+    init: true
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./server:/workspace/server:ro
+      - ./scripts:/workspace/scripts:ro
+      - ./tex/templates:/workspace/tex/templates:ro
+      - dev-data:/data
+      - go-mod:/home/report/go/pkg/mod
+      - go-build:/home/report/.cache/go-build
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+volumes:
+  dev-data:
+  go-mod:
+  go-build:

@@ -1,5 +1,9 @@
 # Docker 部署
 
+部署使用最终生产目标；日常开发使用 `pnpm dev` 和独立的 `compose.dev.yaml`，见 [开发与验证](development.md)，无需每次构建生产镜像。
+
+构建为 Corepack、pnpm store/元数据、Go 模块/编译和 apt 下载设置 BuildKit 缓存挂载；pnpm 使用 `--prefer-offline` 复用已有数据，缺失数据仍联网获取。系统基础包只安装一次，再构造包含完整 TeX 资源且无 Python 运行时的生产环境。apt HTTP/HTTPS 空闲超时为 30 秒、重试最多 2 次，关闭 HTTP 流水线以减少镜像站连接兼容问题。更改软件源、源码或安装层重试时可复用已下载文件。缓存可能被 Docker GC 清理，首次准备仍需要联网；`--no-cache` 不会自动清空缓存挂载。
+
 ## 首次启动
 
 宿主机安装 Docker Engine 和 Compose v2 或更新版本。无需安装 Go、Node、Python、XeLaTeX 或字体。
@@ -12,6 +16,25 @@ curl http://127.0.0.1:8080/api/health
 ```
 
 浏览器访问 `http://localhost:8080`。构建需要联网下载基础镜像、pnpm/Go 依赖和 Debian 包，LaTeX 依赖较大。运行时生成报告无需互联网。
+
+构建默认使用以下国内源，直接执行本文构建命令即可生效，无需修改 Docker Desktop 全局配置：
+
+| 构建参数 | 默认值 | 用途与教程 |
+| --- | --- | --- |
+| `DOCKER_REGISTRY` | `docker.1ms.run` | [毫秒镜像](https://1ms.run/guide)，拉取 `library/node`、`library/golang`、`library/debian` |
+| `NPM_REGISTRY` | `https://registry.npmmirror.com` | [npmmirror](https://npmmirror.com/)，用于 Corepack 下载 pnpm 和 pnpm 安装依赖 |
+| `GOPROXY` | `https://goproxy.cn,direct` | [Goproxy.cn](https://github.com/goproxy/goproxy.cn/blob/master/README.zh-CN.md)，下载 Go 模块，保留校验和验证 |
+| `DEBIAN_MIRROR` | `http://mirrors.aliyun.com` | [阿里云 Debian](https://developer.aliyun.com/mirror/debian/)，替换 Debian 主仓库和[安全更新仓库](https://developer.aliyun.com/mirror/debian-security)地址 |
+
+Dockerfile 使用 BuildKit 内置前端，不额外拉取 `docker/dockerfile:1`。Debian slim 初始不包含 CA 证书包，因此 apt 使用 HTTP 国内源并保留 Debian 签名验证；安全更新镜像可能有同步延迟。上述参数均可通过 `--build-arg` 覆盖；JS 依赖仍严格使用 `package.json` 声明的 pnpm 11.28.5 和 `pnpm install --frozen-lockfile`。
+
+需要切换回 Docker Hub 时执行：
+
+```bash
+docker build --build-arg DOCKER_REGISTRY=docker.io -t phyexp-report:local .
+```
+
+该命令只切换基础镜像仓库。也可把 `DOCKER_REGISTRY` 设为其他兼容仓库的域名，不带 `https://` 或末尾斜杠；`DEBIAN_MIRROR` 则需包含协议，不带末尾斜杠。公共镜像源是否可用以实际下载结果为准。
 
 如本机没有 Compose：
 

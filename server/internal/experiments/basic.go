@@ -127,10 +127,14 @@ func lens(f map[string]string, d map[string][]D, direction D) {
 	if !direction.Equal(one) && !direction.Equal(n(-1)) {
 		fail("物屏位置方向必须为 1（坐标最小）或 -1（坐标最大）")
 	}
-	distance := func(to, from D) D { return to.Sub(from).Mul(direction) }
+	distance := func(to, from D) D { return to.Sub(from).Abs() }
+	between := func(x, a, b D) bool { return x.Sub(a).Mul(x.Sub(b)).IsNegative() }
 	for i, o := range d["single_object"] {
 		l, image := d["single_lens"][i], d["single_image"][i]
-		u, v := pos(distance(l, o), "物距（请检查物屏所在侧和透镜位置）"), pos(distance(image, l), "像距（请检查物屏所在侧和像屏位置）")
+		if !between(l, o, image) {
+			fail("物距像距法透镜必须位于物屏与像屏之间")
+		}
+		u, v := distance(l, o), distance(image, l)
 		d["object_distance"] = append(d["object_distance"], u)
 		d["image_distance"] = append(d["image_distance"], v)
 		f[fmt.Sprintf("object_distance_%02d", i+1)] = u.String()
@@ -138,11 +142,8 @@ func lens(f map[string]string, d map[string][]D, direction D) {
 	}
 	for i, o := range d["bessel_object"] {
 		image, large, small := d["bessel_image"][i], d["bessel_lens_large"][i], d["bessel_lens_small"][i]
-		if !distance(large, o).IsPositive() || !distance(small, large).IsPositive() || !distance(image, small).IsPositive() {
-			if direction.IsNegative() {
-				fail("共轭法位置须满足：物屏 > 成大像时透镜 > 成小像时透镜 > 像屏")
-			}
-			fail("共轭法位置须满足：物屏 < 成大像时透镜 < 成小像时透镜 < 像屏")
+		if !between(large, o, image) || !between(small, o, image) || !between(large, o, small) {
+			fail("共轭法两透镜位置必须位于物屏与像屏之间，且成大像位置更靠近物屏")
 		}
 		l, separation := distance(image, o), distance(small, large)
 		d["bessel_length"] = append(d["bessel_length"], l)

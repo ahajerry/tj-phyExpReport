@@ -15,3 +15,8 @@ tex/grade-rules
 docs
 *.spec
 .env*
+
+tmp*
+*.log
+.codex
+.agents
