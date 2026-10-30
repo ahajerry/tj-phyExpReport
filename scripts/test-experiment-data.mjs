@@ -23,8 +23,8 @@ const quantities = [
   { id: 'mass', showName: '质量', unit: 'g' },
   { id: 'volume', showName: '体积', unit: 'cm³' },
 ]
-assert.match(buildImportPrompt('密度测量', quantities), /mass.*质量/s)
-assert.match(buildImportPrompt('密度测量', quantities), /volume.*体积/s)
+assert.match(buildImportPrompt('合成字段导入', quantities), /mass.*质量/s)
+assert.match(buildImportPrompt('合成字段导入', quantities), /volume.*体积/s)
 assert.deepEqual(
   parseImportedMeasurements('```json\n{"mass":["30.40",31],"volume":["2.00"]}\n```', quantities),
   { mass: ['30.40', '31'], volume: ['2.00'] },
@@ -59,10 +59,10 @@ assert.deepEqual(
 )
 
 const many = Array.from({ length: 400 }, (_, index) => `${index}.40`)
-saveMeasurements('density', 'mass', many)
-assert.deepEqual(readMeasurements('density', 'mass'), many)
-saveMeasurements('density', 'mass', ['7.00'])
-assert.deepEqual(readMeasurements('density', 'mass'), ['7.00'])
-saveMeasurements('density', 'mass', [''])
-assert.equal(readMeasurements('density', 'mass'), null)
+saveMeasurements('synthetic-import', 'mass', many)
+assert.deepEqual(readMeasurements('synthetic-import', 'mass'), many)
+saveMeasurements('synthetic-import', 'mass', ['7.00'])
+assert.deepEqual(readMeasurements('synthetic-import', 'mass'), ['7.00'])
+saveMeasurements('synthetic-import', 'mass', [''])
+assert.equal(readMeasurements('synthetic-import', 'mass'), null)
 console.log('JSON 导入与实验 Cookie 测试通过')

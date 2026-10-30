@@ -8,6 +8,7 @@
 | --- | --- |
 | 启动容器、接入 HTTPS、备份恢复 | [部署指南](deployment.md) |
 | 配置开发环境、构建、运行测试 | [开发与验证](development.md) |
+| 维护页面组件、字体、主题与 CSS 类 | [前端 UI 与 CSS 指南](frontend-ui.md) |
 | Windows 前端开发、WSL/Docker 配置与网络错误排查 | [Windows 开发与排错](windows-development.md) |
 | 理解模块边界和任务生命周期 | [架构](architecture.md) |
 | 对接接口、上传、身份与额度 | [API 与存储契约](api.md) |

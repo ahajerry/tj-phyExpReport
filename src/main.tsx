@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client"
 import { BrowserRouter } from "react-router"
 import App from "./App"
 import "./index.css"
-import "katex/dist/katex.min.css"
 
 if (typeof crypto !== 'undefined' && !crypto.randomUUID) {
   crypto.randomUUID = function () {

@@ -1,0 +1,53 @@
+/* Matched to ui.shadcn.com/docs/installation; keep this app's font families. */
+.code-block {
+  position: relative;
+  margin-block: 24px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: oklch(.98 0 0);
+  color: var(--foreground);
+  font-size: 14px;
+  line-height: 1.75;
+}
+.code-block-toolbar { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 44px 4px 12px; border-bottom: 1px solid color-mix(in oklch, var(--border) 50%, transparent); }
+.code-block-terminal { display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex-shrink: 0; border-radius: 1px; background: var(--foreground); color: oklch(.98 0 0); opacity: .7; }
+.code-block-terminal svg { width: 12px; height: 12px; }
+.code-block-tab-scroll { display: flex; align-items: center; min-width: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.code-block-tab-scroll [data-slot="tabs-list"] { height: 36px; }
+.code-block .code-block-tab { height: 28px; padding: 2px 8px 4px; border: 1px solid transparent; border-radius: 8px; font-size: 14px; line-height: 20px; box-shadow: none; }
+.code-block .code-block-tab[data-active] { border-color: var(--input); background: var(--background); }
+.code-block .code-block-copy { position: absolute; top: 8px; right: 8px; z-index: 1; width: 28px; height: 28px; padding: 0; border-radius: 8px; opacity: .7; }
+.code-block .code-block-copy:hover, .code-block .code-block-copy:focus-visible { opacity: 1; }
+.code-block pre { margin: 0; padding: 14px 16px; overflow-x: auto; white-space: pre; line-height: 24.5px; }
+.code-block pre code { padding: 0; border-radius: 0; background: transparent; font-size: 14px; line-height: 1; overflow-wrap: normal; font-family: var(--font-mono); }
+.code-block-feedback:empty { display: none; }
+.code-block-feedback:not(.sr-only):not(:empty) { display: block; padding: 0 16px 12px; font-size: 12px; color: var(--muted-foreground); }
+.callout { display: block; margin-block: 24px; padding: 12px 16px; border: 1px solid var(--callout-border, var(--border)); border-radius: 18px; background: var(--callout-background, var(--muted)); color: var(--foreground); }
+.callout [data-slot="alert-description"] { display: block; color: color-mix(in oklch, var(--foreground) 80%, transparent); font-size: 14px; line-height: 1.625; }
+.callout .callout-title { font-weight: 700; }
+.callout p, .about-prose .callout p { margin-block: 0; }
+.callout p + p, .about-prose .callout p + p { margin-top: 12px; }
+.callout a, .about-prose .callout a { font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: currentColor; text-decoration-color: color-mix(in oklch, currentColor 30%, transparent); }
+.callout a:hover, .about-prose .callout a:hover { text-decoration-color: currentColor; }
+@media (min-width: 768px) { .callout { margin-inline: -4px; } }
+/* Palette is opt-in; neutral follows the app theme. */
+.callout[data-color="emerald"] { --callout-border: var(--color-emerald-600); --callout-background: var(--color-emerald-100); }
+.dark .callout[data-color="emerald"] { --callout-border: var(--color-emerald-400); --callout-background: var(--color-emerald-900); }
+.callout[data-color="blue"] { --callout-border: var(--color-blue-600); --callout-background: var(--color-blue-100); }
+.dark .callout[data-color="blue"] { --callout-border: var(--color-blue-400); --callout-background: var(--color-blue-900); }
+.callout[data-color="amber"] { --callout-border: var(--color-amber-600); --callout-background: var(--color-amber-100); }
+.dark .callout[data-color="amber"] { --callout-border: var(--color-amber-400); --callout-background: var(--color-amber-900); }
+.callout[data-color="rose"] { --callout-border: var(--color-rose-600); --callout-background: var(--color-rose-100); }
+.dark .callout[data-color="rose"] { --callout-border: var(--color-rose-400); --callout-background: var(--color-rose-900); }
+.dark .code-block { background: var(--muted); }
+
+
+.contributor-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+.contributor-card { padding: 24px; gap: 20px; border-radius: 18px; background: var(--muted); }
+.about-prose .contributor-card h3 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 18px; line-height: 1.5; }
+.contributor-card h3 > svg { width: 18px; height: 18px; color: var(--muted-foreground); }
+.contributor-count { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--muted-foreground); }
+.about-prose .contributor-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.about-prose .contributor-list li { max-width: 100%; margin: 0; padding: 0; }
+.contributor-list [data-slot="badge"] { height: auto; max-width: 100%; padding: 6px 10px; border-radius: 8px; background: var(--background); color: var(--foreground); font-size: 13px; font-weight: 400; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .contributor-groups { grid-template-columns: 1fr; } .contributor-card { padding: 20px; } }

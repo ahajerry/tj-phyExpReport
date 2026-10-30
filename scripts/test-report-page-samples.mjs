@@ -1,3 +1,4 @@
+import { experimentItems } from "../src/experiments.ts"
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { structuredExperiments } from '../src/structured-experiments.ts'
@@ -27,3 +28,6 @@ for (const experiment of structuredExperiments) {
 
 assert.deepEqual(structuredExperiments.map((experiment) => experiment.id).sort(), Object.keys(samples).sort())
 console.log(`${structuredExperiments.length} 个报告页面的样例字段与读数数量检查通过`)
+
+// Every visible experiment must be backed by an active structured report page.
+assert.deepEqual(experimentItems.map((item) => item.id).sort(), structuredExperiments.map((item) => item.id).sort())

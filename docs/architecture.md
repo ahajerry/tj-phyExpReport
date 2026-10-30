@@ -43,3 +43,9 @@ flowchart LR
 容器使用 UID/GID 10001、无新增权限、丢弃 capabilities。图片策略只允许所需位图 coder；上传阶段限制每图 8 MiB、4000 万像素，两个提交/导入请求同时处理。数据库、原图、PDF 保存在数据卷，临时编译目录最终清理。
 
 基础依赖依据：[SQLite 驱动](https://pkg.go.dev/modernc.org/sqlite)、[Docker 多阶段构建](https://docs.docker.com/build/building/multi-stage/)。版本由 `server/go.mod`、`server/go.sum` 和 Dockerfile 固定范围；基础镜像标签仍可随补丁更新。
+
+## 前端页面与历史演示
+
+`App.tsx` 提供共享外壳、关于页和报告状态页面，实验路由仅从 `structuredExperimentById` 选择当前八项实验，由 `StructuredExperimentPage` 渲染。侧栏目录来自 `src/experiments.ts`，与结构化实验目录保持一致。界面及样式维护见 [前端 UI 与 CSS 指南](frontend-ui.md)。
+
+原基础测量（长度、密度）及旧计算／图表 UI 已归档至 `legacy/basic-measurements/`，不参与 TypeScript 构建或生产部署。旧实验地址不再提供计算页，按无效实验地址规则 replace 跳转首页。共享的 JSON 导入、科学计数法文本处理和旧 Cookie 迁移仍保留，以支持当前八项实验；不会扫描或删除弃用演示留下的浏览器 Cookie。报告端及旧 SQLite 数据兼容逻辑未改动。

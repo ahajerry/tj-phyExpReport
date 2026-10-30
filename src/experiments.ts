@@ -2,13 +2,6 @@ type ExperimentGroup = { title: string; items: { id: string; title: string }[] }
 
 export const experimentGroups: ExperimentGroup[] = [
   {
-    title: "基础测量",
-    items: [
-      { id: "length-measurement", title: "长度测量" },
-      { id: "density", title: "密度测量" },
-    ],
-  },
-  {
     title: "力学实验",
     items: [
       { id: "young-modulus", title: "杨氏弹性模量" },

@@ -112,3 +112,9 @@ pnpm version:set v261014.1
 ```
 
 版本格式为 `vYYMMDD.N`，`package.json` 保存对应的 `YYMMDD.N.0`。命令只更新根包版本，不创建 Git 提交或标签，pnpm 锁文件不存储根包版本。发布前更新 CHANGELOG 并完成检查。
+
+## 前端 UI 与样式
+
+完整组件清单、页面结构、CSS 类、主题变量、字体、交互和使用示例统一维护在 [前端 UI 与 CSS 指南](frontend-ui.md)。修改页面时同步更新该指南；首页方案、关于页内容、导航、代码块、Callout、致谢卡片均在其中说明。
+
+当前仅启用八项自主实验。基础测量演示及其专用依赖已归档到 `legacy/basic-measurements/`，归档目录 README 记录了文件范围和旧地址行为。共享 JSON 解析、旧 Cookie 读取与数值修约工具仍服务当前实验，不随演示页弃用。
