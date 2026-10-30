@@ -70,3 +70,5 @@ Session 返回最近 20 个任务；旧任务仍可通过 ID 查询。新 create
 Cookie `report_user` 为 64 位小写十六进制随机 token，HttpOnly、SameSite=Lax、Path=/、有效一年。生产默认 Secure，Compose 本地 HTTP 显式关闭。所有查询/下载按完整 token 隔离，展示的前 8 位不是认证凭证。清除 Cookie 会失去原身份，也能绕过匿名日额度；这不是账号系统。
 
 Go 直接兼容旧 `jobs` 表及索引：`seq,id,user_id,day,payload,status,progress,stage,error,created_at`，不变更既有列。SQLite 文件为 `reports.sqlite3`，PDF 为 `reports/{id}.pdf`，原图为 `original-images/{id}/`。切换版本前必须完整备份并停止旧服务，详见 [迁移说明](migration.md)。
+
+声速请求 parameters 中的 res_frequency、phase_frequency 及对应 frequency_error 继续使用 kHz；表单与报告使用 Hz，前端显示和编辑时换算。

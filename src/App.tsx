@@ -346,10 +346,13 @@ function HomePage() {
           本网站使用cookie确认身份，无需注册账户，
           使用同一设备的同一浏览器时可查看原有数据和报告排队进度。<br />
           目前使用的服务器为1M带宽，可能无法支撑大量访问。<br />
-          当前版本：v261013（测试）<br />
+          当前版本：v261030（测试）<br />
           测试期间数据和图片可能保存到服务器便于调试和后续开发。<br />
-          本项目预计上传github开源。
+          本项目已经上传github开源。
         </p>
+        <Button key="github" render={<Link to="https://github.com/ahajerry/tj-phyExpReport" />} variant="outline">
+          点击访问github仓库
+        </Button>
         <p className="mb-4 text-sm text-muted-foreground">
           ChatGPT负责了一半以上的开发工作。<br />
           欢迎加入QQ群探讨大雾实验的奥秘:1127752706<br />
@@ -362,7 +365,7 @@ function HomePage() {
         </h2>
         <p className="mb-4 text-sm text-muted-foreground">
           群管理员：阿！尔！及！利！亚！,怀梦,机械 金龙鱼,PPh3_O,Herbst,月,yiming564,nor
-          赞助者：H*t,l*n,*🤯,*韶,*鱼,大*n,*泡,*子,*晴
+          赞助者：H*t,l*n,*🤯,*韶,*鱼,大*n,*泡,*子,*晴,s*h,b*n,L*e,*刘
         </p>
       </section>
     </div>

@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "output" / "report-review"
+SOURCE = ROOT / "output" / "pdf" / "latest"
 DEST = ROOT / "tmp" / "pdf-review"
 
 

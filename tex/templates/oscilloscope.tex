@@ -33,7 +33,7 @@ Y 轴输入待测信号，X 轴输入与时间成正比的锯齿扫描电压，�
 \ReportSubsection{电压、周期与频率}
 峰峰值 $U_{\rm pp}$ 由纵向跨度 $N_U$ 与电压档位 $S_y$ 相乘得到；周期由横向跨度 $N_T$ 与时基档位 $S_x$ 相乘得到：
 \[U_{\rm pp}=K S_yN_U,\qquad T=S_xN_T,\qquad f=\frac1T.\]
-$K$ 为探头衰减倍数，同轴直连时 $K=1$；$S_y$ 用 V/div，$S_x$ 用 ms/div，故 $T$ 用 ms，波形频率 $f_v=1000/T$ 用 Hz；李萨如法频率用 kHz。
+$K$ 为探头衰减倍数，同轴直连时 $K=1$；$S_y$ 用 V/div，$S_x$ 用 ms/div，故 $T$ 用 ms，波形频率 $f_v=1/T$ 用 kHz；李萨如法频率用 kHz。
 峰峰值并非峰值或有效值；仅对正弦信号有 $U_{\rm rms}=U_{\rm pp}/(2\sqrt2)$。
 
 \clearpage
@@ -75,15 +75,15 @@ Y 输入使用合适耦合；观察交流波形可选 AC，测直流必须选 DC
 \end{adjustbox}
 \end{center}
 \ReportSubsection{周期与频率}
-\[T=S_xN_T,\qquad f_v\,(\mathrm{Hz})=\frac{1000}{T\,(\mathrm{ms})}.\]
+\[T=S_xN_T,\qquad f_v\,(\mathrm{kHz})=\frac{1}{T\,(\mathrm{ms})}.\]
 \begin{center}\small\renewcommand{\arraystretch}{1.35}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{|c|c|c|c|c|c|}\hline
-序号 & 波形 & $S_x$/(ms/div) & $N_T$/div & $T$/ms & $f_v$/Hz\\\hline
-1 & 方波 & \Field[10mm]{time_scale_01} & \Field[10mm]{period_divisions_01} & \Field[10mm]{period_ms_01} & \Field[10mm]{frequency_hz_01}\\\hline
-2 & 正弦波 & \Field[10mm]{time_scale_02} & \Field[10mm]{period_divisions_02} & \Field[10mm]{period_ms_02} & \Field[10mm]{frequency_hz_02}\\\hline
-3 & 三角波 & \Field[10mm]{time_scale_03} & \Field[10mm]{period_divisions_03} & \Field[10mm]{period_ms_03} & \Field[10mm]{frequency_hz_03}\\\hline
-4 & 半波 & \Field[10mm]{time_scale_04} & \Field[10mm]{period_divisions_04} & \Field[10mm]{period_ms_04} & \Field[10mm]{frequency_hz_04}\\\hline
+序号 & 波形 & $S_x$/(ms/div) & $N_T$/div & $T$/ms & $f_v$/kHz\\\hline
+1 & 方波 & \Field[10mm]{time_scale_01} & \Field[10mm]{period_divisions_01} & \Field[10mm]{period_ms_01} & \Field[10mm]{frequency_khz_01}\\\hline
+2 & 正弦波 & \Field[10mm]{time_scale_02} & \Field[10mm]{period_divisions_02} & \Field[10mm]{period_ms_02} & \Field[10mm]{frequency_khz_02}\\\hline
+3 & 三角波 & \Field[10mm]{time_scale_03} & \Field[10mm]{period_divisions_03} & \Field[10mm]{period_ms_03} & \Field[10mm]{frequency_khz_03}\\\hline
+4 & 半波 & \Field[10mm]{time_scale_04} & \Field[10mm]{period_divisions_04} & \Field[10mm]{period_ms_04} & \Field[10mm]{frequency_khz_04}\\\hline
 \end{tabular}
 \end{adjustbox}
 \end{center}

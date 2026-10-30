@@ -119,7 +119,27 @@ J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}=-k\theta-b\frac{\mathrm{d}\theta}{\mat
 \end{equation}
 由式（3.4.13）可见，当 $|\omega_0-\omega|=\beta$ 时，振幅降为峰值的 $\dfrac{1}{\sqrt{2}}$，根据幅频特性曲线的相应点可确定 $\beta$ 的值，即为作图法求得阻尼系数 $\beta$。对于由作图法和对数逐差法这两种方法得到的阻尼系数 $\beta$ 的值，可以进行比较和分析。
 \ReportSection{实验仪器}
-波尔共振仪、光电门、频闪相位读盘。
+\ReportSubsection{4.1 仪器结构}
+波尔共振仪由振动仪与电器控制箱两部分组成，并配有闪光灯。振动仪结构如图 3.4.3 所示：铜质圆形摆轮 A 安装在机架转轴上，可绕转轴转动；蜗卷弹簧 B 的一端与摆轮相连，另一端与摇杆 M 相连。自由振动时摇杆静止，弹簧对摆轮施加与角位移成正比的弹性回复力矩。
+\par 摆轮下方装有阻尼线圈 K。电流通过线圈产生磁场，铜质摆轮在磁场中运动时形成局部涡电流；涡电流磁场与线圈磁场相互作用，形成与运动速度成正比的电磁阻尼力矩。强迫振动时，电动机通过偏心轮和传动连杆 E 带动摇杆摆动，再经蜗卷弹簧向摆轮施加强迫力矩，使摆轮作受迫振动。
+\par 电动机轴上装有固定的角度读数盘 G，以及随电动机转动的有机玻璃指针盘 F，指针上方装有挡光片。控制箱上的十圈电机转速调节旋钮可精细改变电机电压，使转速在实验范围 30--45 转/分内调节，从而改变强迫力矩的周期。电路采用稳速装置，配合带测速发电机、惯性较小的专用电机，使转速保持稳定。
+\par 通过软件控制阻尼线圈中的直流电流，可改变系统阻尼系数。阻尼分为“阻尼 1”“阻尼 2”“阻尼 3”三档；实验时可先选择“阻尼 2”，若共振振幅太小则改用“阻尼 1”，使振幅约为 $150^\circ$。
+\par 控制箱、闪光灯和振动仪通过专用电缆连接。“电源输出”向振动仪内部电路供电；“传感器输入”接收摆轮周期、振幅及强迫力零点信号；“控制输出”用于控制电动机和摆盘阻尼。
+\Needspace{10cm}
+\begin{center}\includegraphics[width=.95\textwidth,height=9cm,keepaspectratio]{figures/forced-apparatus-reference.png}\par
+图 3.4.3 波尔共振仪装置图\end{center}
+\ReportSubsection{4.2 光电门与计时器}
+\textbf{（1）摆轮振幅与周期的测量}\par
+摆轮圆周上每隔 $2^\circ$ 开有凹槽，其中一个用白漆标志的长凹槽比其他凹槽长。摆轮正上方的光电门架 H 上装有两个光电门：一个对准长凹槽，长凹槽在一个振动周期内两次通过该光电门，测控箱根据其开关时间测量并显示摆轮周期；另一个对准短凹槽，根据一个周期内通过的凹槽数测量并显示摆轮振幅。光电门的角度测量精度为 $2^\circ$。
+\par\textbf{（2）电动机转动周期的测量}\par
+角度盘正上方装有光电门 I。有机玻璃转盘转动时，挡光片通过该光电门，测控箱记录光电门的开关时间，测出强迫力矩的周期。
+\ReportSubsection{4.3 频闪法测量相位差}
+受迫振动时，摆轮与外力的相位差利用频闪法测量，装置如图 3.4.4 所示。角度盘下方的闪光灯受摆轮长凹槽光电门控制，每当摆轮的长凹槽标志 C 通过平衡位置，光电门 H 受光并触发闪光，形成频闪现象。
+\par 当受迫振动达到稳定状态时，电动机与摆轮之间的相位差保持不变。在周期性闪光照明和人眼视觉暂留作用下，实际匀速转动的角度指针看起来停在某一刻度。从角度盘读出摇杆相位超前于摆轮相位的数值，其负值即为报告中采用的相位差 $\varphi$。
+\par 测量时长按闪光灯电路的按钮开关，使摆轮每次通过平衡位置时触发闪光；为保护闪光灯管，采用按钮开关，不使用持续拨动式开关。待振幅与相位稳定后再读数。
+\Needspace{7cm}
+\begin{center}\includegraphics[height=5.8cm,width=.72\textwidth,keepaspectratio]{figures/forced-stroboscope-reference.png}\par
+图 3.4.4 频闪法测量相位差\end{center}
 \ReportSection{实验内容}
 \ReportSubsection{5.1 自由振动——测量摆轮振幅 $\theta$ 与自由振动周期 $T_0$ 的对应关系}
 自由振动（自由震荡）实验的目的，是为了测量摆轮的振幅 $\theta$ 与自由振动周期 $T$ 的关系。
@@ -203,26 +223,26 @@ $10T=\Field[8mm]{damped_time_10_01}\,\mathrm{s}$，$\bar T=\Field[8mm]{damped_pe
 阻尼档位：\Field{damping_setting}
 % BEGIN FORCED_TABLE
 {\small\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{3pt}
-\begin{longtable}{|*{6}{>{\centering\arraybackslash}p{2.1cm}|}}\hline
-\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$ & \shortstack{理论相位\\$\varphi_m$/°}\\\hline
+\begin{longtable}{|*{5}{>{\centering\arraybackslash}p{2.5cm}|}}\hline
+\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$\\\hline
 \endfirsthead\hline
-\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$ & \shortstack{理论相位\\$\varphi_m$/°}\\\hline
+\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$\\\hline
 \endhead
-\Field[8mm]{table_drive_time_10_01} & \Field[8mm]{table_signed_phase_01} & \Field[8mm]{amplitude_01} & \Field[8mm]{table_frequency_ratio_01} & \Field[8mm]{table_amplitude_ratio_01} & \Field[8mm]{table_signed_theory_01}\\\hline
-\Field[8mm]{table_drive_time_10_02} & \Field[8mm]{table_signed_phase_02} & \Field[8mm]{amplitude_02} & \Field[8mm]{table_frequency_ratio_02} & \Field[8mm]{table_amplitude_ratio_02} & \Field[8mm]{table_signed_theory_02}\\\hline
-\Field[8mm]{table_drive_time_10_03} & \Field[8mm]{table_signed_phase_03} & \Field[8mm]{amplitude_03} & \Field[8mm]{table_frequency_ratio_03} & \Field[8mm]{table_amplitude_ratio_03} & \Field[8mm]{table_signed_theory_03}\\\hline
-\Field[8mm]{table_drive_time_10_04} & \Field[8mm]{table_signed_phase_04} & \Field[8mm]{amplitude_04} & \Field[8mm]{table_frequency_ratio_04} & \Field[8mm]{table_amplitude_ratio_04} & \Field[8mm]{table_signed_theory_04}\\\hline
-\Field[8mm]{table_drive_time_10_05} & \Field[8mm]{table_signed_phase_05} & \Field[8mm]{amplitude_05} & \Field[8mm]{table_frequency_ratio_05} & \Field[8mm]{table_amplitude_ratio_05} & \Field[8mm]{table_signed_theory_05}\\\hline
-\Field[8mm]{table_drive_time_10_06} & \Field[8mm]{table_signed_phase_06} & \Field[8mm]{amplitude_06} & \Field[8mm]{table_frequency_ratio_06} & \Field[8mm]{table_amplitude_ratio_06} & \Field[8mm]{table_signed_theory_06}\\\hline
-\Field[8mm]{table_drive_time_10_07} & \Field[8mm]{table_signed_phase_07} & \Field[8mm]{amplitude_07} & \Field[8mm]{table_frequency_ratio_07} & \Field[8mm]{table_amplitude_ratio_07} & \Field[8mm]{table_signed_theory_07}\\\hline
-\Field[8mm]{table_drive_time_10_08} & \Field[8mm]{table_signed_phase_08} & \Field[8mm]{amplitude_08} & \Field[8mm]{table_frequency_ratio_08} & \Field[8mm]{table_amplitude_ratio_08} & \Field[8mm]{table_signed_theory_08}\\\hline
-\Field[8mm]{table_drive_time_10_09} & \Field[8mm]{table_signed_phase_09} & \Field[8mm]{amplitude_09} & \Field[8mm]{table_frequency_ratio_09} & \Field[8mm]{table_amplitude_ratio_09} & \Field[8mm]{table_signed_theory_09}\\\hline
-\Field[8mm]{table_drive_time_10_10} & \Field[8mm]{table_signed_phase_10} & \Field[8mm]{amplitude_10} & \Field[8mm]{table_frequency_ratio_10} & \Field[8mm]{table_amplitude_ratio_10} & \Field[8mm]{table_signed_theory_10}\\\hline
-\Field[8mm]{table_drive_time_10_11} & \Field[8mm]{table_signed_phase_11} & \Field[8mm]{amplitude_11} & \Field[8mm]{table_frequency_ratio_11} & \Field[8mm]{table_amplitude_ratio_11} & \Field[8mm]{table_signed_theory_11}\\\hline
-\Field[8mm]{table_drive_time_10_12} & \Field[8mm]{table_signed_phase_12} & \Field[8mm]{amplitude_12} & \Field[8mm]{table_frequency_ratio_12} & \Field[8mm]{table_amplitude_ratio_12} & \Field[8mm]{table_signed_theory_12}\\\hline
-\Field[8mm]{table_drive_time_10_13} & \Field[8mm]{table_signed_phase_13} & \Field[8mm]{amplitude_13} & \Field[8mm]{table_frequency_ratio_13} & \Field[8mm]{table_amplitude_ratio_13} & \Field[8mm]{table_signed_theory_13}\\\hline
-\Field[8mm]{table_drive_time_10_14} & \Field[8mm]{table_signed_phase_14} & \Field[8mm]{amplitude_14} & \Field[8mm]{table_frequency_ratio_14} & \Field[8mm]{table_amplitude_ratio_14} & \Field[8mm]{table_signed_theory_14}\\\hline
-\Field[8mm]{table_drive_time_10_15} & \Field[8mm]{table_signed_phase_15} & \Field[8mm]{amplitude_15} & \Field[8mm]{table_frequency_ratio_15} & \Field[8mm]{table_amplitude_ratio_15} & \Field[8mm]{table_signed_theory_15}\\\hline
+\Field[8mm]{table_drive_time_10_01} & \Field[8mm]{table_signed_phase_01} & \Field[8mm]{amplitude_01} & \Field[8mm]{table_frequency_ratio_01} & \Field[8mm]{table_amplitude_ratio_01}\\\hline
+\Field[8mm]{table_drive_time_10_02} & \Field[8mm]{table_signed_phase_02} & \Field[8mm]{amplitude_02} & \Field[8mm]{table_frequency_ratio_02} & \Field[8mm]{table_amplitude_ratio_02}\\\hline
+\Field[8mm]{table_drive_time_10_03} & \Field[8mm]{table_signed_phase_03} & \Field[8mm]{amplitude_03} & \Field[8mm]{table_frequency_ratio_03} & \Field[8mm]{table_amplitude_ratio_03}\\\hline
+\Field[8mm]{table_drive_time_10_04} & \Field[8mm]{table_signed_phase_04} & \Field[8mm]{amplitude_04} & \Field[8mm]{table_frequency_ratio_04} & \Field[8mm]{table_amplitude_ratio_04}\\\hline
+\Field[8mm]{table_drive_time_10_05} & \Field[8mm]{table_signed_phase_05} & \Field[8mm]{amplitude_05} & \Field[8mm]{table_frequency_ratio_05} & \Field[8mm]{table_amplitude_ratio_05}\\\hline
+\Field[8mm]{table_drive_time_10_06} & \Field[8mm]{table_signed_phase_06} & \Field[8mm]{amplitude_06} & \Field[8mm]{table_frequency_ratio_06} & \Field[8mm]{table_amplitude_ratio_06}\\\hline
+\Field[8mm]{table_drive_time_10_07} & \Field[8mm]{table_signed_phase_07} & \Field[8mm]{amplitude_07} & \Field[8mm]{table_frequency_ratio_07} & \Field[8mm]{table_amplitude_ratio_07}\\\hline
+\Field[8mm]{table_drive_time_10_08} & \Field[8mm]{table_signed_phase_08} & \Field[8mm]{amplitude_08} & \Field[8mm]{table_frequency_ratio_08} & \Field[8mm]{table_amplitude_ratio_08}\\\hline
+\Field[8mm]{table_drive_time_10_09} & \Field[8mm]{table_signed_phase_09} & \Field[8mm]{amplitude_09} & \Field[8mm]{table_frequency_ratio_09} & \Field[8mm]{table_amplitude_ratio_09}\\\hline
+\Field[8mm]{table_drive_time_10_10} & \Field[8mm]{table_signed_phase_10} & \Field[8mm]{amplitude_10} & \Field[8mm]{table_frequency_ratio_10} & \Field[8mm]{table_amplitude_ratio_10}\\\hline
+\Field[8mm]{table_drive_time_10_11} & \Field[8mm]{table_signed_phase_11} & \Field[8mm]{amplitude_11} & \Field[8mm]{table_frequency_ratio_11} & \Field[8mm]{table_amplitude_ratio_11}\\\hline
+\Field[8mm]{table_drive_time_10_12} & \Field[8mm]{table_signed_phase_12} & \Field[8mm]{amplitude_12} & \Field[8mm]{table_frequency_ratio_12} & \Field[8mm]{table_amplitude_ratio_12}\\\hline
+\Field[8mm]{table_drive_time_10_13} & \Field[8mm]{table_signed_phase_13} & \Field[8mm]{amplitude_13} & \Field[8mm]{table_frequency_ratio_13} & \Field[8mm]{table_amplitude_ratio_13}\\\hline
+\Field[8mm]{table_drive_time_10_14} & \Field[8mm]{table_signed_phase_14} & \Field[8mm]{amplitude_14} & \Field[8mm]{table_frequency_ratio_14} & \Field[8mm]{table_amplitude_ratio_14}\\\hline
+\Field[8mm]{table_drive_time_10_15} & \Field[8mm]{table_signed_phase_15} & \Field[8mm]{amplitude_15} & \Field[8mm]{table_frequency_ratio_15} & \Field[8mm]{table_amplitude_ratio_15}\\\hline
 \end{longtable}}
 % END FORCED_TABLE
 注：$\theta_r$ 为共振时测得的振幅值。取实测最大振幅 $\theta_r=\Field{peak_amplitude_deg}$°，对应周期 $T_r=\Field{resonance_period_s}\,\mathrm{s}$；最大振幅有多个点时，取对应周期的平均值。表中 $10T$ 为十周期总时间，计算时取 $T=(10T)/10$。

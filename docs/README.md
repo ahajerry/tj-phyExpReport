@@ -2,6 +2,8 @@
 
 当前实现为 **Go + React + SQLite + XeLaTeX**。本目录按使用任务组织；历史评估与当前实现明确分开。
 
+最新八种实验的合成样例 PDF 预览集中存放在 `output/pdf/latest/`。旧测试输出、截图、压缩包及残留 Python 后端缓存归档至 `legacy/assets/maintenance-20261030/`，清单见其中的 `inventory.json`；当前生产后端源码在 `server/`。
+
 | 任务 | 文档 |
 | --- | --- |
 | 启动容器、接入 HTTPS、备份恢复 | [部署指南](deployment.md) |

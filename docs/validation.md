@@ -124,3 +124,25 @@ Go 回归样本位于 `server/testdata/`：45 个有效计算场景、31 个无�
 - 本机 `pnpm test:backend` 因未安装 Go 无法启动，使用已有测试镜像挂载仓库 `server/` 和只读 `tex/`，执行 `go test ./...` 全部通过；修改 Go 文件已运行 gofmt。
 - `docker build --progress=plain -t phyexp-report:torsion-precision .` 成功；`$env:REPORT_TEST_IMAGE='phyexp-report:torsion-precision'; pnpm test:docker` 通过：16 份 PDF、10 个导入、7 种图片格式、归属与重启持久化。合成扭摆样例 `output/pdf/torsion-lecture-sample.pdf` 同步重新生成，数据表转 PNG 核对四位惯量/K、I₅ 的 2.000×10⁻⁶、两位百分误差及尾零，确认无表格溢出。
 - 未读取、覆盖或挂载 `.report-data/`，验证仅使用合成样本和自动清理的临时容器/数据卷；未替换当前运行的部署。
+
+## 2026-10-30 实验字段与单位调整
+
+- `pnpm test:storage`（含 Hz/kHz 精确换算）、`pnpm test:preview`、`pnpm test:samples` 通过。
+- 初次 `pnpm lint`、`pnpm build` 通过；后续工作区 `src/App.tsx` 的独立改动出现未闭合 Button，完整 lint 受阻。本次修改的前端文件单独 ESLint 通过。
+- 本机 `pnpm test:backend` 因 PATH 中无 Go 无法运行，改用现有 `phyexp-report:backend-test` 镜像运行 `go test ./...`，所有包通过（含计算参考样本与受迫振动 3/15/20 行五列表格检查）。
+- 完整 `docker build -t phyexp-report:local .` 因基础镜像下载缓慢停止；`pnpm test:docker` 在受限环境中报 `spawnSync docker EPERM`。新镜像端到端 PDF 渲染和视觉布局尚未验证。未使用用户 `.report-data/`。
+
+## 2026-10-30 产物归档与杨氏模量仪器说明
+
+- 清理前 output 与 backend 共 229 个文件完整移动到 `legacy/assets/maintenance-20261030/`，逐项核验路径和文件大小一致。backend 仅含历史 Python 字节码，生产源码 server/ 未移动。
+- 杨氏模量保留附件对应三节仪器说明及结构/视野插图，补充瞄准、旋钮功能、调焦顺序与视差检查，调整插图分页预留；最终 9 页，仪器图文位于第 2–3 页，已渲染目视检查。
+- 复用本地 `phyexp-report:backend-test` 与 `phyexp-report:local`，编译当前 Go 后端并复制当前模板，构建 `phyexp-report:latest-preview`。`go test ./...` 全部通过；首次临时 Dockerfile 缺少测试模板目录，补齐 COPY 后重跑通过。该验证镜像复用现有静态前端，不代替完整生产前端构建。
+- `REPORT_TEST_IMAGE=phyexp-report:latest-preview pnpm test:docker` 通过：16 份 PDF、10 组导入、7 种图片格式、权限隔离与重启持久性。弥补上一节报告渲染未验证项。
+- 最新八份标准合成样例集中保存在 `output/pdf/latest/`，全部渲染为联系表目视检查；附加验收产物、构建输入和截图归档于 `legacy/assets/maintenance-20261030/`。验收未使用用户 `.report-data/`。
+
+## 2026-10-30 扭摆与波尔共振仪器说明扩充
+
+- 按所提供教材截图扩充两份模板的实验仪器部分，新增扭摆装置、波尔共振装置及频闪读盘三幅裁图。扭摆增加待测物体、光电计时预置/复位/遮光检查、电子天平量程与调零；波尔共振增加驱动与阻尼结构、接口、光电门测振幅/周期、频闪测相及按钮操作。
+- 使用已验证的 Go 镜像构建仅替换模板和插图的 `phyexp-report:instrument-preview`；`REPORT_TEST_IMAGE=phyexp-report:instrument-preview pnpm test:docker` 全部通过：16 份 PDF、10 组导入、7 种图片格式、权限隔离与重启持久性。
+- 两份最终 PDF 分别为扭摆 8 页、波尔共振 13 页，已检查完整联系表及仪器页高清渲染，并核验关键说明/图号文本。最新文件替换 `output/pdf/latest/` 中对应两份，其他六份未改动；目录仍仅有八份 PDF。旧预览、附加验收 PDF、构建输入和检查截图归档于 `legacy/assets/instrument-reports-20261030/`。
+- 本轮未修改计算路径与数值规则，未读取或使用用户 `.report-data/`。

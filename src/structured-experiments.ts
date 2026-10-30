@@ -12,7 +12,7 @@ export type StructuredExperiment = {
 export const structuredExperiments: StructuredExperiment[] = [
   {
     id: "oscilloscope", title: "阴极射线示波器",
-    note: "按原始记录表输入方波、正弦波、三角波、半波四种波形的电压档位、纵向跨度、时基档位和周期跨度；峰峰值（V）、周期（ms）和频率（Hz）自动计算。李萨如法输入四组 fx（kHz）、ny、nx，按 fy = nx/ny × fx 计算。四组与正弦波周期测量应使用频率不变的同一待测信号。可附最多两张原始记录图片。",
+    note: "按原始记录表输入方波、正弦波、三角波、半波四种波形的电压档位、纵向跨度、时基档位和周期跨度；峰峰值（V）、周期（ms）和频率（kHz）自动计算。李萨如法输入四组 fx（kHz）、ny、nx，按 fy = nx/ny × fx 计算。四组与正弦波周期测量应使用频率不变的同一待测信号。可附最多两张原始记录图片。",
     measurements: [
       ...[
         { id: "voltage_scale", label: "波形电压档位 Sy", unit: "V/div" },
@@ -31,7 +31,7 @@ export const structuredExperiments: StructuredExperiment[] = [
   },
   {
     id: "speed-of-sound", title: "声速测定",
-    note: "共振干涉法与相位比较法各输入 20 个位置读数；频率及误差按 kHz、位置及游标卡尺误差按 mm 输入。报告计算逐差波长、声速、不确定度、理论声速和百分差。",
+    note: "共振干涉法与相位比较法各输入 20 个位置读数；频率及误差按 Hz、位置及游标卡尺误差按 mm 输入。报告计算逐差波长、声速、不确定度、理论声速和百分差。",
     legacyCookieData: true,
     measurements: [
       { id: "resonance", label: "共振干涉法位置", unit: "mm", count: 20 },
@@ -41,12 +41,12 @@ export const structuredExperiments: StructuredExperiment[] = [
       { id: "caliper_error", label: "游标卡尺仪器误差 Δl", unit: "mm", initial: "0.02", minExclusive: 0 },
       { id: "res_t_start", label: "共振干涉法开始室温", unit: "°C", minExclusive: -273 },
       { id: "res_t_end", label: "共振干涉法结束室温", unit: "°C", minExclusive: -273 },
-      { id: "res_frequency", label: "共振干涉法信号频率", unit: "kHz", minExclusive: 0 },
-      { id: "res_frequency_error", label: "共振干涉法频率误差 Δf", unit: "kHz", min: 0 },
+      { id: "res_frequency", label: "共振干涉法信号频率", unit: "Hz", minExclusive: 0 },
+      { id: "res_frequency_error", label: "共振干涉法频率误差 Δf", unit: "Hz", min: 0 },
       { id: "phase_t_start", label: "相位比较法开始室温", unit: "°C", minExclusive: -273 },
       { id: "phase_t_end", label: "相位比较法结束室温", unit: "°C", minExclusive: -273 },
-      { id: "phase_frequency", label: "相位比较法信号频率", unit: "kHz", minExclusive: 0 },
-      { id: "phase_frequency_error", label: "相位比较法频率误差 Δf", unit: "kHz", min: 0 },
+      { id: "phase_frequency", label: "相位比较法信号频率", unit: "Hz", minExclusive: 0 },
+      { id: "phase_frequency_error", label: "相位比较法频率误差 Δf", unit: "Hz", min: 0 },
     ],
   },
   {

@@ -25,6 +25,7 @@ func oscilloscope(f map[string]string, d map[string][]D, p map[string]D) {
 		put(f, "voltage_pp"+suffix, v)
 		put(f, "period_ms"+suffix, t)
 		put(f, "frequency_hz"+suffix, freq.Mul(n(1000)))
+		put(f, "frequency_khz"+suffix, freq)
 		x, y := int(d["nx"][i].IntPart()), int(d["ny"][i].IntPart())
 		a, b := x, y
 		for b != 0 {

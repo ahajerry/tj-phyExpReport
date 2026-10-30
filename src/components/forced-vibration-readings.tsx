@@ -83,7 +83,7 @@ export function ForcedVibrationReadings({ readingCell, data, dampingSetting, onD
       <h2 className="mb-3 font-semibold">表 3.4.3 幅频特性和相频特性测量数据记录表</h2>
       <p className="mb-3 text-sm text-muted-foreground">填写强迫力矩的十周期总时间 10T，系统除以 10 得到 T。相位填写仪器正读数 α（0–180°），报告中的相位差 φ = −α。频率比取 ω/ωᵣ = Tᵣ/T，θᵣ 为实测最大振幅。理论相位按各点振幅对应的 T₀ 计算；超出自由振动测量范围时提示补测。</p>
       <table className="w-full text-center text-sm">
-        {headers(["序号", "强迫力矩周期 10T / s", "相位滞后角 α / °", "振幅 θ / °", "ω/ωᵣ", "(θ/θᵣ)²", "查表 T₀ / s", "理论相位 φₘ / °"])}
+        {headers(["序号", "强迫力矩周期 10T / s", "相位滞后角 α / °", "振幅 θ / °", "ω/ωᵣ", "(θ/θᵣ)²", "查表 T₀ / s"])}
         <tbody>{Array.from({ length: forcedCount }, (_, row) => <tr key={row} className="border-t">
           <th className="p-2 font-normal">{row + 1}</th>
           <td className="p-2">{readingCell("drive_time_10", row)}</td>
@@ -92,7 +92,6 @@ export function ForcedVibrationReadings({ readingCell, data, dampingSetting, onD
           <td className="p-2">{previewNumber(preview.rows[row].frequencyRatio)}</td>
           <td className="p-2">{previewNumber(preview.rows[row].power)}</td>
           <td className="p-2">{previewNumber(preview.rows[row].t0)}</td>
-          <td className="p-2">{preview.rows[row].t0 === null && data.amplitude[row]?.trim() ? "需补测" : previewNumber(preview.rows[row].theory, 1)}</td>
         </tr>)}</tbody>
       </table>
       {controls("forced", forcedCount, 3)}

@@ -139,7 +139,7 @@
 2. 观察并绘制相位差为 $0^\circ$、$90^\circ$、$180^\circ$、$270^\circ$、$360^\circ$ 时的李萨如图形。\par
 
 \reportsubsection{共振干涉法}
-1. 调整实验装置：将压电陶瓷换能器 $S_1$ 信号端口与低频信号发生器输出相连接，$S_2$ 信号端口连接至示波器 CH1 通道输入端。将 $S_2$ 移至 $S_1$ 附近，两者尽量靠近但不能相互接触，并调整两个端面平行。打开示波器和低频信号发生器，将后者频率设为 $35.0\,\mathrm{kHz}$。\par
+1. 调整实验装置：将压电陶瓷换能器 $S_1$ 信号端口与低频信号发生器输出相连接，$S_2$ 信号端口连接至示波器 CH1 通道输入端。将 $S_2$ 移至 $S_1$ 附近，两者尽量靠近但不能相互接触，并调整两个端面平行。打开示波器和低频信号发生器，将后者频率设为 $35000\,\mathrm{Hz}$。\par
 2. 缓慢调整信号发生器频率，同时观察示波器显示的 $S_2$ 输出信号；当幅度达到最大值时，信号频率与压电换能器的固有频率匹配。\par
 3. 缓慢右移 $S_2$，逐渐远离 $S_1$，同时观察示波器显示的信号幅度变化。用游标卡尺读出信号幅度极大值对应的 $S_2$ 位置 $l_i$，继续移动 $S_2$，连续读出 20 个相邻的幅度极大位置，再用逐差法计算波长。\par
 
@@ -153,7 +153,7 @@
 \reportsection{数据记录处理}
 \reportsubsection{共振干涉法}
 开始时室温 $t_1=\MathField[1.2cm]{res_t_start}\,{}^\circ\mathrm C$，结束时室温 $t_2=\MathField[1.2cm]{res_t_end}\,{}^\circ\mathrm C$，平均室温 $\bar t=\MathField[1.2cm]{res_t_avg}\,{}^\circ\mathrm C$。\par
-信号频率 $f=\MathField[1.5cm]{res_frequency}\,\mathrm{kHz}$，频率误差 $\Delta_f=\MathField[1.4cm]{res_frequency_error}\,\mathrm{kHz}$。\par
+信号频率 $f=\MathField[1.5cm]{res_frequency}\,\mathrm{Hz}$，频率误差 $\Delta_f=\MathField[1.4cm]{res_frequency_error}\,\mathrm{Hz}$。\par
 \begin{center}
 \small
 \renewcommand{\arraystretch}{1.2}
@@ -183,9 +183,9 @@ U_\lambda&=\sqrt{U_{A,\lambda}^2+U_{B,\lambda}^2}
   =\MathField[1.4cm]{res_u_lambda}\,\mathrm{mm},\qquad
 U_{r\lambda}=\frac{U_\lambda}{\bar\lambda}
   =\MathField[1.4cm]{res_u_r_lambda},\\
-U_f&=\frac{\Delta_f}{\sqrt3}=\MathField[1.4cm]{res_u_f}\,\mathrm{kHz},\qquad
+U_f&=\frac{\Delta_f}{\sqrt3}=\MathField[1.4cm]{res_u_f}\,\mathrm{Hz},\qquad
 U_{rf}=\frac{U_f}{f}=\MathField[1.4cm]{res_u_r_f},\\
-v&=\bar\lambda f=\MathField[1.5cm]{res_speed}\,\mathrm{m/s},\\
+v&=10^{-3}\bar\lambda_{\mathrm{(mm)}} f_{\mathrm{(Hz)}}=\MathField[1.5cm]{res_speed}\,\mathrm{m/s},\\
 U_{rv}&=\sqrt{\left(\frac{U_\lambda}{\bar\lambda}\right)^2+
               \left(\frac{U_f}{f}\right)^2}
   =\MathField[1.4cm]{res_u_r_v},\qquad
@@ -200,7 +200,7 @@ E=\frac{|v-v_{\mathrm{th}}|}{v_{\mathrm{th}}}\times100\%
 
 \reportsubsection{相位比较法}
 开始时室温 $t_1=\MathField[1.2cm]{phase_t_start}\,{}^\circ\mathrm C$，结束时室温 $t_2=\MathField[1.2cm]{phase_t_end}\,{}^\circ\mathrm C$，平均室温 $\bar t=\MathField[1.2cm]{phase_t_avg}\,{}^\circ\mathrm C$。\par
-信号频率 $f=\MathField[1.5cm]{phase_frequency}\,\mathrm{kHz}$，频率误差 $\Delta_f=\MathField[1.4cm]{phase_frequency_error}\,\mathrm{kHz}$。\par
+信号频率 $f=\MathField[1.5cm]{phase_frequency}\,\mathrm{Hz}$，频率误差 $\Delta_f=\MathField[1.4cm]{phase_frequency_error}\,\mathrm{Hz}$。\par
 \begin{center}
 \small
 \renewcommand{\arraystretch}{1.2}
@@ -230,9 +230,9 @@ U_\lambda&=\sqrt{U_{A,\lambda}^2+U_{B,\lambda}^2}
   =\MathField[1.4cm]{phase_u_lambda}\,\mathrm{mm},\qquad
 U_{r\lambda}=\frac{U_\lambda}{\bar\lambda}
   =\MathField[1.4cm]{phase_u_r_lambda},\\
-U_f&=\frac{\Delta_f}{\sqrt3}=\MathField[1.4cm]{phase_u_f}\,\mathrm{kHz},\qquad
+U_f&=\frac{\Delta_f}{\sqrt3}=\MathField[1.4cm]{phase_u_f}\,\mathrm{Hz},\qquad
 U_{rf}=\frac{U_f}{f}=\MathField[1.4cm]{phase_u_r_f},\\
-v&=\bar\lambda f=\MathField[1.5cm]{phase_speed}\,\mathrm{m/s},\\
+v&=10^{-3}\bar\lambda_{\mathrm{(mm)}} f_{\mathrm{(Hz)}}=\MathField[1.5cm]{phase_speed}\,\mathrm{m/s},\\
 U_{rv}&=\sqrt{\left(\frac{U_\lambda}{\bar\lambda}\right)^2+
               \left(\frac{U_f}{f}\right)^2}
   =\MathField[1.4cm]{phase_u_r_v},\qquad
@@ -264,7 +264,7 @@ E=\frac{|v-v_{\mathrm{th}}|}{v_{\mathrm{th}}}\times100\%
 \renewcommand{\arraystretch}{1.25}
 \begin{tabular}{l c c c c c c}
 \toprule
-方法 & $f/\mathrm{kHz}$ & $\bar t/{}^\circ\mathrm C$ & $\bar\lambda/\mathrm{mm}$ & $v/(\mathrm{m/s})$ & $U_{rv}/\%$ & $E/\%$\\
+方法 & $f/\mathrm{Hz}$ & $\bar t/{}^\circ\mathrm C$ & $\bar\lambda/\mathrm{mm}$ & $v/(\mathrm{m/s})$ & $U_{rv}/\%$ & $E/\%$\\
 \midrule
 共振干涉法 & \Field[1.1cm]{res_frequency} & \Field[1.1cm]{res_t_avg} & \Field[1.1cm]{res_lambda_avg} & \Field[1.1cm]{res_speed_result} & \Field[0.9cm]{res_u_r_v_percent} & \Field[0.9cm]{res_error_percent}\\
 相位比较法 & \Field[1.1cm]{phase_frequency} & \Field[1.1cm]{phase_t_avg} & \Field[1.1cm]{phase_lambda_avg} & \Field[1.1cm]{phase_speed_result} & \Field[0.9cm]{phase_u_r_v_percent} & \Field[0.9cm]{phase_error_percent}\\

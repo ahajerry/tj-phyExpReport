@@ -1,3 +1,4 @@
+import { soundFrequencyDisplay, soundFrequencyStored } from "./lib/sound-frequency-units.ts"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
@@ -218,7 +219,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
         <div className="overflow-x-auto rounded-xl border bg-white p-4">
           <h2 className="mb-3 font-semibold">波形电压、周期与频率</h2>
           <table className="w-full text-center text-sm">
-            <thead><tr>{["待测波形", "V/div", "纵向跨度 / div", "Upp / V（计算）", "ms/div", "周期跨度 / div", "Ty / ms（计算）", "fv / Hz（计算）"].map((label) => <th key={label} className="whitespace-nowrap p-2">{label}</th>)}</tr></thead>
+            <thead><tr>{["待测波形", "V/div", "纵向跨度 / div", "Upp / V（计算）", "ms/div", "周期跨度 / div", "Ty / ms（计算）", "fv / kHz（计算）"].map((label) => <th key={label} className="whitespace-nowrap p-2">{label}</th>)}</tr></thead>
             <tbody>{experiment.measurements[0].rowLabels?.map((name, index) => <tr key={name} className="border-t">
               <th className="whitespace-nowrap p-2 font-normal">{name}</th>
               <td className="p-2">{readingCell("voltage_scale", index)}</td>
@@ -227,7 +228,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
               <td className="p-2">{readingCell("time_scale", index)}</td>
               <td className="p-2">{readingCell("period_divisions", index)}</td>
               <td className="p-2">{calculatedReading(["time_scale", "period_divisions"], index, (scale, divisions) => scale * divisions)}</td>
-              <td className="p-2">{calculatedReading(["time_scale", "period_divisions"], index, (scale, divisions) => 1000 / (scale * divisions))}</td>
+              <td className="p-2">{calculatedReading(["time_scale", "period_divisions"], index, (scale, divisions) => 1 / (scale * divisions))}</td>
             </tr>)}</tbody>
           </table>
         </div>
@@ -277,8 +278,8 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
             {experiment.parameters.map((item) => (
               <label key={item.id} className="space-y-1 text-sm">
                 <span>{item.label}（{item.unit}）</span>
-                <Input type="number" step="any" inputMode="decimal" value={parameters[item.id]}
-                  onChange={(event) => setParameters((current) => ({ ...current, [item.id]: event.target.value }))} />
+                <Input type="number" step="any" inputMode="decimal" value={soundFrequencyDisplay(experiment.id, item.id, parameters[item.id])}
+                  onChange={(event) => setParameters((current) => ({ ...current, [item.id]: soundFrequencyStored(experiment.id, item.id, event.target.value) }))} />
               </label>
             ))}
           </div>

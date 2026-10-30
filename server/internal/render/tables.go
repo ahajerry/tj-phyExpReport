@@ -27,15 +27,15 @@ func measurementTables(freeCount, trialCount, forcedCount int) map[string]string
 		}
 		damped = append(damped, strings.Join([]string{`\Needspace{13\baselineskip}`, fmt.Sprintf(`第 %d 组\quad 阻尼档位：\Field{damping_setting}`, trial+1), `\begin{center}\small\renewcommand{\arraystretch}{1.35}`, `\begin{tabular}{|c|c|c|c|c|}\hline`, `次数 & 振幅 $\theta_i$/° & 次数 & 振幅 $\theta_{i+5}$/° & $\ln(\theta_i/\theta_{i+5})$\\\hline`, strings.Join(body, "\n"), `\multicolumn{4}{|c|}{$\overline{\ln(\theta_i/\theta_{i+5})}$} & ` + field("damped_log_mean", trial+1) + `\\\hline`, `\end{tabular}\end{center}`, `$10T=` + field("damped_time_10", trial+1) + `\,\mathrm{s}$，$\bar T=` + field("damped_period", trial+1) + `\,\mathrm{s}$，$\beta=` + field("damped_beta", trial+1) + `\,\mathrm{s^{-1}}$。\par`}, "\n"))
 	}
-	header := `\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$ & \shortstack{理论相位\\$\varphi_m$/°}\\\hline`
+	header := `\shortstack{强迫力矩周期\\$10T$/s} & \shortstack{相位差\\$\varphi$/°} & \shortstack{摆轮振幅\\$\theta$/°} & $\dfrac{\omega}{\omega_r}=\dfrac{T_r}{T}$ & $(\theta/\theta_r)^2$\\\hline`
 	rows := []string{}
 	for i := 1; i <= forcedCount; i++ {
 		cells := []string{}
-		for _, k := range []string{"table_drive_time_10", "table_signed_phase", "amplitude", "table_frequency_ratio", "table_amplitude_ratio", "table_signed_theory"} {
+		for _, k := range []string{"table_drive_time_10", "table_signed_phase", "amplitude", "table_frequency_ratio", "table_amplitude_ratio"} {
 			cells = append(cells, field(k, i))
 		}
 		rows = append(rows, strings.Join(cells, " & ")+`\\\hline`)
 	}
-	forced := strings.Join([]string{`{\small\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{3pt}`, `\begin{longtable}{|*{6}{>{\centering\arraybackslash}p{2.1cm}|}}\hline`, header, `\endfirsthead\hline`, header, `\endhead`, strings.Join(rows, "\n"), `\end{longtable}}`}, "\n")
+	forced := strings.Join([]string{`{\small\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{3pt}`, `\begin{longtable}{|*{5}{>{\centering\arraybackslash}p{2.5cm}|}}\hline`, header, `\endfirsthead\hline`, header, `\endhead`, strings.Join(rows, "\n"), `\end{longtable}}`}, "\n")
 	return map[string]string{"FREE": strings.Join(free, "\n"), "DAMPED": strings.Join(damped, "\n\n"), "FORCED": forced}
 }
