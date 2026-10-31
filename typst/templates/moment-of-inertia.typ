@@ -2,7 +2,7 @@
 #import "charts.typ": *
 #let torsion-table() = [
 
-#report-table(columns: (1.2fr, .8fr, .8fr, 1.2fr, .65fr, 1.2fr, 2.4fr, 2.4fr, .8fr), size: 7.5pt,
+#report-table(columns: (1.49fr, 1.14fr, 1.19fr, 1.49fr, .74fr, 1.49fr, 3.09fr, 2.99fr, .99fr), size: 8.6*tpt, baseline: 13*tpt, inset: 2*tpt, breakable: false,
   header: (table.cell(x: 0, y: 0)[物体名称], table.cell(x: 1, y: 0)[质量 $m$\ （kg）], table.cell(x: 2, y: 0, colspan: 2)[几何尺寸\ （$10 ^(- 2)$ m）], table.cell(x: 4, y: 0, colspan: 2)[周期（s）], table.cell(x: 6, y: 0)[转动惯量\ 理论值（kg$dot.op$m$"" ^(2)$）], table.cell(x: 7, y: 0)[转动惯量\ 实验值（kg$dot.op$m$"" ^(2)$）], table.cell(x: 8, y: 0)[百分差\ $E _(0)$（%）],),
   rows: (
     (table.cell(x: 0, y: 1, rowspan: 4)[载物圆盘], table.cell(x: 1, y: 1, rowspan: 4)[#line(start: (0pt, 0pt), end: (6mm, 12mm), stroke: 0.35pt)], table.cell(x: 2, y: 1, colspan: 2, rowspan: 4)[#line(start: (0pt, 0pt), end: (6mm, 12mm), stroke: 0.35pt)], table.cell(x: 4, y: 1, rowspan: 3)[$T _(0)$], table.cell(x: 5, y: 1)[#f("period_disk_01")], table.cell(x: 6, y: 1, rowspan: 4)[#line(start: (0pt, 0pt), end: (6mm, 12mm), stroke: 0.35pt)], table.cell(x: 7, y: 1, rowspan: 2)[$I _(0) = I ' _(1) frac(overline(T) _(0) ^(2), overline(T) _(1) ^(2) - overline(T) _(0) ^(2))$], table.cell(x: 8, y: 1, rowspan: 4)[#line(start: (0pt, 0pt), end: (6mm, 12mm), stroke: 0.35pt)],),
@@ -39,11 +39,11 @@
 
 #section[实验目的]
 
-1. 观察小角度扭摆，测量空盘与规则物体的周期并标定扭转常数。
+1\. 观察小角度扭摆，测量空盘与规则物体的周期并标定扭转常数。
 
-2. 比较圆柱、圆筒、球和细杆的理论与实验转动惯量。
+2\. 比较圆柱、圆筒、球和细杆的理论与实验转动惯量。
 
-3. 改变两个对称滑块到转轴的距离，验证平行轴定理及惯量对距离平方的依赖。
+3\. 改变两个对称滑块到转轴的距离，验证平行轴定理及惯量对距离平方的依赖。
 
 #section[实验原理]
 
@@ -51,8 +51,7 @@
 
 $ T = 2 pi sqrt(frac(I, kappa)) . $
 
-以圆柱作标准物体，比较空盘周期 $T _(0)$ 和装圆柱周期 $T _(1)$，可由圆柱理论惯量 $I ' _(1) = frac(m D ^(2), 8)$ 求 $kappa = frac(4 pi ^(2) I ' _(1), T _(1) ^(2) - T _(0) ^(2))$。圆柱、圆筒置于载物盘上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2)) - I _(0)$（$j = 1 , 2$）；木球、细杆及细杆加滑块直接安装在转轴上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2))$，不扣除 $I _(0)$。对两个质量均为 $m _(s)$ 的滑块，平行轴模型为 $I ( x ) = I _("rod") + 2 I _(s) + 2 m _(s) x ^(2)$。
-以 $Delta = T _(1) ^(2) - T _(0) ^(2)$ 记周期平方差。暂把标准圆柱的理论惯量视为已知常量，独立重复计时的传播公式为
+以圆柱作标准物体，比较空盘周期 $T _(0)$ 和装圆柱周期 $T _(1)$，可由圆柱理论惯量 $I ' _(1) = frac(m D ^(2), 8)$ 求 $kappa = frac(4 pi ^(2) I ' _(1), T _(1) ^(2) - T _(0) ^(2))$。圆柱、圆筒置于载物盘上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2)) - I _(0)$（$j = 1 , 2$）；木球、细杆及细杆加滑块直接安装在转轴上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2))$，不扣除 $I _(0)$。对两个质量均为 $m _(s)$ 的滑块，平行轴模型为 $I ( x ) = I _("rod") + 2 I _(s) + 2 m _(s) x ^(2)$。以 $Delta = T _(1) ^(2) - T _(0) ^(2)$ 记周期平方差。暂把标准圆柱的理论惯量视为已知常量，独立重复计时的传播公式为
 
 $ u _(kappa) = kappa sqrt( ( frac(2 T _(0) u _(T _(0)), Delta)  ) ^(2) +  ( frac(2 T _(1) u _(T _(1)), Delta)  ) ^(2)) . $
 
@@ -68,17 +67,17 @@ $ u _(I) ^(2) =  ( frac(kappa T u _(T), 2 pi ^(2))  ) ^(2) +  ( frac(T ^(2) u _(
 
 #subsection[周期和几何量]
 
-1. 调节底座水平与转轴竖直，保证载物盘空载时自由摆动；轻转一小角度后放手，避免向下压轴。
+1\. 调节底座水平与转轴竖直，保证载物盘空载时自由摆动；轻转一小角度后放手，避免向下压轴。
 
-2. 测量空盘连续二十周期的总时长三次。圆柱、圆筒置于载物盘上；拆下载物盘后直接安装木球或细杆，各计十周期并重复三次。
+2\. 测量空盘连续二十周期的总时长三次。圆柱、圆筒置于载物盘上；拆下载物盘后直接安装木球或细杆，各计十周期并重复三次。
 
-3. 测量各物体质量及必要的直径、长度；装置应居中、固定可靠，换物体时保持转轴条件一致。
+3\. 测量各物体质量及必要的直径、长度；装置应居中、固定可靠，换物体时保持转轴条件一致。
 
 #subsection[平行轴验证]
 
-4. 把两个滑块关于转轴对称放在细杆上，量取滑块质心到轴的距离；在 5、10、15、20 cm 四个位置分别计五周期三次。
+4\. 把两个滑块关于转轴对称放在细杆上，量取滑块质心到轴的距离；在 5、10、15、20 cm 四个位置分别计五周期三次。
 
-5. 将实验惯量与理论惯量对照，并以 $x ^(2)$ 为横轴作图，检查线性关系。
+5\. 将实验惯量与理论惯量对照，并以 $x ^(2)$ 为横轴作图，检查线性关系。
 
 #section[实验仪器]
 
@@ -88,11 +87,7 @@ $ u _(I) ^(2) =  ( frac(kappa T u _(T), 2 pi ^(2))  ) ^(2) +  ( frac(T ^(2) u _(
 
  待测物体包括空心金属圆筒、实心塑料圆柱体、木球，以及用于测量转动惯量和验证平行轴定理的细金属杆；杆上有两块位置可调的金属滑块。圆柱、圆筒放在载物盘上，木球、细杆及细杆加滑块直接安装在转轴上。辅助测量使用数字式电子天平、游标卡尺和刻度尺。
 
-#align(center, image("figures/torsion-apparatus-reference.png", height: 6.8cm, fit: "contain"))
-
- 1. 载物圆盘　 2. 垂直轴　 3. 螺旋弹簧
-
-图 3.5.1 扭摆装置图
+#illustration(image("figures/torsion-apparatus-reference.png", height: 6.8cm, fit: "contain"), size: 9*tpt)[1\. 载物圆盘　 2. 垂直轴　 3. 螺旋弹簧\ 图 3.5.1 扭摆装置图]
 
 #subsection[多功能计数计时器与光电探头]
 
@@ -110,9 +105,8 @@ $ u _(I) ^(2) =  ( frac(kappa T u _(T), 2 pi ^(2))  ) ^(2) +  ( frac(T ^(2) u _(
 
 #section[7. 数据记录与处理]
 
-1. 弹簧扭转常数和转动惯量的测定，数据记录见表 3.5.1。
-
-表 3.5.1　 刚体转动惯量测量实验数据记录表
+1\. 弹簧扭转常数和转动惯量的测定，数据记录见表 3.5.1。
+#block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表 3.5.1　 刚体转动惯量测量实验数据记录表])]
 
 #torsion-table()
 
@@ -122,8 +116,7 @@ $ K = 4 pi ^(2) frac(I ' _(1), overline(T) _(1) ^(2) - overline(T) _(0) ^(2)) = 
 
 #pagebreak()
 
-2. 转动惯量平行轴定理的验证，数据记录见表 3.5.2。滑块质量
-$m _("滑") = #mf("slider_mass_g") thin upright(g)$（两个滑块的平均质量）。
+2\. 转动惯量平行轴定理的验证，数据记录见表 3.5.2。滑块质量$m _("滑") = #mf("slider_mass_g") thin upright(g)$（两个滑块的平均质量）。
 
 表中 $I _(5)$ 为两个滑块绕通过滑块质心转轴的转动惯量
 
@@ -131,11 +124,10 @@ $ I _(5) = frac(1, 8) m _("滑") ( D _("内" 1) ^(2) + D _("外" 1) ^(2) ) + fra
 
 式中，$m _("滑")$ 为滑块质量；$D _("内" 1)$、$D _("外" 1)$ 为滑块的内径和外径；$l _(1)$ 为其长度。
 
-本次实验取 $I _(5) = #mf("slider_pair_inertia") thin upright(k g thin m ^(2))$。
+本次实验取 $I _(5) = #mf("slider_pair_inertia") thin upright("kg" thin m ^(2))$。
+#block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表 3.5.2　 验证平行轴定理实验数据记录表])]
 
-表 3.5.2　 验证平行轴定理实验数据记录表
-
-#report-table(columns: (1fr, 1fr, 1fr, 1fr, 1fr,), size: 8.5pt,
+#report-table(columns: (5.2cm + 10*tpt, 1.65cm + 10*tpt, 1.65cm + 10*tpt, 1.65cm + 10*tpt, 1.65cm + 10*tpt), size: 9*tpt, stretch: 1.6, inset: 5*tpt,
   header: (table.cell(x: 0, y: 0)[$x$（$10 ^(- 2)$ m）], table.cell(x: 1, y: 0)[5.00], table.cell(x: 2, y: 0)[10.00], table.cell(x: 3, y: 0)[15.00], table.cell(x: 4, y: 0)[20.00],),
   rows: (
     (table.cell(x: 0, y: 1, rowspan: 3)[$T$（s）], table.cell(x: 1, y: 1)[#f("slider_period_5_01")], table.cell(x: 2, y: 1)[#f("slider_period_10_01")], table.cell(x: 3, y: 1)[#f("slider_period_15_01")], table.cell(x: 4, y: 1)[#f("slider_period_20_01")],),
@@ -149,9 +141,9 @@ $ I _(5) = frac(1, 8) m _("滑") ( D _("内" 1) ^(2) + D _("外" 1) ^(2) ) + fra
 
 #section[平行轴定理的数据图]
 
-横轴取滑块距离平方 $x ^(2)$（cm$"" ^(2)$），纵轴取总惯量的 $10 ^(- 3) thin upright(k g thin m ^(2))$ 数值。散点是周期换算的实验结果，直线连接对应理论值；两条序列均来自本次读数和输入的滑块质量。
+横轴取滑块距离平方 $x ^(2)$（cm$"" ^(2)$），纵轴取总惯量的 $10 ^(- 3) thin upright("kg" thin m ^(2))$ 数值。散点是周期换算的实验结果，直线连接对应理论值；两条序列均来自本次读数和输入的滑块质量。
 
-#plot(((points: points("slider_graph_points"), label: [实测惯量], line: false), (points: points("slider_graph_theory_points"), label: [平行轴理论], marks: false, color: red)), x-label: [$x^2/upright("cm")^2$], y-label: [$I/(10^(-3) upright("kg") upright(m)^2)$])
+#plot(((points: points("slider_graph_points"), label: [实测惯量], line: false), (points: points("slider_graph_theory_points"), label: [平行轴理论], marks: false, color: rgb("#0000ff"))), height: 3.25cm, width: 10.5cm, x-label: [$x^2 slash upright("cm")^2$], y-label: [$I slash (10^(-3) upright("kg") upright(m)^2)$])
 
 #section[讨论与分析]
 
@@ -159,20 +151,21 @@ $ I _(5) = frac(1, 8) m _("滑") ( D _("内" 1) ^(2) + D _("外" 1) ^(2) ) + fra
 
 若平行轴定理适用，$I$ 对 $x ^(2)$ 的点应近似落在直线上，斜率由两个滑块的质量决定。若图中随位置出现系统偏离，应检查距离是否从滑块质心量起、两个滑块是否对称，以及滑块本身惯量是否计入。
 
+#block(width: 100%, breakable: false, above: 0pt, below: 10*tpt)[
 #subsection[重复计时的不确定度]
 
 下列标准不确定度仅计重复计时贡献，未计质量、尺寸等仪器不确定度。
 
-#report-table(columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr,), size: 8.5pt,
+#report-table(columns: (auto, auto, auto, auto, auto, auto), size: 9*tpt, stretch: 1,
   header: (table.cell(x: 0, y: 0)[物体], table.cell(x: 1, y: 0)[载物圆盘], table.cell(x: 2, y: 0)[实心圆柱体], table.cell(x: 3, y: 0)[空心金属圆筒], table.cell(x: 4, y: 0)[木球], table.cell(x: 5, y: 0)[金属细杆],),
   rows: (
     (table.cell(x: 0, y: 1)[$u _(T)$/s], table.cell(x: 1, y: 1)[$#mf("period_disk_u")$], table.cell(x: 2, y: 1)[$#mf("period_cylinder_u")$], table.cell(x: 3, y: 1)[$#mf("period_tube_u")$], table.cell(x: 4, y: 1)[$#mf("period_ball_u")$], table.cell(x: 5, y: 1)[$#mf("period_rod_u")$],),
     (table.cell(x: 0, y: 2)[$u _(I)$/kg m$"" ^(2)$], table.cell(x: 1, y: 2)[$#mf("empty_inertia_u")$], table.cell(x: 2, y: 2)[$#mf("experiment_cylinder_u")$], table.cell(x: 3, y: 2)[$#mf("experiment_tube_u")$], table.cell(x: 4, y: 2)[$#mf("experiment_ball_u")$], table.cell(x: 5, y: 2)[$#mf("experiment_rod_u")$],),
   ))
 
-滑块四种位置的 $u _(T)$ 依次为
-$#mf("slider_period_5_u")$、$#mf("slider_period_10_u")$、$#mf("slider_period_15_u")$、$#mf("slider_period_20_u")$ s；
-$u _(I)$ 依次为 $#mf("slider_experiment_5_u")$、$#mf("slider_experiment_10_u")$、$#mf("slider_experiment_15_u")$、$#mf("slider_experiment_20_u")$ kg m$"" ^(2)$。
+]
+
+滑块四种位置的 $u _(T)$ 依次为$#mf("slider_period_5_u")$、$#mf("slider_period_10_u")$、$#mf("slider_period_15_u")$、$#mf("slider_period_20_u")$ s；$u _(I)$ 依次为 $#mf("slider_experiment_5_u")$、$#mf("slider_experiment_10_u")$、$#mf("slider_experiment_15_u")$、$#mf("slider_experiment_20_u")$ kg m$"" ^(2)$。
 
 #subsection[主要误差]
 

@@ -42,7 +42,7 @@ func (r Renderer) Render(ctx context.Context, p domain.Payload, archive string, 
 	if err != nil {
 		return result, err
 	}
-	for _, font := range []string{"Noto Serif CJK SC", "Noto Sans CJK SC"} {
+	for _, font := range []string{"FandolSong", "FandolHei", "Latin Modern Roman", "Latin Modern Roman 9", "Latin Modern Roman 12", "Latin Modern Math"} {
 		if !strings.Contains("\n"+string(fonts), "\n"+font+"\n") {
 			return result, fmt.Errorf("缺少报告字体 %s，请检查 REPORT_FONT_DIR", font)
 		}
@@ -109,8 +109,14 @@ func (r Renderer) Render(ctx context.Context, p domain.Payload, archive string, 
 		args = append(args, "--ignore-system-fonts", "--font-path", r.FontDir)
 	}
 	args = append(args, "report.typ", "report.pdf")
-	if _, err = run(ctx, work, 120*time.Second, "typst", args...); err != nil {
+	diagnostics, err := run(ctx, work, 120*time.Second, "typst", args...)
+	if err != nil {
 		return result, err
+	}
+	// Typst can exit successfully with an unstable layout or missing fonts.
+	// Do not publish a PDF that silently failed these layout requirements.
+	if bytes.Contains(diagnostics, []byte("warning:")) {
+		return result, fmt.Errorf("Typst 排版产生警告: %s", strings.TrimSpace(string(diagnostics)))
 	}
 	result.PDF, err = os.ReadFile(filepath.Join(work, "report.pdf"))
 	if err != nil {

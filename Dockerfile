@@ -47,19 +47,35 @@ RUN --mount=type=cache,id=phyexp-apt-archives,target=/var/cache/apt,sharing=lock
     --mount=type=cache,id=phyexp-apt-lists,target=/var/lib/apt/lists,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
     && apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates tzdata fontconfig fonts-noto-cjk imagemagick libheif1 \
+    ca-certificates tzdata fontconfig imagemagick libheif1 \
     && groupadd --gid 10001 report && useradd --uid 10001 --gid report --create-home report \
     && mkdir -p /data && chown report:report /data
 
 FROM runtime-base AS render-runtime
 COPY --from=typst-toolchain /bin/typst /usr/local/bin/typst
 COPY deploy/imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
-LABEL org.phyexp.render-engine="typst-0.15.1"
-ENV REPORT_FONT_DIR=/usr/share/fonts/opentype/noto
+COPY typst/fonts /usr/share/fonts/phyexp
+LABEL org.phyexp.render-engine="typst-0.15.1-latex-fonts-v1"
+ENV REPORT_FONT_DIR=/usr/share/fonts/phyexp
 RUN ! command -v python && ! command -v python3 && ! command -v xelatex \
     && typst --version | grep -F 'typst 0.15.1 ' \
-    && typst fonts | grep -Fx 'Noto Serif CJK SC' \
-    && typst fonts | grep -Fx 'Noto Sans CJK SC'
+    && cd /usr/share/fonts/phyexp && sha256sum -c SHA256SUMS \
+    && typst fonts | grep -Fx 'FandolSong' \
+    && typst fonts | grep -Fx 'FandolHei' \
+    && typst fonts | grep -Fx 'Latin Modern Roman' \
+    && typst fonts | grep -Fx 'Latin Modern Roman 9' \
+    && typst fonts | grep -Fx 'Latin Modern Roman 12' \
+    && typst fonts | grep -Fx 'Latin Modern Math'
+
+# PDF inspection tools stay out of development and production images.
+FROM render-runtime AS layout-qa
+RUN --mount=type=cache,id=phyexp-apt-archives,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=phyexp-apt-lists,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends poppler-utils poppler-data
+COPY --from=node-toolchain /usr/local/bin/node /usr/local/bin/node
+COPY scripts/test-layout.mjs /check-layout.mjs
+COPY server/testdata/layout-baseline.json /layout-baseline.json
+ENTRYPOINT ["node", "/check-layout.mjs", "--inside"]
 
 # No frontend install/build or application compilation is needed for this image.
 FROM ${DEV_RUNTIME} AS development

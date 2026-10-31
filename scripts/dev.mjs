@@ -60,7 +60,7 @@ function monitor(child, label) {
 async function compatibleImage(name) {
   try {
     const { stdout } = await promisify(execFile)('docker', ['image', 'inspect', '--format', '{{ index .Config.Labels "org.phyexp.render-engine" }}', name], { timeout: 10000, windowsHide: true })
-    return stdout.trim() === 'typst-0.15.1'
+    return stdout.trim() === 'typst-0.15.1-latex-fonts-v1'
   } catch { return false }
 }
 

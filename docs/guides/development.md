@@ -11,7 +11,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Windows 会启动本机 Vite 与 Docker 开发后端，先确保 Docker Desktop Linux 引擎可用。Linux/WSL 默认使用本机 Go（1.26+），生成报告还需安装 [源码说明](../../typst/templates/README.md) 中的 Typst/字体及 ImageMagick/libheif；可改用 `pnpm dev:docker`，复用完整容器环境。自定义字体目录通过 `REPORT_FONT_DIR` 指定。
+Windows 会启动本机 Vite 与 Docker 开发后端，先确保 Docker Desktop Linux 引擎可用。Linux/WSL 默认使用本机 Go（1.26+），生成报告还需安装 [源码说明](../../typst/templates/README.md) 中的 Typst 及 ImageMagick/libheif；字体已随仓库保存；可改用 `pnpm dev:docker`，复用完整容器环境。本地后端默认读取模板目录同级的 `fonts/`；自定义字体目录通过 `REPORT_FONT_DIR` 指定，应使用仓库固定版本。
 
 Vite 默认 `http://127.0.0.1:15173`，API 代理到 `127.0.0.1:8000`。Go 保存后增量编译，失败时保留旧服务；模板保存后下一份报告直接读取。端口被其他服务占用时先处理该服务，脚本不会关闭其他项目。
 
@@ -59,10 +59,11 @@ pnpm build:backend
 真实编译全部参考样本并导出供检查的 PDF/源码：
 
 ```bash
-pnpm test:render --font-dir /usr/share/fonts/opentype/noto --output output/typst-validation
+pnpm test:render --output output/layout-parity/after
+pnpm test:layout
 ```
 
-该命令要求本机 Typst 和字体；`--run` 可缩小到指定 Go 测试名。只运行普通后端测试不会证明真实 PDF 排版通过。人工检查重点见 [报告 spec](../specs/reports.md)。
+`test:render` 要求本机 Typst，默认使用仓库字体；`--run` 可缩小到指定 Go 测试名，编译警告也会导致失败。只运行普通后端测试不会证明真实 PDF 排版通过。`test:layout` 自动构建独立 Poppler 检查镜像，断网检查所有输出样本的 A4、嵌入字体和纸张边界，另核对八种基础报告的页数、标题坐标及封面实验名称不换行；可用 `--pdf-dir DIR` 指定样本目录。基准数值来自冻结 LaTeX 合成 PDF，保存在 `server/testdata/layout-baseline.json`，不能为了通过测试随意更新。检查工具不会进入生产镜像。仍须逐页目视检查表格溢出、公式、图注与曲线，人工检查重点见 [报告 spec](../specs/reports.md)。
 
 ## 容器检查
 

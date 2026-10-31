@@ -7,11 +7,11 @@
 
 #section[实验目的]
 
-1. 测量摆轮的自由周期和阻尼系数。
+1\. 测量摆轮的自由周期和阻尼系数。
 
-2. 研究受迫振动的幅频、相频特性，观察共振现象。
+2\. 研究受迫振动的幅频、相频特性，观察共振现象。
 
-3. 学习用频闪法测量相位差。
+3\. 学习用频闪法测量相位差。
 
 #section[实验原理]
 
@@ -31,7 +31,7 @@
 
 式中，$J$ 为摆轮的转动惯量，$- k theta$ 为弹性力矩，$k$ 为弹性力矩系数。
 
-在实际的实验过程中，存在与角速度 $upright(d) theta / upright(d) t$ 成正比、方向与摆轮运动方向相反的空气阻尼力矩的作用。由于空气阻尼力矩较小，相应的阻尼系数值比后续电磁阻尼振动的阻尼系数值要低一个数量级，摆轮振幅衰减缓慢。因而，实验中可近似地将此小阻尼振动视为自由振动。
+在实际的实验过程中，存在与角速度 $upright(d) theta slash upright(d) t$ 成正比、方向与摆轮运动方向相反的空气阻尼力矩的作用。由于空气阻尼力矩较小，相应的阻尼系数值比后续电磁阻尼振动的阻尼系数值要低一个数量级，摆轮振幅衰减缓慢。因而，实验中可近似地将此小阻尼振动视为自由振动。
 
 在摆轮的下方左右两侧放置有两个带铁芯的线圈，当线圈中通有励磁电流时，线圈之间及附近空间中形成磁场，摆轮往复摆动时收到电磁阻尼力矩的作用，即为阻尼振动。通过调节励磁电流值，可以使阻尼力矩和阻尼系数相应变化。
 
@@ -51,7 +51,7 @@
 
 在受迫振动状态下，系统除了受到强迫力的作用外，同时还受到回复力和阻尼力的作用。所以在稳定状态时物体的位移、速度变化与强迫力变化不是同相位的，存在相位差。当强迫力频率与系统的固有频率相同时产生共振，此时振幅最大，相位差为 $90 ^(degree)$。
 
-本实验中，由铜质圆形摆轮在蜗卷弹簧提供的恢复力矩的作用下，可绕转轴往复摆动。摆轮在摆动过程中受到与角位移 $theta$ 成正比、方向指向平衡位置的弹性恢复力矩的作用；与角速度 $upright(d) theta / upright(d) t$ 成正比、方向与摆轮运动方向相反的阻尼力矩的作用；以及按简谐规律变化的外力矩 $M _(0) cos omega t$ 的作用。根据转动规律，可列出摆轮的运动方程：
+本实验中，由铜质圆形摆轮在蜗卷弹簧提供的恢复力矩的作用下，可绕转轴往复摆动。摆轮在摆动过程中受到与角位移 $theta$ 成正比、方向指向平衡位置的弹性恢复力矩的作用；与角速度 $upright(d) theta slash upright(d) t$ 成正比、方向与摆轮运动方向相反的阻尼力矩的作用；以及按简谐规律变化的外力矩 $M _(0) cos omega t$ 的作用。根据转动规律，可列出摆轮的运动方程：
 
 #math.equation(block: true, numbering: n => "(3.4.4)", $J frac(upright(d) ^(2) theta, upright(d) t ^(2)) = - k theta - b frac(upright(d) theta, upright(d) t) + M _(0) cos omega t$)
 
@@ -121,17 +121,15 @@ $ omega _(1) = sqrt(omega _(0) ^(2) - beta ^(2)) $
 
  控制箱、闪光灯和振动仪通过专用电缆连接。“电源输出”向振动仪内部电路供电；“传感器输入”接收摆轮周期、振幅及强迫力零点信号；“控制输出”用于控制电动机和摆盘阻尼。
 
-#align(center, image("figures/forced-apparatus-reference.png", width: 95.0%, height: 9cm, fit: "contain"))
-
-图 3.4.3 波尔共振仪装置图
+#illustration(image("figures/forced-apparatus-reference.png", width: 95.0%, height: 9cm, fit: "contain"))[图 3.4.3 波尔共振仪装置图]
 
 #subsection[4.2 光电门与计时器]
 
-#strong[（1）摆轮振幅与周期的测量]
+#block(sticky: true)[#strong[（1）摆轮振幅与周期的测量]]
 
 摆轮圆周上每隔 $2 ^(degree)$ 开有凹槽，其中一个用白漆标志的长凹槽比其他凹槽长。摆轮正上方的光电门架 H 上装有两个光电门：一个对准长凹槽，长凹槽在一个振动周期内两次通过该光电门，测控箱根据其开关时间测量并显示摆轮周期；另一个对准短凹槽，根据一个周期内通过的凹槽数测量并显示摆轮振幅。光电门的角度测量精度为 $2 ^(degree)$。
 
-#strong[（2）电动机转动周期的测量]
+#block(sticky: true)[#strong[（2）电动机转动周期的测量]]
 
 角度盘正上方装有光电门 I。有机玻璃转盘转动时，挡光片通过该光电门，测控箱记录光电门的开关时间，测出强迫力矩的周期。
 
@@ -143,9 +141,7 @@ $ omega _(1) = sqrt(omega _(0) ^(2) - beta ^(2)) $
 
  测量时长按闪光灯电路的按钮开关，使摆轮每次通过平衡位置时触发闪光；为保护闪光灯管，采用按钮开关，不使用持续拨动式开关。待振幅与相位稳定后再读数。
 
-#align(center, image("figures/forced-stroboscope-reference.png", width: 72.0%, height: 5.8cm, fit: "contain"))
-
-图 3.4.4 频闪法测量相位差
+#illustration(image("figures/forced-stroboscope-reference.png", width: 72.0%, height: 5.8cm, fit: "contain"))[图 3.4.4 频闪法测量相位差]
 
 #section[实验内容]
 
@@ -181,9 +177,9 @@ $ omega _(1) = sqrt(omega _(0) ^(2) - beta ^(2)) $
 
 #subsection[注意事项]
 
-1. 在作受迫振动实验时，须待电机与摆轮的周期相同（差值一般不大于 $0.003 thin upright(s)$），即系统稳定后，方可记录实验数据。每当改变了强迫力矩的周期值时，都需要等待系统重新稳定后，再进行数据测量。
+1\. 在作受迫振动实验时，须待电机与摆轮的周期相同（差值一般不大于 $0.003 thin upright(s)$），即系统稳定后，方可记录实验数据。每当改变了强迫力矩的周期值时，都需要等待系统重新稳定后，再进行数据测量。
 
-2. 因为闪光灯的电流脉冲及强光会干扰光电门采集数据，因此须待一次测量完成，显示测量状态为“关”后，才可使用闪光灯读取相位差。
+2\. 因为闪光灯的电流脉冲及强光会干扰光电门采集数据，因此须待一次测量完成，显示测量状态为“关”后，才可使用闪光灯读取相位差。
 
 #pagebreak()
 
@@ -217,7 +213,7 @@ $ omega _(1) = sqrt(omega _(0) ^(2) - beta ^(2)) $
 
 #subsection[7.3 幅频特性和相频特性测量]
 
-#strong[（1）实验数据记录]
+#block(sticky: true)[#strong[（1）实验数据记录]]
 
 将记录的实验数据填入表 3.4.3。
 
@@ -227,7 +223,7 @@ $ omega _(1) = sqrt(omega _(0) ^(2) - beta ^(2)) $
 
 #forced-table()
 
-注：$theta _(r)$ 为共振时测得的振幅值。取实测最大振幅 $theta _(r) = #f("peak_amplitude_deg")$°，对应周期 $T _(r) = #f("resonance_period_s") thin upright(s)$；最大振幅有多个点时，取对应周期的平均值。表中 $10 T$ 为十周期总时间，计算时取 $T = ( 10 T ) / 10$。
+注：$theta _(r)$ 为共振时测得的振幅值。取实测最大振幅 $theta _(r) = #f("peak_amplitude_deg")$°，对应周期 $T _(r) = #f("resonance_period_s") thin upright(s)$；最大振幅有多个点时，取对应周期的平均值。表中 $10 T$ 为十周期总时间，计算时取 $T = ( 10 T ) slash 10$。
 
 理论相位按各点振幅对应的自由周期 $T _(0)$ 计算：
 
@@ -235,11 +231,11 @@ $ phi _(m) = tan ^(- 1)   [ frac(- beta T _(0) ^(2) T, pi ( T ^(2) - T _(0) ^(2)
 
 受迫振动相位滞后于强迫力，相位差取负值；仪器的正读数 $alpha$ 换算为 $phi = - alpha$。反正切结果为正时减去 $180 ^(degree)$，$T = T _(0)$ 时取 $- 90 ^(degree)$。#f("phase_coverage_note")
 
-#strong[（2）绘制幅频特性曲线与相频特性曲线]
+#block(sticky: true)[#strong[（2）绘制幅频特性曲线与相频特性曲线]]
 
-以 $omega / omega _(r)$ 为横轴，$( theta / theta _(r) ) ^(2)$（或 $theta$）为纵轴，作出幅频特性曲线；以 $omega / omega _(r)$ 为横轴，相位差 $phi$ 为纵轴，作相频特性曲线。
+以 $omega slash omega _(r)$ 为横轴，$( theta slash theta _(r) ) ^(2)$（或 $theta$）为纵轴，作出幅频特性曲线；以 $omega slash omega _(r)$ 为横轴，相位差 $phi$ 为纵轴，作相频特性曲线。
 
-#strong[（3）作图法求阻尼系数]
+#block(sticky: true)[#strong[（3）作图法求阻尼系数]]
 
 在阻尼系数较小（满足 $beta ^(2) lt.double omega _(0) ^(2)$）和共振位置附近（$omega approx omega _(0)$），由于 $omega _(0) + omega approx 2 omega _(0)$，从（3.4.8）式和（3.4.11）式可得出
 
@@ -255,15 +251,16 @@ $ beta _("图") = frac(omega _(2) - omega _(1), 2) . $
 
 将此法与对数逐差法求得到的 $beta$ 值作比较并讨论。
 
-本次 $omega _(1) = #f("half_power_omega_1") thin upright(r a d / s)$，$omega _(2) = #f("half_power_omega_2") thin upright(r a d / s)$，$beta _("图") = #f("graph_beta_s_inv") thin upright(s ^(- 1))$。以逐差法结果为参照，两法相对差异为 $#f("graph_beta_difference_percent") "%"$。#f("graph_beta_note")
+本次 $omega _(1) = #f("half_power_omega_1") thin upright("rad" slash s)$，$omega _(2) = #f("half_power_omega_2") thin upright("rad" slash s)$，$beta _("图") = #f("graph_beta_s_inv") thin upright(s ^(- 1))$。以逐差法结果为参照，两法相对差异为 $#f("graph_beta_difference_percent") "%"$。#f("graph_beta_note")
 
+#pagebreak()
 #section[实验曲线]
 
-幅频曲线的虚线为半峰高 $( theta / theta _(r) ) ^(2) = 1 / 2$。相频曲线采用滞后相位的负值，与表 3.4.3 一致；两图均按频率从小到大连接测量点。
+幅频曲线的虚线为半峰高 $( theta slash theta _(r) ) ^(2) = 1 slash 2$。相频曲线采用滞后相位的负值，与表 3.4.3 一致；两图均按频率从小到大连接测量点。
 
-#plot(((points: points("normalized_amplitude_graph_points"), label: [归一化振幅平方]), (points: points("half_power_line_points"), label: [半峰高], marks: false, color: gray, dash: "dashed")), x-label: [$omega/omega_r$], y-label: [$(theta/theta_r)^2$])
+#plot(((points: points("normalized_amplitude_graph_points"), label: [测量值]), (points: points("half_power_line_points"), label: [半峰高], marks: false, color: gray, dash: "dashed")), legend: "right", x-label: [$omega slash omega_r$], y-label: [$(theta slash theta_r)^2$])
 
-#plot(((points: points("phase_graph_points"), label: [相位差], color: orange),), x-label: [$omega/omega_r$], y-label: [相位差 $phi$/°], y-range: (-180, 0))
+#plot(((points: points("phase_graph_points"), label: [], color: orange, mark: "square"),), x-label: [$omega slash omega_r$], y-label: [相位差 $phi$/°], y-range: (-180, 0))
 
 #pagebreak()
 

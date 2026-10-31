@@ -17,6 +17,7 @@
 | 编辑下载的源码并重新编译 | [源码使用](guides/typst-source.md) |
 | 了解重要取舍 | [ADR 索引](adrs/README.md) |
 | 查看本次实施和验收结果 | [Typst 迁移计划](plans/2026-10-31-typst-migration.md) |
+| 查看版式恢复及验收结果 | [LaTeX 版式对齐](plans/2026-10-31-typst-layout-parity.md) |
 | 查阅历史实现与验收 | [LaTeX 快照](archive/latex-2026-10-31/README.md)、[Python 快照](archive/python-2026-10-14/README.md) |
 
 文档维护约束见 [AGENTS.md](../AGENTS.md)。第三方许可证保存在 `docs/licenses/` 和对应资产目录。`output/` 仅保存本机生成的合成验收资料，不属于文档契约或 Git 交付。

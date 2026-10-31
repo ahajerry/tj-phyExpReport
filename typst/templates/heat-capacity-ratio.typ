@@ -8,19 +8,18 @@
 
 #section[实验目的]
 
-1. 理解气体的定压、定容比热容及比热容比的物理意义，并认识绝热过程的近似条件。
+1\. 理解气体的定压、定容比热容及比热容比的物理意义，并认识绝热过程的近似条件。
 
-2. 使用振动法测定空气比热容比，掌握小球直径、质量、周期、气压和容积的测量。
+2\. 使用振动法测定空气比热容比，掌握小球直径、质量、周期、气压和容积的测量。
 
-3. 学习零点修正、重复测量及 A、B 类不确定度的合成，分析直径误差的放大效应。
+3\. 学习零点修正、重复测量及 A、B 类不确定度的合成，分析直径误差的放大效应。
 
 #section[实验原理]
 
 图4.2.1为振动法测比热容比的实验原理示意图。实验以球形储气瓶中的空气作为研究的热力学系统，并测量其比热容比数值。储气瓶正上方连接一个精密细玻璃管B，其内有一个可以自由移动的振动小球A，侧壁有一个小孔。振动小球A的直径仅比玻璃管B的直径小0.01 mm～0.02 mm。在储气瓶壁上有一小口并插入一根细管C，可将待测气体通过细管C注入到储气瓶中。为了补偿由于空气阻尼以及少量漏气引起的小球A振幅的衰减，可以通过细管C持续稳定注入小气压的气流。如果注入气体的流量适当时，小球A就能在玻璃管B的小孔上下做简谐振动。当振动小球A处于小孔下方的半个振动周期时，注入气体会使储气瓶内的压力增大，引起小球A向上移动。而当小球A处于小孔上方的半个振动周期时，储气瓶内的气体将通过小孔流出，使物体下落，以后重复上述过程。小球A的振动周期$T$可利用光电计时装置来测得。
 
-#align(center, image("figures/heat-principle-source.png", width: 5.4cm, fit: "contain"))
+#illustration(image("figures/heat-principle-source.png", width: 5.4cm, fit: "contain"), size: 9*tpt)[ 图4.2.1实验原理示意图。]
 
- 图4.2.1实验原理示意图。
 若小球A的质量为$m$，半径为$r$（直径为$d$），当储气瓶内压强$P$满足下面条件时，小球A处于受力平衡状态。
 
 #math.equation(block: true, numbering: n => "(4.2.1)", $P = P _(L) + frac(m g, pi r ^(2))$)
@@ -95,9 +94,9 @@
 
 #subsection[1．小球直径测量（螺旋测微计）：]
 
- 表4.2.2 小球直径测量数据记录表　 单位：mm
+#block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表4.2.2 小球直径测量数据记录表　 单位：mm])]
 
-#report-table(columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr,), size: 8.5pt,
+#report-table(columns: (auto, auto, auto, auto, auto, auto, auto,), size: 9*tpt,
   header: (table.cell(x: 0, y: 0)[测量序号], table.cell(x: 1, y: 0)[1], table.cell(x: 2, y: 0)[2], table.cell(x: 3, y: 0)[3], table.cell(x: 4, y: 0)[4], table.cell(x: 5, y: 0)[5], table.cell(x: 6, y: 0)[平均值],),
   rows: (
     (table.cell(x: 0, y: 1)[初读数], table.cell(x: 1, y: 1)[#f("diameter_initial_01")], table.cell(x: 2, y: 1)[#f("diameter_initial_02")], table.cell(x: 3, y: 1)[#f("diameter_initial_03")], table.cell(x: 4, y: 1)[#f("diameter_initial_04")], table.cell(x: 5, y: 1)[#f("diameter_initial_05")], table.cell(x: 6, y: 1)[---],),
@@ -105,13 +104,13 @@
     (table.cell(x: 0, y: 3)[直径 $d$], table.cell(x: 1, y: 3)[#f("diameter_corrected_01")], table.cell(x: 2, y: 3)[#f("diameter_corrected_02")], table.cell(x: 3, y: 3)[#f("diameter_corrected_03")], table.cell(x: 4, y: 3)[#f("diameter_corrected_04")], table.cell(x: 5, y: 3)[#f("diameter_corrected_05")], table.cell(x: 6, y: 3)[#f("diameter_mean_mm")],),
   ))
 
-$ U _(d A) = sqrt(frac(sum ( d _(i) - overline(d) ) ^(2), n ( n - 1 ))) = #mf("diameter_u_a_mm") thin upright(m m) $
+$ U _(d A) = sqrt(frac(sum ( d _(i) - overline(d) ) ^(2), n ( n - 1 ))) = #mf("diameter_u_a_mm") thin upright("mm") $
 
-$ U _(d B) = frac(#mf("diameter_error_mm"), sqrt(3)) = #mf("diameter_u_b_mm") thin upright(m m) $
+$ U _(d B) = frac(#mf("diameter_error_mm"), sqrt(3)) = #mf("diameter_u_b_mm") thin upright("mm") $
 
-$ U _(d) = sqrt(U _(d A) ^(2) + U _(d B) ^(2)) = #mf("diameter_mean_u_mm") thin upright(m m) , quad U _(r d) = frac(U _(d), overline(d)) times 100 "%" = #mf("diameter_relative_u_percent") "%" $
+$ U _(d) = sqrt(U _(d A) ^(2) + U _(d B) ^(2)) = #mf("diameter_mean_u_mm") thin upright("mm") , quad U _(r d) = frac(U _(d), overline(d)) times 100 "%" = #mf("diameter_relative_u_percent") "%" $
 
-$ d = ( #mf("diameter_mean_mm") plus.minus #mf("diameter_mean_u_mm") ) thin upright(m m) $
+$ d = ( #mf("diameter_mean_mm") plus.minus #mf("diameter_mean_u_mm") ) thin upright("mm") $
 
 #subsection[2. 小球质量：]
 
@@ -135,32 +134,31 @@ $ V = ( #mf("volume_result_m3") plus.minus #mf("volume_u_m3") ) thin upright(m ^
 
 ①大气压强$P _(L)$：
 
-实验开始时：$P _(L 1) = #f("pressure_start_kpa") thin upright(k P a)$　
-实验结束时：$P _(L 2) = #f("pressure_end_kpa") thin upright(k P a)$
+实验开始时：$P _(L 1) = #f("pressure_start_kpa") thin upright("kPa")$　实验结束时：$P _(L 2) = #f("pressure_end_kpa") thin upright("kPa")$
 
-平均值$overline(P) _(L) = #mf("pressure_mean_kpa") thin upright(k P a)$。
+平均值$overline(P) _(L) = #mf("pressure_mean_kpa") thin upright("kPa")$。
 
-仪器误差$Delta = #f("pressure_error_kpa") thin upright(k P a)$
+仪器误差$Delta = #f("pressure_error_kpa") thin upright("kPa")$
 
-$ U _(P _(L)) = frac(Delta, sqrt(3)) = #mf("pressure_mean_u_kpa") thin upright(k P a) $
+$ U _(P _(L)) = frac(Delta, sqrt(3)) = #mf("pressure_mean_u_kpa") thin upright("kPa") $
 
 $ U _(r P _(L)) = frac(U _(P _(L)), P _(L)) times 100 "%" = #mf("pressure_atmos_relative_u_percent") "%" $
 
-$ P _(L) = ( #mf("pressure_mean_kpa") plus.minus #mf("pressure_mean_u_kpa") ) thin upright(k P a) $
+$ P _(L) = ( #mf("pressure_mean_kpa") plus.minus #mf("pressure_mean_u_kpa") ) thin upright("kPa") $
 
 ②容器内的大气压$P$：
 
-$ P = P _(L) + frac(4 m g, pi d ^(2)) = #mf("pressure_inside_pa") thin upright(P a) $
+$ P = P _(L) + frac(4 m g, pi d ^(2)) = #mf("pressure_inside_pa") thin upright("Pa") $
 
-$ U _(P) approx U _(P _(L)) = #mf("pressure_inside_u_pa") thin upright(P a) , quad U _(r P) = frac(U _(P), P) times 100 "%" = #mf("pressure_relative_u_percent") "%" $
+$ U _(P) approx U _(P _(L)) = #mf("pressure_inside_u_pa") thin upright("Pa") , quad U _(r P) = frac(U _(P), P) times 100 "%" = #mf("pressure_relative_u_percent") "%" $
 
-$ P = ( #mf("pressure_inside_result_pa") plus.minus #mf("pressure_inside_u_pa") ) thin upright(P a) $
+$ P = ( #mf("pressure_inside_result_pa") plus.minus #mf("pressure_inside_u_pa") ) thin upright("Pa") $
 
 #subsection[5. 小球振动周期$T$的测量：]
 
- 表4.2.3 小球振动周期数据记录表
+#block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表4.2.3 小球振动周期数据记录表])]
 
-#report-table(columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr,), size: 8.5pt,
+#report-table(columns: (auto, auto, auto, auto, auto, auto, auto,), size: 9*tpt,
   header: (table.cell(x: 0, y: 0)[测量序号], table.cell(x: 1, y: 0)[1], table.cell(x: 2, y: 0)[2], table.cell(x: 3, y: 0)[3], table.cell(x: 4, y: 0)[4], table.cell(x: 5, y: 0)[5], table.cell(x: 6, y: 0)[平均值],),
   rows: (
     (table.cell(x: 0, y: 1)[$100 T$（s）], table.cell(x: 1, y: 1)[#f("time_100_01")], table.cell(x: 2, y: 1)[#f("time_100_02")], table.cell(x: 3, y: 1)[#f("time_100_03")], table.cell(x: 4, y: 1)[#f("time_100_04")], table.cell(x: 5, y: 1)[#f("time_100_05")], table.cell(x: 6, y: 1)[#f("period_time_mean_s")],),

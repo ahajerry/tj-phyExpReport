@@ -7,25 +7,23 @@
 
 #section[实验目的]
 
-1. 观察带电油滴在重力和电场力作用下的运动，用平衡电压与下降时间估计油滴电荷量。
+1\. 观察带电油滴在重力和电场力作用下的运动，用平衡电压与下降时间估计油滴电荷量。
 
-2. 理解电荷量子化假设 $q _(i) approx n _(i) e$，并用多颗油滴检查整数倍关系。
+2\. 理解电荷量子化假设 $q _(i) approx n _(i) e$，并用多颗油滴检查整数倍关系。
 
-3. 分别用反向验证、图解拟合和过原点最小二乘法估计元电荷，比较三种处理方式。
+3\. 分别用反向验证、图解拟合和过原点最小二乘法估计元电荷，比较三种处理方式。
 
-4. 练习识别布朗运动、油滴蒸发和计时误差对结果的影响。
+4\. 练习识别布朗运动、油滴蒸发和计时误差对结果的影响。
 
 #section[实验原理]
 
 #subsection[3.1 静态平衡法]
 
-用喷雾器将油滴喷入两块相距为 $d$ 的水平放置的平行板之间，如图 8.3.1 所示，油滴在喷射时由于摩擦会带有电荷。设油滴的质量为 $m$，所带电量为 $Q$，两极板间所加的电压为 $U$，则油滴在平行板间将同时受到两个力的作用，一个是重力 $m g$，一个是静电力 $Q E = Q U / d$，两个力的方向如图所示。
+用喷雾器将油滴喷入两块相距为 $d$ 的水平放置的平行板之间，如图 8.3.1 所示，油滴在喷射时由于摩擦会带有电荷。设油滴的质量为 $m$，所带电量为 $Q$，两极板间所加的电压为 $U$，则油滴在平行板间将同时受到两个力的作用，一个是重力 $m g$，一个是静电力 $Q E = Q U slash d$，两个力的方向如图所示。
 
-#align(center, image("figures/millikan-static-source.png", width: 9cm, fit: "contain"))
+#illustration(image("figures/millikan-static-source.png", width: 9cm, fit: "contain"), size: 9*tpt)[ 图 8.3.1 静态法测量原理图]
 
- 图 8.3.1 静态法测量原理图
-
-如果调节两极板间的电压 $U$，可使两力相互抵消而达到平衡，此时 $m g = Q U / d$，故有
+如果调节两极板间的电压 $U$，可使两力相互抵消而达到平衡，此时 $m g = Q U slash d$，故有
 
 #math.equation(block: true, numbering: n => "(8.3.1)", $Q = m g frac(d, U) .$)
 
@@ -51,7 +49,7 @@
 
 上式根号中还包含油滴的半径 $a$，但因它是处于修正项中，不需要十分精确，故它仍可用式 (8.3.4) 计算。将式 (8.3.5) 代入式 (8.3.3)，得
 
-#math.equation(block: true, numbering: n => "(8.3.7)", $m = frac(4, 3) pi  [ frac(9 eta v _(g), 2 rho g) frac(1, 1 + frac(b, p a))  ] ^(3 / 2) rho .$)
+#math.equation(block: true, numbering: n => "(8.3.7)", $m = frac(4, 3) pi  [ frac(9 eta v _(g), 2 rho g) frac(1, 1 + frac(b, p a))  ] ^(3 slash 2) rho .$)
 
 当两极板间的电压 $U = 0$ 时，设油滴匀速下降的距离为 $l$，时间为 $t$，则
 
@@ -59,16 +57,15 @@
 
 由式 (8.3.1)、(8.3.6)、(8.3.7) 得
 
-#math.equation(block: true, numbering: n => "(8.3.9)", $Q = frac(18 pi, sqrt(2 rho g))  [ frac(eta l, t  ( 1 + frac(b, p a)  ))  ] ^(3 / 2) frac(d, U) .$)
+#math.equation(block: true, numbering: n => "(8.3.9)", $Q = frac(18 pi, sqrt(2 rho g))  [ frac(eta l, t  ( 1 + frac(b, p a)  ))  ] ^(3 slash 2) frac(d, U) .$)
 
-式中 $eta$、$l$、$rho$、$g$、$d$ 均为与实验条件、仪器有关的参量，均为已知量，只需测出平衡电压 $U _(n)$ 和油滴匀速下落 $l$ 所用时间 $t$，即可求出油滴带电量 $Q$。
-将式 (8.3.4) 代入式 (8.3.9)，并引入 $k$ 和 $k '$ 后计算式为
+式中 $eta$、$l$、$rho$、$g$、$d$ 均为与实验条件、仪器有关的参量，均为已知量，只需测出平衡电压 $U _(n)$ 和油滴匀速下落 $l$ 所用时间 $t$，即可求出油滴带电量 $Q$。将式 (8.3.4) 代入式 (8.3.9)，并引入 $k$ 和 $k '$ 后计算式为
 
-#math.equation(block: true, numbering: n => "(8.3.10)", $Q = frac(k,  [ t  ( 1 + k ' sqrt(t)  )  ] ^(3 / 2)) frac(1, U) .$)
+#math.equation(block: true, numbering: n => "(8.3.10)", $Q = frac(k,  [ t  ( 1 + k ' sqrt(t)  )  ] ^(3 slash 2)) frac(1, U) .$)
 
 式中
 
-#math.equation(block: true, numbering: n => "(8.3.11)", $k = frac(18 pi, sqrt(2 rho g)) ( eta l ) ^(3 / 2) d ,$)
+#math.equation(block: true, numbering: n => "(8.3.11)", $k = frac(18 pi, sqrt(2 rho g)) ( eta l ) ^(3 slash 2) d ,$)
 
 和
 
@@ -83,10 +80,9 @@
 #subsection[实验参数与计算常数]
 
 实验参数如表 8.3.1 所示。
+#block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表 8.3.1 密立根油滴实验参数表])]
 
-表 8.3.1 密立根油滴实验参数表
-
-#report-table(columns: (1fr, 1fr,), size: 8.5pt,
+#report-table(columns: (8cm + 12*tpt, 4cm + 12*tpt), size: 9*tpt, stretch: 1.45, rules: "parameters", cell-align: left + horizon,
   header: (table.cell(x: 0, y: 0)[名称], table.cell(x: 1, y: 0)[参数],),
   rows: (
     (table.cell(x: 0, y: 1)[极板间距 $d$(m)], table.cell(x: 1, y: 1)[$5 times 10 ^(- 3)$],),
@@ -101,15 +97,15 @@
 
 将以上参数代入公式 (8.3.11) 和 (8.3.12) 得
 
-#math.equation(block: true, numbering: n => "(8.3.17)", $k = 0.928 times 10 ^(- 14) thin upright(k g dot.op m ^(2) dot.op s ^(- 1 / 2)) ,$)
+#math.equation(block: true, numbering: n => "(8.3.17)", $k = 0.928 times 10 ^(- 14) thin upright("kg" dot.op m ^(2) dot.op s ^(- 1 slash 2)) ,$)
 
 和
 
-#math.equation(block: true, numbering: n => "(8.3.18)", $k ' = 0.0226 thin upright(s ^(- 1 / 2)) .$)
+#math.equation(block: true, numbering: n => "(8.3.18)", $k ' = 0.0226 thin upright(s ^(- 1 slash 2)) .$)
 
 将 $k$ 和 $k '$ 代入式 (8.3.10) 得
 
-#math.equation(block: true, numbering: n => "(8.3.19)", $Q = frac(0.928 times 10 ^(- 14),  [ t  ( 1 + 0.0226 sqrt(t)  )  ] ^(3 / 2)) frac(1, U _(n)) .$)
+#math.equation(block: true, numbering: n => "(8.3.19)", $Q = frac(0.928 times 10 ^(- 14),  [ t  ( 1 + 0.0226 sqrt(t)  )  ] ^(3 slash 2)) frac(1, U _(n)) .$)
 
 显然，由于油滴的密度 $rho$、空气的黏度 $eta$ 都是温度的函数，大气压强 $p$ 又随实验地点和条件的变化而变化。因此，上式的计算是近似的。一般情况下，由于它们引起的误差仅 1% 左右，可以使计算大为简化，当然也可以实验时实际参数代入公式进行计算。
 
@@ -121,9 +117,7 @@
 
 假如通过测量并计算得到一组（20 个以上）油滴所带的电量值 $Q _(1) , Q _(2) , Q _(3) , dots.h , Q _(m)$。把这些数据标在数轴上，通过图形可以直观地看到数据形成疏密有致、一簇一簇的有序分布，如图 8.3.5 所示。其中间距较大的应该是基本电荷数 $n$ 的差异，而间距较小的应该是测量随机误差形成的差异。对同一簇数据求平均，可得一组按不同基本电荷数排列的数据 $q _(1) , q _(2) , dots.h , q _(n)$。
 
-#align(center, image("figures/millikan-charge-axis-source.png", width: 10cm, fit: "contain"))
-
- 图 8.3.5 油滴电荷量数轴示意图
+#illustration(image("figures/millikan-charge-axis-source.png", width: 10cm, fit: "contain"), size: 9*tpt)[ 图 8.3.5 油滴电荷量数轴示意图]
 
 对这些数据进行逐差处理，也即 $e _(1) = Q _(2) - Q _(1)$，$e _(2) = Q _(3) - Q _(2)$，$dots.h$，$e _(n) = Q _(n) - Q _(n - 1)$。只要测量数据足够多，通过分析差值结果，可以得出结论，最小差值 $e$ 的平均值是电子电量的最佳估计值。以上得到的结果仅是一个粗略的估计值。
 
@@ -145,7 +139,7 @@ $m$ 个油滴电子电荷平均值
 
 #math.equation(block: true, numbering: n => "(8.3.23)", $U _(e) = t sqrt(frac(sum _(i = 1) ^(m) ( Delta e _(i) ) ^(2), m ( m - 1 ))) .$)
 
-也可以通过绘制 $Q$--$n$ 关系图，求出直线的斜率 $Delta Q / Delta n$，即电荷值。
+也可以通过绘制 $Q$--$n$ 关系图，求出直线的斜率 $Delta Q slash Delta n$，即电荷值。
 
 #subsection[（3）最小二乘法]
 
@@ -171,21 +165,21 @@ $m$ 个油滴电子电荷平均值
 
 其不确定度为
 
-#math.equation(block: true, numbering: n => "(8.3.29)", $U _(e) = t sqrt(frac(sum _(i = 1) ^(m) ( Q _(i) / n _(i) - e ) ^(2), m ( m - 1 ))) .$)
+#math.equation(block: true, numbering: n => "(8.3.29)", $U _(e) = t sqrt(frac(sum _(i = 1) ^(m) ( Q _(i) slash n _(i) - e ) ^(2), m ( m - 1 ))) .$)
 
 #section[实验内容]
 
 #subsection[观测准备]
 
-1. 检查油滴盒清洁、照明、显微镜调焦和极板电压零点；喷入少量油雾，选取孤立且运动缓慢的油滴。
+1\. 检查油滴盒清洁、照明、显微镜调焦和极板电压零点；喷入少量油雾，选取孤立且运动缓慢的油滴。
 
-2. 标定目镜中的固定下降距离。关闭电场，待油滴运动稳定后计时；同一滴重复四次，若轨迹偏离或油滴消失，应重新选滴。
+2\. 标定目镜中的固定下降距离。关闭电场，待油滴运动稳定后计时；同一滴重复四次，若轨迹偏离或油滴消失，应重新选滴。
 
 #subsection[平衡与重复测量]
 
-3. 逐渐增大电压，使油滴尽可能悬浮，记录平衡电压。对多颗油滴重复下降计时与电压测量。
+3\. 逐渐增大电压，使油滴尽可能悬浮，记录平衡电压。对多颗油滴重复下降计时与电压测量。
 
-4. 分别计算 $q _(i)$、整数 $n _(i)$ 和 $frac(q _(i), n _(i))$；绘制散点与拟合直线，比较反向验证值、图解斜率和最小二乘结果。
+4\. 分别计算 $q _(i)$、整数 $n _(i)$ 和 $frac(q _(i), n _(i))$；绘制散点与拟合直线，比较反向验证值、图解斜率和最小二乘结果。
 
 #section[实验仪器]
 
@@ -198,10 +192,9 @@ $m$ 个油滴电子电荷平均值
 #subsection[（1）模糊统计法]
 
 选择合适的油滴，每颗油滴重复测量 4 组下降时间 $t$ 和平衡电压 $U$，下降八格，即 $l = 1.6$ mm。计算油滴所带电荷量 $Q _(i)$，填入表 8.3.2。每滴采用四次下降时间和平衡电压的均值。
+#block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表 8.3.2 静态平衡法数据记录表])]
 
-表 8.3.2 静态平衡法数据记录表
-
-#report-table(columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr,), size: 7.5pt,
+#report-table(columns: (auto, auto, auto, auto, auto, auto, auto, auto, auto,), size: 9*tpt,
   header: (table.cell(x: 0, y: 0)[$m$], table.cell(x: 1, y: 0)[$U$(V)], table.cell(x: 2, y: 0)[$t _(1)$(s)], table.cell(x: 3, y: 0)[$t _(2)$(s)], table.cell(x: 4, y: 0)[$t _(3)$(s)], table.cell(x: 5, y: 0)[$t _(4)$(s)], table.cell(x: 6, y: 0)[$overline(t)$(s)], table.cell(x: 7, y: 0)[$Q _(i)$($times 10 ^(- 19)$ C)], table.cell(x: 8, y: 0)[$n _(i)$],),
   rows: (
     (table.cell(x: 0, y: 1)[1], table.cell(x: 1, y: 1)[#f("voltage_01")], table.cell(x: 2, y: 1)[#f("time_01_1")], table.cell(x: 3, y: 1)[#f("time_01_2")], table.cell(x: 4, y: 1)[#f("time_01_3")], table.cell(x: 5, y: 1)[#f("time_01_4")], table.cell(x: 6, y: 1)[#f("time_mean_01")], table.cell(x: 7, y: 1)[#f("charge_scaled_01")], table.cell(x: 8, y: 1)[#f("electron_count_01")],),
@@ -214,10 +207,9 @@ $m$ 个油滴电子电荷平均值
     (table.cell(x: 0, y: 8)[8], table.cell(x: 1, y: 8)[#f("voltage_08")], table.cell(x: 2, y: 8)[#f("time_08_1")], table.cell(x: 3, y: 8)[#f("time_08_2")], table.cell(x: 4, y: 8)[#f("time_08_3")], table.cell(x: 5, y: 8)[#f("time_08_4")], table.cell(x: 6, y: 8)[#f("time_mean_08")], table.cell(x: 7, y: 8)[#f("charge_scaled_08")], table.cell(x: 8, y: 8)[#f("electron_count_08")],),
   ))
 
-求各电荷量的近似最大公约数，估计基本电荷 $e$，并与公认值比较计算百分差。测量有误差，不对有限小数直接求精确最大公约数。计算过程采用公认值
-$e _("ref") = 1.602176634 times 10 ^(- 19)$ C 辅助判定
+求各电荷量的近似最大公约数，估计基本电荷 $e$，并与公认值比较计算百分差。测量有误差，不对有限小数直接求精确最大公约数。计算过程采用公认值$e _("ref") = 1.602176634 times 10 ^(- 19)$ C 辅助判定
 
-$ n _(i) = max brace.l 1 , "round" ( Q _(i) / e _("ref") ) brace.r , quad quad Q _(i) approx n _(i) e _(0) . $
+$ n _(i) = max brace.l 1 , "round" ( Q _(i) slash e _("ref") ) brace.r , quad quad Q _(i) approx n _(i) e _(0) . $
 
 在表列整数倍数固定后，以 $sum _(i) ( Q _(i) - n _(i) e _(0) ) ^(2)$ 最小确定近似公约数，得
 
@@ -239,15 +231,15 @@ $ Delta e _(i) = e _(i) - overline(e) , quad quad U _(e) = t sqrt(frac(sum _(i =
 
 $ e = ( #mf("electron_charge_graph") plus.minus #mf("electron_charge_graph_u") ) thin upright(C) , quad quad b = #mf("electron_charge_graph_intercept") thin upright(C) , quad quad E = #f("graph_error_percent") "%" . $
 
-图中横轴为 $n _(i)$，纵轴为 $Q _(i) / ( 10 ^(- 19) thin upright(C) )$；散点和拟合线均由本次读数计算。斜率所附误差为拟合标准不确定度。
+图中横轴为 $n _(i)$，纵轴为 $Q _(i) slash ( 10 ^(- 19) thin upright(C) )$；散点和拟合线均由本次读数计算。斜率所附误差为拟合标准不确定度。
 
-#plot(((points: points("charge_graph_points"), label: [油滴数据], line: false), (points: points("charge_graph_fit_points"), label: [线性拟合], marks: false, color: red)), x-label: [$n_i$], y-label: [$Q_i/(10^(-19) upright(C))$])
+#plot(((points: points("charge_graph_points"), label: [油滴数据], line: false), (points: points("charge_graph_fit_points"), label: [线性拟合], marks: false, color: rgb("#0000ff"))), x-label: [$n_i$], y-label: [$Q_i slash (10^(-19) upright(C))$])
 
 #subsection[（4）最小二乘法]
 
 $ e = frac(sum _(i = 1) ^(m) n _(i) Q _(i), sum _(i = 1) ^(m) n _(i) ^(2)) = #mf("electron_charge_ls_95") thin upright(C) . $
 
-$ U _(e) = t sqrt(frac(sum _(i = 1) ^(m) ( Q _(i) / n _(i) - e ) ^(2), m ( m - 1 ))) = #mf("electron_charge_ls_u95") thin upright(C) . $
+$ U _(e) = t sqrt(frac(sum _(i = 1) ^(m) ( Q _(i) slash n _(i) - e ) ^(2), m ( m - 1 ))) = #mf("electron_charge_ls_u95") thin upright(C) . $
 
 按讲义公式计算不确定度，$t$ 与反向验证法相同。与公认值的百分差为 $#f("ls_error_percent") "%"$。
 

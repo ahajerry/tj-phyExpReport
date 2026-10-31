@@ -53,7 +53,7 @@ func main() {
 	if e != nil {
 		log.Fatal(e)
 	}
-	renderer := render.Renderer{TemplateDir: templates, WorkDir: filepath.Join(data, "work"), FontDir: env("REPORT_FONT_DIR", "/usr/share/fonts/opentype/noto")}
+	renderer := render.Renderer{TemplateDir: templates, WorkDir: filepath.Join(data, "work"), FontDir: env("REPORT_FONT_DIR", filepath.Join(filepath.Dir(templates), "fonts"))}
 	q, e := storage.Open(data, renderer.Render)
 	if e != nil {
 		log.Fatal(e)

@@ -272,6 +272,40 @@ func TestTypstProjectRoot(t *testing.T) {
 	}
 }
 
+func TestCompilerWarningsPreventPublication(t *testing.T) {
+	if os.Getenv("REPORT_TEST_PDF") != "1" {
+		t.Skip("requires Typst and report fonts")
+	}
+	b, err := os.ReadFile("../../testdata/calculations.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cases []struct{ Payload domain.Payload }
+	if err = json.Unmarshal(b, &cases); err != nil {
+		t.Fatal(err)
+	}
+	p := cases[0].Payload
+	templates := t.TempDir()
+	// A missing font produces a PDF and exit code 0. It must still be rejected
+	// instead of silently publishing a report in a different font.
+	for name, content := range map[string]string{
+		p.ExperimentID + ".typ": "#set text(font: \"Missing Report Font Regression Test\")\nReport",
+		"base.typ":              "", "charts.typ": "", "README.md": "",
+	} {
+		if err := os.WriteFile(filepath.Join(templates, name), []byte(content), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	r := Renderer{TemplateDir: templates, WorkDir: t.TempDir(), FontDir: os.Getenv("REPORT_FONT_DIR")}
+	artifacts, err := r.Render(context.Background(), p, filepath.Join(t.TempDir(), "absent"), func(int, string) {})
+	if err == nil || !strings.Contains(err.Error(), "unknown font family") {
+		t.Fatalf("expected compiler warning to fail rendering, got %v", err)
+	}
+	if len(artifacts.PDF) != 0 || len(artifacts.SourceZIP) != 0 {
+		t.Fatal("artifacts published despite a compiler warning")
+	}
+}
+
 func TestLiteralUserTextAndIntegerReadings(t *testing.T) {
 	if os.Getenv("REPORT_TEST_PDF") != "1" {
 		t.Skip("requires Typst and report fonts")

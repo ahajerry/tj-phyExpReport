@@ -33,13 +33,13 @@
 | `REPORT_PORT` | `8000` | 容器内部端口 |
 | `REPORT_DATA_DIR` | `.report-data` | `/data`；开发脚本另设 `output/dev-data/` |
 | `REPORT_TEMPLATE_DIR` | `typst/templates` | `/app/typst/templates` |
-| `REPORT_FONT_DIR` | `/usr/share/fonts/opentype/noto` | 显式字体目录，忽略其他系统字体 |
+| `REPORT_FONT_DIR` | 本地：模板目录同级 `fonts/`；镜像：`/usr/share/fonts/phyexp` | 显式字体目录，忽略其他系统字体 |
 | `REPORT_STATIC_DIR` | 空 | `/app/web`；空值不托管前端 |
 | `REPORT_COOKIE_SECURE` | production 为 `1`，否则 `0` | Compose 本地 HTTP 为 `0` |
 | `REPORT_REVISION` | 编译标识或 development | 覆盖健康响应的版本标识 |
 
 Go 不读取 `.env`。Compose 的 `REPORT_BIND`、`REPORT_PUBLIC_PORT` 仅控制宿主端口，默认 `127.0.0.1:8080`；后端平台目标为 Linux/Unix，使用进程组和文件锁系统调用。
 
-运行镜像只含 Go 服务、前端、Typst、Noto CJK、ImageMagick/libheif 和必要系统包，不包含 Python 或 TeX。UID/GID 为 10001；Compose 禁止新增权限、丢弃 capabilities，限制 128 个进程和 2 GiB 内存。两个提交/导入请求可同时处理，报告仍串行生成。健康检查只证明服务存活，不检查排版能力。
+运行镜像只含 Go 服务、前端、Typst、[固定报告字体](reports.md)、ImageMagick/libheif 和必要系统包，不包含 Python 或 TeX。UID/GID 为 10001；Compose 禁止新增权限、丢弃 capabilities，限制 128 个进程和 2 GiB 内存。两个提交/导入请求可同时处理，报告仍串行生成。健康检查只证明服务存活，不检查排版能力。
 
 生产和开发共享 `render-runtime`。开发镜像只复用带有匹配 `org.phyexp.render-engine` 标签的运行时，防止旧 TeX 镜像被误用。工具链升级需重建；模板保存后新任务直接读取。部署切换流程见 [指南](../guides/deployment.md)。

@@ -1,5 +1,5 @@
 // Uses a disposable container and volume. Never mounts the user's .report-data.
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import { readFile, mkdir, writeFile } from 'node:fs/promises'
 import { setTimeout as delay } from 'node:timers/promises'
 import assert from 'node:assert/strict'
@@ -78,10 +78,13 @@ async function complete(payload, label, images = []) {
   const entries = await extractSource(zip, directory)
   assert.equal(entries.filter(name => /^original_\d+\.jpg$/.test(name)).length, images.length)
   // No application, data volume or network is available to this compilation.
-  docker('run', '--rm', '--network', 'none', '--user', `${process.getuid?.() ?? 10001}:${process.getgid?.() ?? 10001}`,
+  const compilation = spawnSync('docker', ['run', '--rm', '--network', 'none', '--user', `${process.getuid?.() ?? 10001}:${process.getgid?.() ?? 10001}`,
     '--mount', `type=bind,src=${directory},dst=/source`, '--workdir', '/source',
     '--entrypoint', 'typst', image, 'compile', '--root', '.', '--creation-timestamp', '0', '--jobs', '1',
-    '--ignore-system-fonts', '--font-path', '/usr/share/fonts/opentype/noto', 'report.typ', 'recompiled.pdf')
+    '--ignore-system-fonts', '--font-path', '/usr/share/fonts/phyexp', 'report.typ', 'recompiled.pdf'], { encoding: 'utf8', timeout: 120000 })
+  if (compilation.error) throw compilation.error
+  assert.equal(compilation.status, 0, compilation.stderr)
+  assert.doesNotMatch(compilation.stderr, /warning:/, 'offline compilation must have no layout or font warnings')
   assert.equal(hash(await readFile(`${directory}/recompiled.pdf`)), hash(pdf), 'offline source must reproduce the PDF')
   results.push({ label, id: job.id, bytes: pdf.length, sourceBytes: zip.length, imageCount: job.imageCount,
     elapsedMs, pdfSHA256: hash(pdf), sourceSHA256: hash(zip), offlineRecompile: 'identical' })
@@ -107,9 +110,11 @@ try {
   assert.match(runtime, /^10001\n/)
   assert.doesNotMatch(runtime, /\/(python|xelatex)/)
   assert.match(runtime, /typst 0\.15\.1 /)
-  assert.match(runtime, /Noto Serif CJK SC/)
-  assert.match(runtime, /Noto Sans CJK SC/)
-  console.log('Runtime: UID 10001, Typst 0.15.1, Noto CJK, no Python/LaTeX')
+  assert.match(runtime, /FandolSong/)
+  assert.match(runtime, /FandolHei/)
+  assert.match(runtime, /Latin Modern Roman/)
+  assert.match(runtime, /Latin Modern Math/)
+  console.log('Runtime: UID 10001, Typst 0.15.1, Fandol + Latin Modern, no Python/LaTeX')
   assert.match(await (await request('/')).text(), /<div id="root">/)
   assert.equal((await request('/api/unknown')).status, 404)
   const cases = JSON.parse(await readFile(new URL('calculations.json', fixtures), 'utf8'))
