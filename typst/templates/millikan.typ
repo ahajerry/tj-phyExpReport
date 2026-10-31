@@ -270,4 +270,3 @@ $ U _(e) = t sqrt(frac(sum _(i = 1) ^(m) ( Q _(i) / n _(i) - e ) ^(2), m ( m - 1
 本次实验以多颗油滴检验电荷量子化。反向验证得到 $e _("rev") = ( #mf("electron_charge_reverse") plus.minus #mf("electron_charge_reverse_u") ) thin upright(C)$，图解拟合斜率为 $e _("graph") = ( #mf("electron_charge_graph") plus.minus #mf("electron_charge_graph_u") ) thin upright(C)$，过原点最小二乘结果为 $e _("ls") = ( #mf("electron_charge_ls") plus.minus #mf("electron_charge_ls_u") ) thin upright(C)$。三种结果应结合散点分布与不确定度比较。
 
 #records()
-

@@ -106,4 +106,3 @@ $  overline(f) _("single") & = ( #mf("focus_single_mean_mm") plus.minus #mf("foc
 凸透镜焦距由物像距法、共轭法和自准直法分别得到 $#mf("focus_single_mean_mm")$、$#mf("focus_bessel_mean_mm")$、$#mf("focus_auto_mean_mm") thin upright(m m)$。各值的重复测量标准不确定度见上式；结果需结合三法一致性评价。
 
 #records()
-

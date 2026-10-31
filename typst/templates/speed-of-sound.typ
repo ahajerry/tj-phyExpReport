@@ -160,4 +160,3 @@ $ E = frac(| v - v _(upright(t h)) |, v _(upright(t h))) times 100 "%" = #mf("ph
 取两种方法结果的算术平均，本实验测得当前室温下空气中的声速约为 $#mf("final_speed") thin upright(m / s)$。
 
 #records()
-

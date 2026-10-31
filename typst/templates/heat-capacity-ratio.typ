@@ -208,4 +208,3 @@ $ "百分差：" quad E _(0) = frac(| gamma - gamma _(0) |, gamma _(0)) times 10
 由五次振动周期和修正后的几何、气压数据得到空气比热容比 $gamma = #mf("gamma_result") plus.minus #mf("gamma_uncertainty")$；相对参考值 $1.402$ 的百分差为 $#f("gamma_error_percent") "%"$。结果应结合密封性和直径测量条件评价。
 
 #records()
-

@@ -214,4 +214,3 @@ $ Y _(2) plus.minus U _(Y _(2)) = ( #mf("young_modulus_pa") plus.minus #mf("youn
 3. 在加减砝码时要格外小心，做到轻拿轻放，避免震动产生较大的实验误差。光杠杆与望远镜调整好之后，实验过程中两者位置不能有任何移动。
 
 #records()
-

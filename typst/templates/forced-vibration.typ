@@ -284,4 +284,3 @@ $ phi = tan ^(- 1)   [ frac(- beta T _(0) ^(2) T, pi ( T ^(2) - T _(0) ^(2) ))  
 逐差法测得阻尼系数 $beta = #mf("damping_beta_s_inv") thin upright(s ^(- 1))$。最大振幅为 $#mf("peak_amplitude_deg") ^(degree)$，对应外力周期约 $T _(r) = #mf("resonance_period_s") thin upright(s)$。幅频、相频曲线反映了摆轮在共振附近振幅增大、相位差变化较快的特点。
 
 #records()
-
