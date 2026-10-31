@@ -1,21 +1,22 @@
 # 文档中心
 
-当前实现为 **Go + React + SQLite + XeLaTeX**。本目录按使用任务组织；历史评估与当前实现明确分开。
+当前系统使用 React/TypeScript、Go、SQLite 和 Typst。当前行为只在 specs 定义；操作、决策与历史记录分别维护。
 
-最新八种实验的合成样例 PDF 预览集中存放在 `output/pdf/latest/`。旧测试输出、截图、压缩包及残留 Python 后端缓存归档至 `legacy/assets/maintenance-20261030/`，清单见其中的 `inventory.json`；当前生产后端源码在 `server/`。
-
-| 任务 | 文档 |
+| 任务 | 入口 |
 | --- | --- |
-| 启动容器、接入 HTTPS、备份恢复 | [部署指南](deployment.md) |
-| 配置开发环境、构建、运行测试 | [开发与验证](development.md) |
-| 维护页面组件、字体、主题与 CSS 类 | [前端 UI 与 CSS 指南](frontend-ui.md) |
-| Windows 前端开发、WSL/Docker 配置与网络错误排查 | [Windows 开发与排错](windows-development.md) |
-| 理解模块边界和任务生命周期 | [架构](architecture.md) |
-| 对接接口、上传、身份与额度 | [API 与存储契约](api.md) |
-| 理解八种实验和数值规则 | [实验与计算](experiments.md) |
-| 查阅前端字段、单位、默认值 | [字段目录](fields.md) |
-| 从旧 Python 服务升级、回退 | [迁移记录](migration.md) |
-| 查看已完成的验收和环境限制 | [本地验收记录](validation.md) |
-| 查阅重写前的调研与建议 | [历史快照](archive/python-2026-10-14/README.md) |
+| 理解模块、运行环境与任务生命周期 | [架构](specs/architecture.md) |
+| 对接接口、身份、额度和存储 | [API 与存储](specs/api.md) |
+| 查阅输入字段、单位与默认值 | [字段目录](specs/fields.md) |
+| 理解计算、修约、导入和兼容输入 | [实验规则](specs/experiments.md) |
+| 维护报告、图表、字体和源码快照 | [报告契约](specs/reports.md) |
+| 理解页面、录入与下载行为 | [前端契约](specs/frontend.md) |
+| 启动开发环境、测试、发布编号 | [开发指南](guides/development.md) |
+| 部署、备份、从 LaTeX 停机切换 | [部署指南](guides/deployment.md) |
+| 排查 Windows、Docker 与网络问题 | [Windows 指南](guides/windows-development.md) |
+| 修改 UI、组件与 CSS | [前端维护](guides/frontend-ui.md) |
+| 编辑下载的源码并重新编译 | [源码使用](guides/typst-source.md) |
+| 了解重要取舍 | [ADR 索引](adrs/README.md) |
+| 查看本次实施和验收结果 | [Typst 迁移计划](plans/2026-10-31-typst-migration.md) |
+| 查阅历史实现与验收 | [LaTeX 快照](archive/latex-2026-10-31/README.md)、[Python 快照](archive/python-2026-10-14/README.md) |
 
-维护规则：行为修改同步更新 API/实验文档；部署参数以 `server/cmd/reportd/main.go`、`compose.yaml` 为准；验证结果记录命令和限制，不能把“代码支持”写成“实际通过”。历史快照不继续改写为当前指南。
+文档维护约束见 [AGENTS.md](../AGENTS.md)。第三方许可证保存在 `docs/licenses/` 和对应资产目录。`output/` 仅保存本机生成的合成验收资料，不属于文档契约或 Git 交付。

@@ -69,6 +69,13 @@ type Image struct {
 	Name    string
 	Content []byte
 }
+
+// ReportArtifacts are a PDF and its exact editable compilation inputs.
+// A job is complete only after both have been archived.
+type ReportArtifacts struct {
+	PDF       []byte
+	SourceZIP []byte
+}
 type Job struct {
 	ID           string  `json:"id"`
 	ExperimentID string  `json:"experimentId"`

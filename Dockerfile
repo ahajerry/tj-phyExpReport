@@ -2,6 +2,8 @@
 # Override with --build-arg DOCKER_REGISTRY=docker.io to use Docker Hub.
 ARG DOCKER_REGISTRY=docker.1ms.run
 ARG DEV_RUNTIME=render-runtime
+ARG TYPST_IMAGE=ghcr.io/typst/typst:0.15.1@sha256:032e292249bcd378480cc7c142cfa324b63ef8aadeb88d7e7230320c4c9c422f
+FROM ${TYPST_IMAGE} AS typst-toolchain
 FROM ${DOCKER_REGISTRY}/library/node:24-bookworm-slim AS node-toolchain
 
 FROM node-toolchain AS web
@@ -45,25 +47,19 @@ RUN --mount=type=cache,id=phyexp-apt-archives,target=/var/cache/apt,sharing=lock
     --mount=type=cache,id=phyexp-apt-lists,target=/var/lib/apt/lists,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
     && apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates tzdata texlive-binaries fontconfig fonts-noto-cjk imagemagick libheif1 \
+    ca-certificates tzdata fontconfig fonts-noto-cjk imagemagick libheif1 \
     && groupadd --gid 10001 report && useradd --uid 10001 --gid report --create-home report \
-    && mkdir -p /data && chown report:report /data \
-    && ln -sf xetex /usr/bin/xelatex
+    && mkdir -p /data && chown report:report /data
 
-FROM runtime-base AS tex-assets
-RUN --mount=type=cache,id=phyexp-apt-archives,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=phyexp-apt-lists,target=/var/lib/apt/lists,sharing=locked \
-    apt-get update && apt-get install -y --no-install-recommends \
-    texlive-xetex texlive-lang-chinese texlive-latex-extra \
-    texlive-fonts-recommended texlive-pictures
-# Keep TeX resources without optional Python tools from the metapackages.
 FROM runtime-base AS render-runtime
-COPY --from=tex-assets /usr/share/texlive /usr/share/texlive
-COPY --from=tex-assets /usr/share/texmf /usr/share/texmf
-COPY --from=tex-assets /var/lib/texmf /var/lib/texmf
-COPY --from=tex-assets /etc/texmf /etc/texmf
+COPY --from=typst-toolchain /bin/typst /usr/local/bin/typst
 COPY deploy/imagemagick-policy.xml /etc/ImageMagick-6/policy.xml
-RUN ! command -v python && ! command -v python3 && kpsewhich ctexart.cls && kpsewhich FandolSong-Regular.otf
+LABEL org.phyexp.render-engine="typst-0.15.1"
+ENV REPORT_FONT_DIR=/usr/share/fonts/opentype/noto
+RUN ! command -v python && ! command -v python3 && ! command -v xelatex \
+    && typst --version | grep -F 'typst 0.15.1 ' \
+    && typst fonts | grep -Fx 'Noto Serif CJK SC' \
+    && typst fonts | grep -Fx 'Noto Sans CJK SC'
 
 # No frontend install/build or application compilation is needed for this image.
 FROM ${DEV_RUNTIME} AS development
@@ -74,7 +70,7 @@ ENV PATH=/usr/local/go/bin:$PATH CGO_ENABLED=0 GOPROXY=https://goproxy.cn,direct
     GOMODCACHE=/home/report/go/pkg/mod GOCACHE=/home/report/.cache/go-build \
     REPORT_DEV_BINARY=/home/report/bin/reportd REPORT_ENV=development \
     REPORT_HOST=0.0.0.0 REPORT_PORT=8000 REPORT_DATA_DIR=/data \
-    REPORT_TEMPLATE_DIR=/workspace/tex/templates REPORT_STATIC_DIR= REPORT_COOKIE_SECURE=0 TZ=Asia/Shanghai
+    REPORT_TEMPLATE_DIR=/workspace/typst/templates REPORT_STATIC_DIR= REPORT_COOKIE_SECURE=0 TZ=Asia/Shanghai
 RUN mkdir -p /home/report/go/pkg/mod /home/report/.cache/go-build /home/report/bin \
     && chown -R report:report /home/report
 WORKDIR /workspace
@@ -88,9 +84,9 @@ FROM render-runtime AS runtime
 WORKDIR /app
 COPY --from=server /reportd /app/reportd
 COPY --from=web /src/dist /app/web
-COPY tex/templates /app/tex/templates
+COPY typst/templates /app/typst/templates
 ENV REPORT_ENV=production REPORT_HOST=0.0.0.0 REPORT_PORT=8000 \
-    REPORT_DATA_DIR=/data REPORT_TEMPLATE_DIR=/app/tex/templates REPORT_STATIC_DIR=/app/web \
+    REPORT_DATA_DIR=/data REPORT_TEMPLATE_DIR=/app/typst/templates REPORT_STATIC_DIR=/app/web \
     TZ=Asia/Shanghai
 USER report
 EXPOSE 8000

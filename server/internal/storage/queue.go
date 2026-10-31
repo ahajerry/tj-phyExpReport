@@ -22,7 +22,7 @@ import (
 var ErrQuota = errors.New("今天的报告生成次数已用完，请明天再试")
 var ErrNotFound = errors.New("任务不存在")
 
-type RenderFunc func(context.Context, domain.Payload, string, func(int, string)) ([]byte, error)
+type RenderFunc func(context.Context, domain.Payload, string, func(int, string)) (domain.ReportArtifacts, error)
 type Queue struct {
 	db     *sql.DB
 	dir    string
@@ -78,8 +78,7 @@ func Open(dir string, render RenderFunc) (q *Queue, err error) {
 	_, err = db.Exec(`PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS jobs(seq INTEGER PRIMARY KEY AUTOINCREMENT,id TEXT NOT NULL UNIQUE,user_id TEXT NOT NULL,day TEXT NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL,progress INTEGER NOT NULL DEFAULT 0,stage TEXT NOT NULL,error TEXT,created_at TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS jobs_user_day ON jobs(user_id,day);
-UPDATE jobs SET status='queued',progress=0,stage='等待重新编译' WHERE status='running';
-UPDATE jobs SET status='queued',progress=0,stage='模板修复后重新排队',error=NULL WHERE status='failed' AND error IN ('模板中不存在这些字段：student_id','模板中不存在这些字段：partner');`)
+UPDATE jobs SET status='queued',progress=0,stage='等待重新编译' WHERE status='running';`)
 	if err != nil {
 		return nil, err
 	}
@@ -218,6 +217,12 @@ func (q *Queue) Session(ctx context.Context, user string) (domain.Session, error
 	return s, nil
 }
 func (q *Queue) Download(ctx context.Context, id, user string) (domain.Job, string, error) {
+	return q.download(ctx, id, user, ".pdf")
+}
+func (q *Queue) DownloadSource(ctx context.Context, id, user string) (domain.Job, string, error) {
+	return q.download(ctx, id, user, ".typ.zip")
+}
+func (q *Queue) download(ctx context.Context, id, user, extension string) (domain.Job, string, error) {
 	j, e := q.Job(ctx, id, user)
 	if e != nil {
 		return j, "", e
@@ -225,7 +230,7 @@ func (q *Queue) Download(ctx context.Context, id, user string) (domain.Job, stri
 	if j.Status != "done" {
 		return j, "", ErrNotFound
 	}
-	path := filepath.Join(q.dir, "reports", id+".pdf")
+	path := filepath.Join(q.dir, "reports", id+extension)
 	if _, e = os.Stat(path); e != nil {
 		return j, "", ErrNotFound
 	}
@@ -261,9 +266,9 @@ func (q *Queue) work(ctx context.Context) {
 		}
 		var p domain.Payload
 		e = json.Unmarshal([]byte(raw), &p)
-		var pdf []byte
+		var artifacts domain.ReportArtifacts
 		if e == nil {
-			pdf, e = q.render(ctx, p, filepath.Join(q.dir, "original-images", id), func(value int, stage string) {
+			artifacts, e = q.render(ctx, p, filepath.Join(q.dir, "original-images", id), func(value int, stage string) {
 				if _, err := q.db.ExecContext(ctx, "UPDATE jobs SET progress=?,stage=? WHERE id=?", value, stage, id); err != nil && ctx.Err() == nil {
 					log.Printf("progress: %v", err)
 				}
@@ -277,12 +282,9 @@ func (q *Queue) work(ctx context.Context) {
 			return
 		}
 		if e == nil {
-			temp := filepath.Join(q.dir, "reports", id+".tmp")
-			e = os.WriteFile(temp, pdf, 0600)
-			if e == nil {
-				e = os.Rename(temp, filepath.Join(q.dir, "reports", id+".pdf"))
-			}
+			e = q.archive(id, artifacts)
 		}
+
 		var updateErr error
 		if e != nil {
 			message := []rune(e.Error())
@@ -297,4 +299,33 @@ func (q *Queue) work(ctx context.Context) {
 			log.Printf("finish job %s: %v", id, updateErr)
 		}
 	}
+}
+
+// Status is the publication gate: both renames must succeed before marking done.
+// An interrupted job is re-rendered, replacing any incomplete previous attempt.
+func (q *Queue) archive(id string, artifacts domain.ReportArtifacts) (err error) {
+	if len(artifacts.PDF) == 0 || len(artifacts.SourceZIP) == 0 {
+		return fmt.Errorf("报告产物不完整")
+	}
+	paths := []string{filepath.Join(q.dir, "reports", id+".pdf"), filepath.Join(q.dir, "reports", id+".typ.zip")}
+	data := [][]byte{artifacts.PDF, artifacts.SourceZIP}
+	defer func() {
+		for _, path := range paths {
+			os.Remove(path + ".tmp")
+			if err != nil {
+				os.Remove(path)
+			}
+		}
+	}()
+	for i, path := range paths {
+		if err = os.WriteFile(path+".tmp", data[i], 0600); err != nil {
+			return err
+		}
+	}
+	for _, path := range paths {
+		if err = os.Rename(path+".tmp", path); err != nil {
+			return err
+		}
+	}
+	return nil
 }

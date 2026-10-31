@@ -8,17 +8,19 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"phyexp/server/internal/domain"
 	"phyexp/server/internal/storage"
+	"strings"
 	"testing"
 	"time"
 )
 
 func TestAPIQueueOwnershipQuotaAndRestart(t *testing.T) {
 	dir := t.TempDir()
-	q, e := storage.Open(dir, func(_ context.Context, _ domain.Payload, _ string, progress func(int, string)) ([]byte, error) {
+	q, e := storage.Open(dir, func(_ context.Context, _ domain.Payload, _ string, progress func(int, string)) (domain.ReportArtifacts, error) {
 		progress(50, "test")
-		return []byte("%PDF-test"), nil
+		return domain.ReportArtifacts{PDF: []byte("%PDF-test"), SourceZIP: []byte("source snapshot")}, nil
 	})
 	if e != nil {
 		t.Fatal(e)
@@ -67,6 +69,11 @@ func TestAPIQueueOwnershipQuotaAndRestart(t *testing.T) {
 	if foreign.Code != 404 {
 		t.Fatal("ownership", foreign.Code)
 	}
+	for _, suffix := range []string{"download", "source"} {
+		if request("GET", "/api/reports/jobs/"+job.ID+"/"+suffix, nil, cookie).Code != 404 {
+			t.Fatal("queued artifact exposed")
+		}
+	}
 	q.Start()
 	for i := 0; i < 100; i++ {
 		current := request("GET", "/api/reports/jobs/"+job.ID, nil, cookie)
@@ -86,6 +93,13 @@ func TestAPIQueueOwnershipQuotaAndRestart(t *testing.T) {
 	if request("GET", "/api/reports/jobs/"+job.ID+"/download", nil, nil).Code != 404 {
 		t.Fatal("download leaked")
 	}
+	source := request("GET", "/api/reports/jobs/"+job.ID+"/source", nil, cookie)
+	if source.Code != 200 || source.Body.String() != "source snapshot" || source.Header().Get("Content-Type") != "application/zip" || !strings.Contains(source.Header().Get("Content-Disposition"), "report-source.zip") || source.Header().Get("Cache-Control") != "no-store" {
+		t.Fatal(source)
+	}
+	if request("GET", "/api/reports/jobs/"+job.ID+"/source", nil, nil).Code != 404 {
+		t.Fatal("source leaked")
+	}
 	if e = q.Close(); e != nil {
 		t.Fatal(e)
 	}
@@ -100,6 +114,15 @@ func TestAPIQueueOwnershipQuotaAndRestart(t *testing.T) {
 	json.Unmarshal(recovered.Body.Bytes(), &state)
 	if state.UsedToday != 1 || len(state.Jobs) != 1 || state.Jobs[0].Status != "done" {
 		t.Fatal(state)
+	}
+	if w := request("GET", "/api/reports/jobs/"+job.ID+"/source", nil, cookie); w.Code != 200 || w.Body.String() != "source snapshot" {
+		t.Fatal("snapshot not persisted", w)
+	}
+	if e := os.Remove(filepath.Join(dir, "reports", job.ID+".typ.zip")); e != nil {
+		t.Fatal(e)
+	}
+	if request("GET", "/api/reports/jobs/"+job.ID+"/source", nil, cookie).Code != 404 {
+		t.Fatal("missing archive response")
 	}
 	for i := 1; i < 50; i++ {
 		if w := request("POST", "/api/reports/jobs", payload, cookie); w.Code != 202 {

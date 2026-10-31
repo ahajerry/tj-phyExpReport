@@ -29,7 +29,8 @@
     "dev:setup": "node scripts/dev.mjs --setup",
     "dev:frontend": "vite",
     "test:dev": "node --test --test-isolation=none scripts/test-dev-workflow.mjs",
-    "test:dev:docker": "node scripts/smoke-dev.mjs"
+    "test:dev:docker": "node scripts/smoke-dev.mjs",
+    "test:render": "node scripts/test-render.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

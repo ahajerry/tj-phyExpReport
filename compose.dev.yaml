@@ -10,7 +10,7 @@ services:
     volumes:
       - ./server:/workspace/server:ro
       - ./scripts:/workspace/scripts:ro
-      - ./tex/templates:/workspace/tex/templates:ro
+      - ./typst/templates:/workspace/typst/templates:ro
       - dev-data:/data
       - go-mod:/home/report/go/pkg/mod
       - go-build:/home/report/.cache/go-build

@@ -4,6 +4,8 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises'
 import { setTimeout as delay } from 'node:timers/promises'
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
+import { createHash } from 'node:crypto'
+import { extractSource } from './source-bundle.mjs'
 
 const useCompose = process.argv.includes('--compose')
 const image = process.env.REPORT_TEST_IMAGE || 'phyexp-report:local'
@@ -24,6 +26,7 @@ let base
 let started = false
 let container = name
 const results = []
+const hash = data => createHash('sha256').update(data).digest('hex')
 async function request(path, options = {}, identity = true) {
   const response = await fetch(`${base}${path}`, { ...options, headers: { ...(identity && cookie ? { Cookie: cookie } : {}), ...options.headers }, signal: AbortSignal.timeout(90000) })
   if (identity && response.headers.get('set-cookie')) cookie = response.headers.get('set-cookie').split(';')[0]
@@ -37,6 +40,7 @@ async function waitReady() {
   throw new Error('Container did not become ready')
 }
 async function complete(payload, label, images = []) {
+  const start = performance.now()
   let options
   if (images.length) {
     const form = new FormData()
@@ -55,14 +59,33 @@ async function complete(payload, label, images = []) {
     job = await response.json()
   }
   assert.equal(job.status, 'done', JSON.stringify(job))
+  const elapsedMs = Math.round(performance.now() - start)
   const response = await request(`/api/reports/jobs/${job.id}/download`)
   assert.equal(response.status, 200)
   const pdf = Buffer.from(await response.arrayBuffer())
   assert.equal(pdf.subarray(0, 5).toString(), '%PDF-')
   assert.equal((await request(`/api/reports/jobs/${job.id}/download`, {}, false)).status, 404)
   await writeFile(new URL(`${label}.pdf`, output), pdf)
-  results.push({ label, id: job.id, bytes: pdf.length, imageCount: job.imageCount })
-  console.log(`${label}: PDF ${pdf.length} bytes; images=${job.imageCount}`)
+  const source = await request(`/api/reports/jobs/${job.id}/source`)
+  assert.equal(source.status, 200)
+  assert.match(source.headers.get('content-type'), /^application\/zip/)
+  assert.match(source.headers.get('content-disposition'), /-report-source\.zip/)
+  assert.match(source.headers.get('cache-control'), /no-store/)
+  assert.equal((await request(`/api/reports/jobs/${job.id}/source`, {}, false)).status, 404)
+  const zip = Buffer.from(await source.arrayBuffer())
+  await writeFile(new URL(`${label}.zip`, output), zip)
+  const directory = fileURLToPath(new URL(`sources/${label}/`, output))
+  const entries = await extractSource(zip, directory)
+  assert.equal(entries.filter(name => /^original_\d+\.jpg$/.test(name)).length, images.length)
+  // No application, data volume or network is available to this compilation.
+  docker('run', '--rm', '--network', 'none', '--user', `${process.getuid?.() ?? 10001}:${process.getgid?.() ?? 10001}`,
+    '--mount', `type=bind,src=${directory},dst=/source`, '--workdir', '/source',
+    '--entrypoint', 'typst', image, 'compile', '--root', '.', '--creation-timestamp', '0', '--jobs', '1',
+    '--ignore-system-fonts', '--font-path', '/usr/share/fonts/opentype/noto', 'report.typ', 'recompiled.pdf')
+  assert.equal(hash(await readFile(`${directory}/recompiled.pdf`)), hash(pdf), 'offline source must reproduce the PDF')
+  results.push({ label, id: job.id, bytes: pdf.length, sourceBytes: zip.length, imageCount: job.imageCount,
+    elapsedMs, pdfSHA256: hash(pdf), sourceSHA256: hash(zip), offlineRecompile: 'identical' })
+  console.log(`${label}: PDF ${pdf.length} bytes; source ${zip.length} bytes; ${elapsedMs} ms; offline recompile identical`)
   return job
 }
 try {
@@ -80,11 +103,13 @@ try {
   const port = docker('port', container, '8000/tcp').split(':').at(-1)
   base = `http://127.0.0.1:${port}`
   await waitReady()
-  const runtime = docker('exec', container, 'sh', '-c', 'id -u; command -v python || command -v python3 || true; xelatex --version | head -1; kpsewhich FandolSong-Regular.otf')
+  const runtime = docker('exec', container, 'sh', '-c', 'id -u; command -v python || command -v python3 || command -v xelatex || true; typst --version; typst fonts')
   assert.match(runtime, /^10001\n/)
-  assert.doesNotMatch(runtime, /\/python/)
-  assert.match(runtime, /FandolSong-Regular\.otf/)
-  console.log(runtime)
+  assert.doesNotMatch(runtime, /\/(python|xelatex)/)
+  assert.match(runtime, /typst 0\.15\.1 /)
+  assert.match(runtime, /Noto Serif CJK SC/)
+  assert.match(runtime, /Noto Sans CJK SC/)
+  console.log('Runtime: UID 10001, Typst 0.15.1, Noto CJK, no Python/LaTeX')
   assert.match(await (await request('/')).text(), /<div id="root">/)
   assert.equal((await request('/api/unknown')).status, 404)
   const cases = JSON.parse(await readFile(new URL('calculations.json', fixtures), 'utf8'))
@@ -115,6 +140,7 @@ try {
   await complete(sound, 'images-standard', ['sample.png', 'sample.jpg', 'sample.gif', 'sample.tif', 'sample.webp'])
   await complete(sound, 'images-heif', ['sample.heic', 'sample.avif'])
   const before = await (await request('/api/reports/session')).json()
+  const peakMemoryBytes = Number(docker('exec', container, 'cat', '/sys/fs/cgroup/memory.peak'))
   if (useCompose) compose('restart', 'app')
   else docker('restart', container)
   // Docker may allocate a different host port when restarting an ephemeral mapping.
@@ -123,9 +149,18 @@ try {
   const after = await (await request('/api/reports/session')).json()
   assert.equal(after.usedToday, before.usedToday)
   assert.deepEqual(after.jobs.map(j => [j.id, j.status]), before.jobs.map(j => [j.id, j.status]))
-  for (const item of results) assert.equal((await request(`/api/reports/jobs/${item.id}/download`)).status, 200)
-  await writeFile(new URL('results.json', output), JSON.stringify({ mode: useCompose ? 'compose' : 'docker', image, runtime, imports: imports.length, reports: results, restart: 'passed' }, null, 2))
-  console.log(`PASS: ${results.length} PDFs, ${imports.length} imports, 7 image formats, ownership and restart persistence`)
+  for (const item of results) {
+    for (const [suffix, digest] of [['download', item.pdfSHA256], ['source', item.sourceSHA256]]) {
+      const response = await request(`/api/reports/jobs/${item.id}/${suffix}`)
+      assert.equal(response.status, 200)
+      assert.equal(hash(Buffer.from(await response.arrayBuffer())), digest, 'snapshot persists across restart')
+    }
+  }
+  assert.equal((await (await request('/api/reports/session')).json()).usedToday, before.usedToday)
+  const imageBytes = Number(docker('image', 'inspect', '--format', '{{.Size}}', image))
+  await writeFile(new URL('results.json', output), JSON.stringify({ mode: useCompose ? 'compose' : 'docker', image, runtime,
+    imageBytes, peakMemoryBytes, imports: imports.length, reports: results, restart: 'passed' }, null, 2))
+  console.log(`PASS: ${results.length} PDFs and offline source rebuilds, ${imports.length} imports, 7 image formats, ownership and restart persistence`)
 } finally {
   if (useCompose) {
     if (started) compose('down', '--volumes', '--remove-orphans')

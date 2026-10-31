@@ -1,6 +1,8 @@
 package render
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -8,58 +10,165 @@ import (
 	"path/filepath"
 	"phyexp/server/internal/domain"
 	"phyexp/server/internal/experiments"
+	"regexp"
+	"sort"
+	"strings"
 	"time"
 )
 
-type Renderer struct{ TemplateDir, WorkDir string }
+type Renderer struct{ TemplateDir, WorkDir, FontDir string }
 
-func (r Renderer) Render(ctx context.Context, p domain.Payload, archive string, progress func(int, string)) ([]byte, error) {
-	fields, p, e := experiments.Calculate(p)
-	if e != nil {
-		return nil, e
+var assetRE = regexp.MustCompile(`image\("([^"\n]+)"`)
+
+func (r Renderer) Render(ctx context.Context, p domain.Payload, archive string, progress func(int, string)) (domain.ReportArtifacts, error) {
+	var result domain.ReportArtifacts
+	fields, p, err := experiments.Calculate(p)
+	if err != nil {
+		return result, err
 	}
-	source, e := Template(r.TemplateDir, p, fields)
-	if e != nil {
-		return nil, e
+	progress(10, "正在检查 Typst 编译环境")
+	version, err := run(ctx, "", 10*time.Second, "typst", "--version")
+	if err != nil {
+		return result, err
 	}
-	progress(10, "正在检查编译环境")
-	if e = os.MkdirAll(r.WorkDir, 0700); e != nil {
-		return nil, e
+	if v := strings.Fields(string(version)); len(v) < 2 || v[1] != TypstVersion {
+		return result, fmt.Errorf("需要 Typst %s，当前为 %s", TypstVersion, strings.TrimSpace(string(version)))
 	}
-	work, e := os.MkdirTemp(r.WorkDir, p.ExperimentID+"-")
-	if e != nil {
-		return nil, e
+	fontArgs := []string{"fonts"}
+	if r.FontDir != "" {
+		fontArgs = append(fontArgs, "--ignore-system-fonts", "--font-path", r.FontDir)
+	}
+	fonts, err := run(ctx, "", 10*time.Second, "typst", fontArgs...)
+	if err != nil {
+		return result, err
+	}
+	for _, font := range []string{"Noto Serif CJK SC", "Noto Sans CJK SC"} {
+		if !strings.Contains("\n"+string(fonts), "\n"+font+"\n") {
+			return result, fmt.Errorf("缺少报告字体 %s，请检查 REPORT_FONT_DIR", font)
+		}
+	}
+	if err = os.MkdirAll(r.WorkDir, 0700); err != nil {
+		return result, err
+	}
+	work, err := os.MkdirTemp(r.WorkDir, p.ExperimentID+"-")
+	if err != nil {
+		return result, err
 	}
 	defer os.RemoveAll(work)
-	for _, name := range []string{"physics_report_base.tex", "tongji_logo.jpeg", "figures"} {
-		if e = copyTree(filepath.Join(r.TemplateDir, name), filepath.Join(work, name)); e != nil {
-			return nil, e
+	files := []string{"report.typ", "base.typ", "charts.typ", "data.json", "README.md"}
+	assets := map[string]bool{}
+	for _, name := range []string{p.ExperimentID + ".typ", "base.typ", "charts.typ", "README.md"} {
+		source, e := os.ReadFile(filepath.Join(r.TemplateDir, name))
+		if e != nil {
+			return result, e
+		}
+		dest := name
+		if name == p.ExperimentID+".typ" {
+			dest = "report.typ"
+		}
+		if e = os.WriteFile(filepath.Join(work, dest), source, 0600); e != nil {
+			return result, e
+		}
+		if strings.HasSuffix(name, ".typ") {
+			for _, m := range assetRE.FindAllStringSubmatch(string(source), -1) {
+				assets[m[1]] = true
+			}
 		}
 	}
-	images, e := prepareImages(ctx, archive, work)
-	if e != nil {
-		return nil, e
+	for name := range assets {
+		if !filepath.IsLocal(name) || strings.Contains(name, "..") {
+			return result, fmt.Errorf("模板资源路径无效")
+		}
+		if err = os.MkdirAll(filepath.Dir(filepath.Join(work, name)), 0700); err != nil {
+			return result, err
+		}
+		if err = copyTree(filepath.Join(r.TemplateDir, name), filepath.Join(work, name)); err != nil {
+			return result, err
+		}
+		files = append(files, name)
+	}
+	images, err := prepareImages(ctx, archive, work)
+	if err != nil {
+		return result, err
 	}
 	if p.ExperimentID == "oscilloscope" && len(images) > 2 {
-		return nil, fmt.Errorf("示波器最多附两张图片")
+		return result, fmt.Errorf("示波器最多附两张图片")
 	}
-	progress(25, "正在整理原始数据图片")
-	filled, e := Fill(source, fields, p, images)
-	if e != nil {
-		return nil, e
+	progress(25, "正在整理报告数据与图片")
+	data, err := DataJSON(fields, p, images)
+	if err != nil {
+		return result, err
 	}
-	if e = os.WriteFile(filepath.Join(work, "report.tex"), []byte(filled), 0600); e != nil {
-		return nil, e
+	if err = os.WriteFile(filepath.Join(work, "data.json"), data, 0600); err != nil {
+		return result, err
 	}
-	for i := 0; i < 2; i++ {
-		progress(45+30*i, fmt.Sprintf("正在进行第 %d 次 LaTeX 编译", i+1))
-		if _, e = run(ctx, work, 120*time.Second, "xelatex", "-no-shell-escape", "-interaction=nonstopmode", "-halt-on-error", "report.tex"); e != nil {
-			return nil, e
+	files = append(files, images...)
+	progress(45, "正在使用 Typst 排版 PDF")
+	args := []string{"compile", "--root", work, "--creation-timestamp", "0", "--jobs", "1"}
+	if r.FontDir != "" {
+		args = append(args, "--ignore-system-fonts", "--font-path", r.FontDir)
+	}
+	args = append(args, "report.typ", "report.pdf")
+	if _, err = run(ctx, work, 120*time.Second, "typst", args...); err != nil {
+		return result, err
+	}
+	result.PDF, err = os.ReadFile(filepath.Join(work, "report.pdf"))
+	if err != nil {
+		return result, err
+	}
+	if !bytes.HasPrefix(result.PDF, []byte("%PDF-")) {
+		return result, fmt.Errorf("编译器未生成有效 PDF")
+	}
+	progress(85, "正在打包 Typst 源码")
+	result.SourceZIP, err = sourceZIP(ctx, work, files)
+	if err != nil {
+		return domain.ReportArtifacts{}, err
+	}
+	progress(95, "正在保存 PDF 与源码")
+	return result, nil
+}
+
+// An explicit input list excludes PDFs, diagnostics and any compiler output.
+func sourceZIP(ctx context.Context, work string, files []string) ([]byte, error) {
+	var buffer bytes.Buffer
+	writer := zip.NewWriter(&buffer)
+	sort.Strings(files)
+	for _, name := range files {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		if !filepath.IsLocal(name) {
+			return nil, fmt.Errorf("源码资源路径无效")
+		}
+		path := filepath.Join(work, name)
+		info, err := os.Lstat(path)
+		if err != nil {
+			return nil, err
+		}
+		if !info.Mode().IsRegular() {
+			return nil, fmt.Errorf("源码资源必须为普通文件")
+		}
+		header := &zip.FileHeader{Name: filepath.ToSlash(name), Method: zip.Deflate}
+		header.SetMode(0644)
+		header.Modified = time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC)
+		entry, err := writer.CreateHeader(header)
+		if err != nil {
+			return nil, err
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		if _, err = entry.Write(data); err != nil {
+			return nil, err
 		}
 	}
-	progress(95, "正在保存 PDF")
-	return os.ReadFile(filepath.Join(work, "report.pdf"))
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
 }
+
 func copyTree(src, dst string) error {
 	info, e := os.Stat(src)
 	if e != nil {

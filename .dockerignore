@@ -7,11 +7,6 @@ build
 dist
 backend
 legacy
-tex/original
-tex/official
-tex/zipped
-tex/test-data
-tex/grade-rules
 docs
 *.spec
 .env*
