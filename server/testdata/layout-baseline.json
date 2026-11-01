@@ -1,0 +1,66 @@
+{
+  "focal-length": {
+    "pages": 5,
+    "bodyTitle": "透镜焦距的测量",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 269.33,
+    "firstSectionY": 118.67,
+    "coverExperiment": "透镜焦距的测量"
+  },
+  "forced-vibration": {
+    "pages": 13,
+    "bodyTitle": "用波尔共振仪研究物体受迫振动",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 269.33,
+    "firstSectionY": 118.67,
+    "coverExperiment": "用波尔共振仪研究物体受迫振动"
+  },
+  "heat-capacity-ratio": {
+    "pages": 7,
+    "bodyTitle": "空气比热容比的测定",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 269.33,
+    "firstSectionY": 118.67,
+    "coverExperiment": "空气比热容比的测定"
+  },
+  "millikan": {
+    "pages": 9,
+    "bodyTitle": "密立根油滴实验",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 269.33,
+    "firstSectionY": 116.0,
+    "coverExperiment": "密立根油滴实验"
+  },
+  "moment-of-inertia": {
+    "pages": 8,
+    "bodyTitle": "用扭摆法测定物体转动惯量",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 269.33,
+    "firstSectionY": 118.67,
+    "coverExperiment": "用扭摆法测定物体转动惯量"
+  },
+  "oscilloscope": {
+    "pages": 6,
+    "bodyTitle": "阴极射线示波器",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 269.33,
+    "firstSectionY": 118.67,
+    "coverExperiment": "阴极射线示波器"
+  },
+  "speed-of-sound": {
+    "pages": 6,
+    "bodyTitle": "声速测定",
+    "bodyTitleY": 112.67,
+    "coverTitleY": 263.33,
+    "firstSectionY": 154.0,
+    "coverExperiment": "声速测定"
+  },
+  "young-modulus": {
+    "pages": 9,
+    "bodyTitle": "杨氏模量的测量",
+    "bodyTitleY": 76.67,
+    "coverTitleY": 263.33,
+    "firstSectionY": 117.33,
+    "coverExperiment": "金属丝杨氏模量的测定"
+  }
+}

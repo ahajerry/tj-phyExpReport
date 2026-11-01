@@ -84,9 +84,9 @@ function AboutPage() {
     </section>
     <section>
       <h2>技术架构</h2>
-      <p>前端使用 React、Vite、Tailwind CSS 与 shadcn/ui，页面中的统计结果在浏览器本地计算。生成报告时，测量数据会提交给 Go 后端保存为任务，再由 XeLaTeX 填入模板生成 PDF。</p>
+      <p>前端使用 React、Vite、Tailwind CSS 与 shadcn/ui，页面中的统计结果在浏览器本地计算。生成报告时，测量数据会提交给 Go 后端保存为任务，再由 Typst 读取数据并排版生成 PDF 和可编辑源码包。</p>
       <Callout title="为什么不输出.docx文档？">
-        用程序生成.docx文档时，排版容易乱掉，并且运行性能较差。而当前采用的latex编译.pdf方案，排版简便，易于调用tikz库画图，占用资源少。若需要word格式，可自行转换。
+        报告使用 Typst 排版，支持公式、表格和可编辑的矢量图。生成完成后，可分别下载 PDF 或包含 .typ 文件与图片的源码 ZIP。
       </Callout>
       <p>网站通过匿名 Cookie 确认身份，无需注册账户。使用同一设备的同一浏览器，可以查看原有数据与报告排队进度。</p>
       <p>当前版本为 <code>v261030（测试）</code>；测试期间，数据和图片可能保存到服务器，用于调试与后续开发。</p>
@@ -198,15 +198,18 @@ function ReportPage() {
                   <div className="flex justify-between gap-3 text-sm"><span>{current.stage}</span><span>{current.progress}%</span></div>
                   <progress value={current.progress} max={100} className="h-3 w-full accent-blue-600" aria-label="报告生成进度" />
                   <p className="text-xs text-muted-foreground">
-                    进度按模板填充与两次编译阶段更新。（插入图片和tikz绘图等导致latex需要多次编译）
-                    目测单份报告编译时长在30s~60s.
+                    进度随数据整理、Typst 排版和源码归档更新。
                   </p>
                 </div>
               )}
               {current.status === "done" && (
                 <div className="space-y-3">
                   <p className="font-medium text-green-700">报告已生成</p>
-                  <Button render={<a href={`/api/reports/jobs/${current.id}/download`} download={`${experimentTitle}实验报告.pdf`} />}>下载 PDF</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button nativeButton={false} render={<a href={`/api/reports/jobs/${current.id}/download`} download={`${experimentTitle}实验报告.pdf`} />}>下载 PDF</Button>
+                    <Button nativeButton={false} variant="secondary" render={<a href={`/api/reports/jobs/${current.id}/source`} download={`${experimentTitle}实验报告-source.zip`} />}>下载 Typst 源码</Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">源码以 ZIP 下载，包含 .typ 文件和图片。编译需要安装 Typst 与中文字体，步骤见包内说明。</p>
                 </div>
               )}
               {current.status === "failed" && (

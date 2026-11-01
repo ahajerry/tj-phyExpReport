@@ -45,7 +45,7 @@ func main() {
 	if *environment != "development" && *environment != "production" {
 		log.Fatal("invalid environment")
 	}
-	templates, e := filepath.Abs(env("REPORT_TEMPLATE_DIR", "tex/templates"))
+	templates, e := filepath.Abs(env("REPORT_TEMPLATE_DIR", "typst/templates"))
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -53,7 +53,7 @@ func main() {
 	if e != nil {
 		log.Fatal(e)
 	}
-	renderer := render.Renderer{TemplateDir: templates, WorkDir: filepath.Join(data, "work")}
+	renderer := render.Renderer{TemplateDir: templates, WorkDir: filepath.Join(data, "work"), FontDir: env("REPORT_FONT_DIR", filepath.Join(filepath.Dir(templates), "fonts"))}
 	q, e := storage.Open(data, renderer.Render)
 	if e != nil {
 		log.Fatal(e)
