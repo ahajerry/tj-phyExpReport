@@ -32,6 +32,7 @@ scripts/report_index.py
 !.env.example
 !.env.*.example
 phyExpCal-upload.tar.gz
+phyexp-report.tar
 
 # Editor directories and files
 .vscode/*

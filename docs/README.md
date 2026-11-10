@@ -2,6 +2,8 @@
 
 当前实现为 **Go + React + SQLite + XeLaTeX**。本目录按使用任务组织；历史评估与当前实现明确分开。
 
+仓库说明文档使用 Markdown；实验 PDF 使用 LaTeX 模板和 XeLaTeX 编译，并非 Typst。Typst 与 MCP 当前均为方案分析，尚未接入运行链路。
+
 最新八种实验的合成样例 PDF 预览集中存放在 `output/pdf/latest/`。旧测试输出、截图、压缩包及残留 Python 后端缓存归档至 `legacy/assets/maintenance-20261030/`，清单见其中的 `inventory.json`；当前生产后端源码在 `server/`。
 
 | 任务 | 文档 |
@@ -11,6 +13,8 @@
 | 维护页面组件、字体、主题与 CSS 类 | [前端 UI 与 CSS 指南](frontend-ui.md) |
 | Windows 前端开发、WSL/Docker 配置与网络错误排查 | [Windows 开发与排错](windows-development.md) |
 | 理解模块边界和任务生命周期 | [架构](architecture.md) |
+| 了解当前报告引擎、Typst 生产与开发方案 | [报告引擎与 Typst 评估](report-engine.md) |
+| 评估 AI 客户端调用网站能力 | [MCP server 接入方案（未实现）](mcp-design.md) |
 | 对接接口、上传、身份与额度 | [API 与存储契约](api.md) |
 | 理解八种实验和数值规则 | [实验与计算](experiments.md) |
 | 查阅前端字段、单位、默认值 | [字段目录](fields.md) |
