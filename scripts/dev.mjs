@@ -1,4 +1,5 @@
-import { spawn } from 'node:child_process'
+import { spawn, execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
@@ -54,6 +55,15 @@ function monitor(child, label) {
     }
   })
 }
+// A tag can still refer to the pre-migration TeX image. Only reuse a runtime
+// carrying the current engine contract, including its pinned compiler version.
+async function compatibleImage(name) {
+  try {
+    const { stdout } = await promisify(execFile)('docker', ['image', 'inspect', '--format', '{{ index .Config.Labels "org.phyexp.render-engine" }}', name], { timeout: 10000, windowsHide: true })
+    return stdout.trim() === 'typst-0.15.1-latex-fonts-v1'
+  } catch { return false }
+}
+
 async function main() {
   if (!args.has('--setup')) {
     monitor(start(process.execPath, [path.join(root, 'node_modules', 'vite', 'bin', 'vite.js')]), 'Vite')
@@ -64,17 +74,15 @@ async function main() {
       throw new Error('Docker Linux 引擎尚未就绪。请启动 Docker Desktop，等待 docker info 成功后再运行 pnpm dev；只开发页面可用 pnpm dev:frontend。')
     }
     if (closing) return
-    let hasImage = true
-    try { await run('docker', ['image', 'inspect', 'phyexp-report:dev'], { quiet: true }) } catch { hasImage = false }
+    const hasImage = await compatibleImage('phyexp-report:dev')
     if (args.has('--setup') || !hasImage) {
-      console.log('首次准备开发环境（Go + TeX）；以后修改源码无需重建镜像。')
+      console.log('准备开发环境（Go + Typst）；以后修改源码无需重建镜像。')
       const buildArgs = ['build', '--progress=plain', '--target', 'development', '-t', 'phyexp-report:dev']
       if (!args.has('--setup')) {
-        try {
-          await run('docker', ['image', 'inspect', 'phyexp-report:local'], { quiet: true })
+        if (await compatibleImage('phyexp-report:local')) {
           buildArgs.push('--build-arg', 'DEV_RUNTIME=phyexp-report:local')
-          console.log('复用已有报告镜像的 TeX 环境，当前 Go 应用仍从源码编译。')
-        } catch { /* No existing runtime: prepare the shared render-runtime stage. */ }
+          console.log('复用已有报告镜像的 Typst 环境，当前 Go 应用仍从源码编译。')
+        }
       }
       if (closing) return
       await run('docker', [...buildArgs, '.'])

@@ -95,14 +95,20 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			if len(parts) == 5 && parts[4] == "download" {
-				j, path, e := s.Queue.Download(r.Context(), id, user)
+			if len(parts) == 5 && (parts[4] == "download" || parts[4] == "source") {
+				download := s.Queue.Download
+				contentType, suffix := "application/pdf", "report.pdf"
+				if parts[4] == "source" {
+					download = s.Queue.DownloadSource
+					contentType, suffix = "application/zip", "report-source.zip"
+				}
+				j, path, e := download(r.Context(), id, user)
 				if e != nil {
 					apiError(w, 404, fmt.Errorf("报告尚未生成或任务不存在"))
 					return
 				}
-				w.Header().Set("Content-Type", "application/pdf")
-				w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s-report.pdf"`, j.ExperimentID))
+				w.Header().Set("Content-Type", contentType)
+				w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s-%s"`, j.ExperimentID, suffix))
 				http.ServeFile(w, r, path)
 				return
 			}

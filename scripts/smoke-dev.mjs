@@ -5,6 +5,7 @@ import { cp, mkdir, readFile, writeFile, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { root } from './backend.mjs'
+import { extractSource } from './source-bundle.mjs'
 
 const name = `phyexp-dev-smoke-${process.pid}-${Date.now()}`
 const temp = path.join(root, 'output', name)
@@ -32,7 +33,7 @@ try {
   // Fail before creating anything if the development image is unavailable.
   docker('image', 'inspect', 'phyexp-report:dev')
   await mkdir(temp, { recursive: true })
-  for (const dir of ['server', 'tex/templates']) {
+  for (const dir of ['server', 'typst/templates']) {
     await cp(path.join(root, dir), path.join(temp, dir), { recursive: true })
   }
   await mkdir(path.join(temp, 'scripts'))
@@ -43,7 +44,7 @@ try {
     docker('volume', 'create', volume)
     createdVolumes.push(volume)
   }
-  const mounts = ['server', 'scripts', 'tex/templates'].flatMap(dir => [
+  const mounts = ['server', 'scripts', 'typst/templates'].flatMap(dir => [
     '--mount', `type=bind,src=${path.join(temp, dir)},dst=/workspace/${dir},readonly`,
   ])
   docker('run', '-d', '--init', '--name', name, '-p', '127.0.0.1::8000',
@@ -64,16 +65,35 @@ try {
     const current = await health()
     return current && current.revision !== first.revision && current
   }, 'corrected source is rebuilt and restarted', 60000)
-  const template = path.join(temp, 'tex/templates/heat-capacity-ratio.tex')
-  await writeFile(template, `${await readFile(template, 'utf8')}\n% dev smoke live template\n`)
+  const template = path.join(temp, 'typst/templates/heat-capacity-ratio.typ')
+  await writeFile(template, `${await readFile(template, 'utf8')}\n// dev smoke live template\n`)
   const compileCount = docker('logs', name).split('正在增量编译').length
   await delay(2000)
   assert.equal((await health()).revision, second.revision)
   assert.equal(docker('logs', name).split('正在增量编译').length, compileCount, 'template edits must not trigger compilation')
-  assert.ok(docker('exec', name, 'cat', '/workspace/tex/templates/heat-capacity-ratio.tex').includes('dev smoke live template'))
+  assert.ok(docker('exec', name, 'cat', '/workspace/typst/templates/heat-capacity-ratio.typ').includes('dev smoke live template'))
+  const cases = JSON.parse(await readFile(path.join(temp, 'server/testdata/calculations.json'), 'utf8'))
+  const payload = cases.find(c => c.name === 'heat-capacity-pdf-100-periods').payload
+  const submitted = await fetch(`${base}/api/reports/jobs`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+  })
+  assert.equal(submitted.status, 202, await submitted.clone().text())
+  const identity = submitted.headers.get('set-cookie').split(';')[0]
+  const job = await submitted.json()
+  await until(async () => {
+    const response = await fetch(`${base}/api/reports/jobs/${job.id}`, { headers: { Cookie: identity } })
+    const current = await response.json()
+    assert.notEqual(current.status, 'failed', JSON.stringify(current))
+    return current.status === 'done'
+  }, 'new report uses the edited Typst template', 60000)
+  const source = await fetch(`${base}/api/reports/jobs/${job.id}/source`, { headers: { Cookie: identity } })
+  assert.equal(source.status, 200)
+  const extracted = path.join(temp, 'downloaded-source')
+  await extractSource(Buffer.from(await source.arrayBuffer()), extracted)
+  assert.match(await readFile(path.join(extracted, 'report.typ'), 'utf8'), /dev smoke live template/)
   docker('stop', '-t', '25', name)
   assert.equal(docker('inspect', '--format', '{{.State.ExitCode}}', name), '0')
-  console.log('PASS: Go startup, failed build preserves service, corrected edit restarts, live templates, graceful shutdown')
+  console.log('PASS: Go startup, failed build preserves service, corrected edit restarts, live Typst template rendered and archived, graceful shutdown')
 } finally {
   if (started) docker('rm', '-f', name)
   for (const volume of createdVolumes) docker('volume', 'rm', volume)
