@@ -1,6 +1,6 @@
 import { soundFrequencyDisplay, soundFrequencyStored } from "./lib/sound-frequency-units.ts"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -199,7 +199,13 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   return (
     <div className="space-y-5">
       <header>
-        <h1 className="text-2xl font-semibold">{experiment.title}</h1>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-semibold">{experiment.title}</h1>
+          <Button nativeButton={false} variant="outline"
+            render={<Link to={`/materials#materials-${experiment.id}`} />}>
+            查看资料
+          </Button>
+        </div>
         <p className="text-muted-foreground">{experiment.note}</p>
       </header>
       {tableType && <section className="rounded-xl border bg-white p-4">

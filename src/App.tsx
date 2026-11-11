@@ -3,6 +3,7 @@ import { CodeBlock } from "@/components/code-block"
 import { Callout } from "@/components/callout"
 import { LabHome } from "@/components/lab-home"
 import { LabAbout } from "@/components/lab-about"
+import { LabMaterials } from "@/components/lab-materials"
 import { useEffect, useState } from "react"
 import { Link, Navigate, Outlet, Route, Routes, useParams, useLocation } from "react-router"
 
@@ -86,7 +87,7 @@ function AboutPage() {
       <h2>技术架构</h2>
       <p>前端使用 React、Vite、Tailwind CSS 与 shadcn/ui，页面中的统计结果在浏览器本地计算。生成报告时，测量数据会提交给 Go 后端保存为任务，再由 Typst 读取数据并排版生成 PDF 和可编辑源码包。</p>
       <Callout title="为什么不输出.docx文档？">
-        报告使用 Typst 排版，支持公式、表格和可编辑的矢量图。生成完成后，可分别下载 PDF 或包含 .typ 文件与图片的源码 ZIP。
+        生成.docx文档时，排版可能会乱掉，并且生成效率较低，占用服务器资源多；当前采用的是Typst生成pdf的方案，编译快。如果需要.docx格式，可以自行转换。
       </Callout>
       <p>网站通过匿名 Cookie 确认身份，无需注册账户。使用同一设备的同一浏览器，可以查看原有数据与报告排队进度。</p>
       <p>当前版本为 <code>v261030（测试）</code>；测试期间，数据和图片可能保存到服务器，用于调试与后续开发。</p>
@@ -250,6 +251,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<LabHome />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="materials" element={<LabMaterials />} />
         <Route path="experiments/:experimentId" element={<ExperimentPage />} />
         <Route path="reports" element={<ReportPage />} />
         <Route path="reports/:jobId" element={<ReportPage />} />

@@ -25,6 +25,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     { title: "导航", items: [
       { to: "/", title: "首页" },
       { to: "/about", title: "关于" },
+      { to: "/materials", title: "资料" },
       { to: "/reports", title: "我的报告" },
     ] },
     ...experimentGroups.map((group) => ({

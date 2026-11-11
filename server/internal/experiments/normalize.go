@@ -146,7 +146,7 @@ func normalize(p *domain.Payload) {
 		}
 		s1 := pos(number(p.Parameters["slider_mass_1_kg"]), "滑块质量")
 		s2 := pos(number(p.Parameters["slider_mass_2_kg"]), "滑块质量")
-		si := nonneg(number(p.Parameters["slider_pair_inertia_scaled"]), "滑块惯量")
+		si := pos(number(p.Parameters["slider_pair_inertia_scaled"]), "两滑块自身惯量（×10⁻⁴ kg·m²，须填写正值）")
 		params["slider_mass_g"] = scalar(div(s1.Add(s2), n(2)).Mul(n(1000)))
 		params["slider_self_inertia"] = scalar(div(si.Mul(dec("1e-4")), n(2)))
 		timeRows := [][]string{}

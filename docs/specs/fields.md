@@ -94,7 +94,7 @@
 | `mass_rod_kg` | 细杆质量 | kg | 空 | > 0 |
 | `slider_mass_1_kg` | 滑块1质量 | kg | 空 | > 0 |
 | `slider_mass_2_kg` | 滑块2质量 | kg | 空 | > 0 |
-| `slider_pair_inertia_scaled` | 两滑块绕质心转轴的转动惯量 | ×10⁻⁴ kg·m² | `0` | ≥ 0 |
+| `slider_pair_inertia_scaled` | 两滑块绕质心转轴的转动惯量（装置给定值，必填） | ×10⁻⁴ kg·m² | 无 | > 0 |
 
 ## 金属丝杨氏模量的测定（young-modulus）
 

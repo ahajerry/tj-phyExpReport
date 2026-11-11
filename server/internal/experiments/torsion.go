@@ -124,9 +124,10 @@ func torsion(f map[string]string, d map[string][]D, p map[string]D) {
 		}
 	}
 	sm := div(pos(p["slider_mass_g"], "滑块质量"), n(1000))
-	si := nonneg(p["slider_self_inertia"], "滑块惯量")
+	si := pos(p["slider_self_inertia"], "滑块自身惯量（须填写装置给定的正值）")
 	f["slider_pair_inertia"] = torsionSignificant(si.Mul(n(2)), 4)
-	rodInertia := div(i1.Mul(sq(periods["rod"])), diff)
+	// The theoretical baseline must not absorb the measured rod's error.
+	rodInertia := theory["rod"]
 	points, tp := []string{}, []string{}
 	for _, x := range []int{5, 10, 15, 20} {
 		suffix := fmt.Sprint(x)

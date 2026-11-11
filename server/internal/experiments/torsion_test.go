@@ -1,11 +1,83 @@
 package experiments
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"phyexp/server/internal/domain"
 	"strings"
 	"testing"
 )
+
+func TestTorsionParallelAxisRegression(t *testing.T) {
+	b, err := os.ReadFile("../../testdata/torsion-parallel-axis.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	read := func() domain.Payload {
+		var p domain.Payload
+		if err := json.Unmarshal(b, &p); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	f, normalized, err := Calculate(read())
+	if err != nil {
+		t.Fatal(err)
+	}
+	normalized.Parameters["slider_self_inertia"] = "0"
+	if _, _, err := Calculate(normalized); err == nil {
+		t.Error("accepted zero I5 through legacy normalized input")
+	}
+	// Independent geometry: .1314*.6005²/12 + .00008139 + .4782*x².
+	// Keep this site's four-digit inertias and two-digit percentage rule.
+	for key, want := range map[string]string{
+		"theory_rod": "0.003949", "experiment_rod": "0.004056",
+		"slider_theory_5": "0.005225", "slider_theory_10": "0.008812",
+		"slider_theory_15": "0.01479", "slider_theory_20": "0.02316",
+		"slider_error_5": "3.1", "slider_error_10": "3.0",
+		"slider_error_15": "3.3", "slider_error_20": "3.3",
+		"slider_pair_inertia":        "8.139e-5",
+		"slider_graph_theory_points": "(25,5.22546) (100,8.81196) (225,14.7895) (400,23.158)",
+	} {
+		if f[key] != want {
+			t.Errorf("%s: got %s want %s", key, f[key], want)
+		}
+	}
+	p := read()
+	p.Data["time_rod"] = []domain.Scalar{"25", "25", "25"}
+	changed, _, err := Calculate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if changed["experiment_rod"] == f["experiment_rod"] {
+		t.Fatal("rod measurement did not change")
+	}
+	for key, want := range f {
+		if strings.HasPrefix(key, "slider_theory_") || strings.HasPrefix(key, "slider_error_") || key == "slider_graph_theory_points" {
+			if changed[key] != want {
+				t.Errorf("rod timing changed theoretical reference %s", key)
+			}
+		}
+	}
+	for _, value := range []domain.Scalar{"", "0", "-1"} {
+		p := read()
+		p.Parameters["slider_pair_inertia_scaled"] = value
+		if _, _, err := Calculate(p); err == nil {
+			t.Errorf("accepted invalid I5 %q", value)
+		}
+	}
+	p = read()
+	delete(p.Parameters, "slider_pair_inertia_scaled")
+	if _, _, err := Calculate(p); err == nil {
+		t.Error("accepted missing I5")
+	}
+	p = read()
+	p.Data["size_tube_inner_cm"] = []domain.Scalar{"11", "11", "11"}
+	if _, _, err := Calculate(p); err == nil {
+		t.Error("accepted reversed tube diameters")
+	}
+}
 
 func TestTorsionTrialRows(t *testing.T) {
 	p := domain.Payload{ExperimentID: "moment-of-inertia", Data: map[string][]domain.Scalar{
@@ -46,19 +118,18 @@ func TestTorsionTrialRows(t *testing.T) {
 			}
 		}
 	}
-	// Lecture table 3.5.2 uses measured rod inertia I4=0.00125*25/3,
-	// plus (m1+m2)*0.05² and the pair's own inertia 0.0001.
-	if !strings.HasPrefix(f["slider_graph_theory_points"], "(25,11.2667)") {
-		t.Errorf("parallel-axis reference must use measured I4: %s", f["slider_graph_theory_points"])
+	// Rod theory = 1*1²/12, independent of the measured rod period.
+	if !strings.HasPrefix(f["slider_graph_theory_points"], "(25,84.1833)") {
+		t.Errorf("parallel-axis reference must use theoretical I4: %s", f["slider_graph_theory_points"])
 	}
 	// The displayed inertias coincide at four digits, but their unrounded
 	// difference is nonzero. Do not derive the error from displayed strings.
-	p.Data["slider_time_5"] = []domain.Scalar{"26.00005", "26.00005", "26.00005"}
+	p.Data["slider_time_5"] = []domain.Scalar{"71.070523", "71.070523", "71.070523"}
 	f, _, err = Calculate(p)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if f["slider_experiment_5"] != "0.01127" || f["slider_theory_5"] != "0.01127" || f["slider_error_5"] != "0.00038" {
+	if f["slider_experiment_5"] != "0.08418" || f["slider_theory_5"] != "0.08418" || f["slider_error_5"] != "0.00038" {
 		t.Errorf("premature rounding: I=%s I'=%s error=%s", f["slider_experiment_5"], f["slider_theory_5"], f["slider_error_5"])
 	}
 }

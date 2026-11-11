@@ -51,7 +51,7 @@
 
 $ T = 2 pi sqrt(frac(I, kappa)) . $
 
-以圆柱作标准物体，比较空盘周期 $T _(0)$ 和装圆柱周期 $T _(1)$，可由圆柱理论惯量 $I ' _(1) = frac(m D ^(2), 8)$ 求 $kappa = frac(4 pi ^(2) I ' _(1), T _(1) ^(2) - T _(0) ^(2))$。圆柱、圆筒置于载物盘上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2)) - I _(0)$（$j = 1 , 2$）；木球、细杆及细杆加滑块直接安装在转轴上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2))$，不扣除 $I _(0)$。对两个质量均为 $m _(s)$ 的滑块，平行轴模型为 $I ( x ) = I _("rod") + 2 I _(s) + 2 m _(s) x ^(2)$。以 $Delta = T _(1) ^(2) - T _(0) ^(2)$ 记周期平方差。暂把标准圆柱的理论惯量视为已知常量，独立重复计时的传播公式为
+以圆柱作标准物体，比较空盘周期 $T _(0)$ 和装圆柱周期 $T _(1)$，可由圆柱理论惯量 $I ' _(1) = frac(m D ^(2), 8)$ 求 $kappa = frac(4 pi ^(2) I ' _(1), T _(1) ^(2) - T _(0) ^(2))$。圆柱、圆筒置于载物盘上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2)) - I _(0)$（$j = 1 , 2$）；木球、细杆及细杆加滑块直接安装在转轴上，实验惯量为 $I _(j) = frac(kappa T _(j) ^(2), 4 pi ^(2))$，不扣除 $I _(0)$。对两个质量均为 $m _(s)$ 的滑块，平行轴模型为 $I ' ( x ) = I ' _(4) + 2 I _(s) + 2 m _(s) x ^(2)$。以 $Delta = T _(1) ^(2) - T _(0) ^(2)$ 记周期平方差。暂把标准圆柱的理论惯量视为已知常量，独立重复计时的传播公式为
 
 $ u _(kappa) = kappa sqrt( ( frac(2 T _(0) u _(T _(0)), Delta)  ) ^(2) +  ( frac(2 T _(1) u _(T _(1)), Delta)  ) ^(2)) . $
 
@@ -118,11 +118,7 @@ $ K = 4 pi ^(2) frac(I ' _(1), overline(T) _(1) ^(2) - overline(T) _(0) ^(2)) = 
 
 2\. 转动惯量平行轴定理的验证，数据记录见表 3.5.2。滑块质量$m _("滑") = #mf("slider_mass_g") thin upright(g)$（两个滑块的平均质量）。
 
-表中 $I _(5)$ 为两个滑块绕通过滑块质心转轴的转动惯量
-
-$ I _(5) = frac(1, 8) m _("滑") ( D _("内" 1) ^(2) + D _("外" 1) ^(2) ) + frac(1, 6) m _("滑") l _(1) ^(2) . $
-
-式中，$m _("滑")$ 为滑块质量；$D _("内" 1)$、$D _("外" 1)$ 为滑块的内径和外径；$l _(1)$ 为其长度。
+表中 $I _(5)$ 为两个滑块分别绕各自质心、平行于扭摆转轴的惯量之和，使用装置给定的正值。细杆理论惯量为 $I ' _(4) = frac(1, 12) m _(4) overline(l) ^(2)$，平行轴理论值不使用细杆实测惯量。
 
 本次实验取 $I _(5) = #mf("slider_pair_inertia") thin upright("kg" thin m ^(2))$。
 #block(width: 100%, sticky: true, above: 8*tpt, below: 0pt)[#align(center, text(size: 9*tpt)[表 3.5.2　 验证平行轴定理实验数据记录表])]
@@ -135,7 +131,7 @@ $ I _(5) = frac(1, 8) m _("滑") ( D _("内" 1) ^(2) + D _("外" 1) ^(2) ) + fra
     (table.cell(x: 1, y: 3)[#f("slider_period_5_03")], table.cell(x: 2, y: 3)[#f("slider_period_10_03")], table.cell(x: 3, y: 3)[#f("slider_period_15_03")], table.cell(x: 4, y: 3)[#f("slider_period_20_03")],),
     (table.cell(x: 0, y: 4)[$overline(T)$（s）], table.cell(x: 1, y: 4)[$#mf("slider_period_5")$], table.cell(x: 2, y: 4)[$#mf("slider_period_10")$], table.cell(x: 3, y: 4)[$#mf("slider_period_15")$], table.cell(x: 4, y: 4)[$#mf("slider_period_20")$],),
     (table.cell(x: 0, y: 5)[实验值（kg$dot.op$m$"" ^(2)$）\ $I = frac(K, 4 pi ^(2)) overline(T) ^(2)$], table.cell(x: 1, y: 5)[$#mf("slider_experiment_5")$], table.cell(x: 2, y: 5)[$#mf("slider_experiment_10")$], table.cell(x: 3, y: 5)[$#mf("slider_experiment_15")$], table.cell(x: 4, y: 5)[$#mf("slider_experiment_20")$],),
-    (table.cell(x: 0, y: 6)[理论值（kg$dot.op$m$"" ^(2)$）\ $I ' = I _(4) + 2 m x ^(2) + I _(5)$], table.cell(x: 1, y: 6)[$#mf("slider_theory_5")$], table.cell(x: 2, y: 6)[$#mf("slider_theory_10")$], table.cell(x: 3, y: 6)[$#mf("slider_theory_15")$], table.cell(x: 4, y: 6)[$#mf("slider_theory_20")$],),
+    (table.cell(x: 0, y: 6)[理论值（kg$dot.op$m$"" ^(2)$）\ $I ' = I ' _(4) + 2 m x ^(2) + I _(5)$], table.cell(x: 1, y: 6)[$#mf("slider_theory_5")$], table.cell(x: 2, y: 6)[$#mf("slider_theory_10")$], table.cell(x: 3, y: 6)[$#mf("slider_theory_15")$], table.cell(x: 4, y: 6)[$#mf("slider_theory_20")$],),
     (table.cell(x: 0, y: 7)[百分差 $E _(0) = frac(| I ' - I |, I ') times 100 "%"$], table.cell(x: 1, y: 7)[$#mf("slider_error_5")$], table.cell(x: 2, y: 7)[$#mf("slider_error_10")$], table.cell(x: 3, y: 7)[$#mf("slider_error_15")$], table.cell(x: 4, y: 7)[$#mf("slider_error_20")$],),
   ))
 
@@ -173,7 +169,7 @@ $ I _(5) = frac(1, 8) m _("滑") ( D _("内" 1) ^(2) + D _("外" 1) ^(2) ) + fra
 
 #section[实验结论]
 
-由圆柱与空盘的周期差标定扭转常数 $kappa = ( #mf("torsion_constant") plus.minus #mf("torsion_constant_u") ) thin upright(N thin m)$，再求其他物体惯量。这里的不确定度只计重复计时的贡献。滑块位置变化所得散点应与 $I ' = I _(4) + I _(5) + 2 m _(s) x ^(2)$ 的平方关系比较，不能只凭周期随距离变大作结论。
+由圆柱与空盘的周期差标定扭转常数 $kappa = ( #mf("torsion_constant") plus.minus #mf("torsion_constant_u") ) thin upright(N thin m)$，再求其他物体惯量。这里的不确定度只计重复计时的贡献。滑块位置变化所得散点应与 $I ' = I ' _(4) + I _(5) + 2 m _(s) x ^(2)$ 的平方关系比较，不能只凭周期随距离变大作结论。
 
 #section[思考题]
 

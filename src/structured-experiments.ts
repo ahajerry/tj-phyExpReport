@@ -94,7 +94,7 @@ export const structuredExperiments: StructuredExperiment[] = [
       })),
       { id: "slider_mass_1_kg", label: "滑块1质量", unit: "kg", minExclusive: 0 },
       { id: "slider_mass_2_kg", label: "滑块2质量", unit: "kg", minExclusive: 0 },
-      { id: "slider_pair_inertia_scaled", label: "两滑块绕质心转轴的转动惯量", unit: "×10⁻⁴ kg·m²", initial: "0", min: 0 },
+      { id: "slider_pair_inertia_scaled", label: "两滑块绕质心转轴的转动惯量（装置给定值，必填）", unit: "×10⁻⁴ kg·m²", minExclusive: 0 },
     ],
   },
   {
