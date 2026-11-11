@@ -8,6 +8,7 @@ services:
       - "${REPORT_BIND:-127.0.0.1}:${REPORT_PUBLIC_PORT:-8080}:8000"
     environment:
       REPORT_COOKIE_SECURE: "${REPORT_COOKIE_SECURE:-0}"
+      REPORT_MCP_GUESTS: "${REPORT_MCP_GUESTS:-0}"
     volumes:
       - report-data:/data
     stop_grace_period: 30s

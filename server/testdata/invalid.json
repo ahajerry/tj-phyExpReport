@@ -1879,12 +1879,9 @@
         ]
       },
       "parameters": {
-        "res_t_start": "-300",
-        "res_t_end": "22.0",
+        "room_temperature": "-273",
         "res_frequency": "35.0",
         "res_frequency_error": "0.1",
-        "phase_t_start": "20.0",
-        "phase_t_end": "20.0",
         "phase_frequency": "34.0",
         "phase_frequency_error": "0.1",
         "caliper_error": "0.02"

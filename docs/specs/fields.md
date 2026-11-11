@@ -14,10 +14,6 @@
 | `ny` | 垂直线切点数 ny | 个 | 4 | 否 |
 | `nx` | 水平线切点数 nx | 个 | 4 | 否 |
 
-| parameters 字段 | 含义 | 单位 | 初始值 | 配置范围 |
-| --- | --- | --- | --- | --- |
-| `probe_factor` | 波形测量的探头倍数 K（直连取 1） | 倍 | `1` | > 0 |
-
 ## 声速测定（speed-of-sound）
 
 | data 字段 | 含义 | 输入单位 | 初始数量 | 可选标记 |
@@ -28,12 +24,9 @@
 | parameters 字段 | 含义 | 单位 | 初始值 | 配置范围 |
 | --- | --- | --- | --- | --- |
 | `caliper_error` | 游标卡尺仪器误差 Δl | mm | `0.02` | > 0 |
-| `res_t_start` | 共振干涉法开始室温 | °C | 空 | > -273 |
-| `res_t_end` | 共振干涉法结束室温 | °C | 空 | > -273 |
+| `room_temperature` | 室温（两种方法共用） | °C | 空 | > -273 |
 | `res_frequency` | 共振干涉法信号频率 | Hz | 空 | > 0 |
 | `res_frequency_error` | 共振干涉法频率误差 Δf | Hz | 空 | ≥ 0 |
-| `phase_t_start` | 相位比较法开始室温 | °C | 空 | > -273 |
-| `phase_t_end` | 相位比较法结束室温 | °C | 空 | > -273 |
 | `phase_frequency` | 相位比较法信号频率 | Hz | 空 | > 0 |
 | `phase_frequency_error` | 相位比较法频率误差 Δf | Hz | 空 | ≥ 0 |
 

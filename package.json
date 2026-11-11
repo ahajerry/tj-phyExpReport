@@ -12,7 +12,7 @@
     "version:show": "node scripts/version.mjs",
     "version:set": "node scripts/version.mjs",
     "test:backend": "go -C server test ./...",
-    "test:experiment-data": "node --experimental-strip-types scripts/test-experiment-data.mjs",
+    "test:experiment-data": "node scripts/mcp-catalog.mjs --check && node --experimental-strip-types scripts/test-experiment-data.mjs",
     "test:precision": "node --experimental-strip-types scripts/test-result-precision.mjs",
     "preview": "vite preview",
     "build:backend": "node scripts/backend.mjs --build-only",

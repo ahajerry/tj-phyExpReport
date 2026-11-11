@@ -1,9 +1,9 @@
-export type MeasurementQuantity = { id: string; showName: string; unit: string; allowBlank?: boolean; optionalCount?: number }
+import type { StructuredExperiment } from "../structured-experiments.ts"
+import { soundFrequencyStored } from "./sound-frequency-units.ts"
 
 const COOKIE_PREFIX = "phyexp_v1_"
 const COOKIE_CHUNK_SIZE = 3000
 const COOKIE_AGE = 365 * 24 * 60 * 60
-const MAX_IMPORT_VALUES = 300
 const DECIMAL_NUMBER = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 const SCIENTIFIC_PRODUCT = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*[×xX*]\s*10\s*(?:\^\s*([+\-−]?\d+)|([⁺⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹]+))$/
 const SUPERSCRIPT_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
@@ -72,15 +72,44 @@ export function saveMeasurements(experimentId: string, quantityId: string, value
   }
 }
 
-export function buildImportPrompt(experimentTitle: string, quantities: MeasurementQuantity[]): string {
-  const example = Object.fromEntries(quantities.map((quantity) => [quantity.id, ["1.00", "2.00"]]))
-  const descriptions = quantities.map((quantity) =>
-    `- ${quantity.id}：${quantity.showName}（${quantity.unit}）`,
-  ).join("\n")
-  return `请识别随附图片中的「${experimentTitle}」原始测量数据，并严格按下面字段输出 JSON。\n${descriptions}\n每个字段对应一个按测量顺序排列的数组。数值请写成字符串，保留图片中的小数位和末尾零；不要计算、补造或省略读数。只返回 JSON，不要解释，也不要使用 Markdown 代码块。\n格式示例（请替换为图片中的真实读数）：\n${JSON.stringify(example, null, 2)}`
+function calculationFields(experiment: StructuredExperiment) {
+  return {
+    measurements: experiment.measurements.filter((item) => !item.optional),
+    parameters: experiment.parameters.filter((item) => item.calculation !== false),
+  }
 }
 
-export function parseImportedMeasurements(text: string, quantities: MeasurementQuantity[]): Record<string, string[]> {
+export function buildImportPrompt(experiment: StructuredExperiment): string {
+  const { measurements, parameters } = calculationFields(experiment)
+  const millikan = experiment.id === "millikan"
+  const vibration = experiment.id === "forced-vibration"
+  const descriptions = measurements.map((item) => {
+    const count = millikan ? "按已测油滴填写，共 12 至 32 个" : vibration ? "按实际测量数量" : `${item.count} 个`
+    const order = item.rowLabels ? `，依次为${item.rowLabels.join("、")}` : ""
+    return `- ${item.id}（${item.label}，${item.unit}，${count}${order}）使用数组`
+  })
+  for (const item of parameters) descriptions.push(`- ${item.id}（${item.label}，${item.unit}）使用单个数值字符串`)
+  if (millikan) descriptions.push("每颗油滴连续四行，只填写完整测量的油滴，各数组行顺序一致。")
+  if (vibration) descriptions.push("自由振动各列至少 2 项，受迫振动各列至少 3 项，同组各列等长。每组阻尼计时对应 10 个峰值。")
+  const example = Object.fromEntries([
+    ...measurements.map((item) => [item.id, ["1.00", "2.00"]]),
+    ...parameters.map((item) => [item.id, "1.00"]),
+  ])
+  return `请识别随附图片中的「${experiment.title}」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n${descriptions.join("\n")}\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n${JSON.stringify(example, null, 2)}`
+}
+
+function parseImportNumber(raw: unknown, label: string, allowBlank = false) {
+  if (typeof raw !== "string" && typeof raw !== "number") throw new Error(`${label}需要填写数字`)
+  const value = String(raw).trim()
+  if (allowBlank && value === "") return ""
+  const normalized = normalizeImportedReading(value)
+  if (!DECIMAL_NUMBER.test(normalized) || !Number.isFinite(Number(normalized))) {
+    throw new Error(`${label}的数值无效：${value}`)
+  }
+  return normalized
+}
+
+export function parseExperimentImport(text: string, experiment: StructuredExperiment) {
   const content = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "")
   let parsed: unknown
   try {
@@ -92,27 +121,26 @@ export function parseImportedMeasurements(text: string, quantities: MeasurementQ
     throw new Error("JSON 顶层应为对象，字段名须与下方示例一致")
   }
   const object = parsed as Record<string, unknown>
-  const expected = new Set(quantities.map((quantity) => quantity.id))
+  const { measurements, parameters } = calculationFields(experiment)
+  const expected = new Set([...experiment.measurements, ...experiment.parameters].map((item) => item.id))
   const extra = Object.keys(object).filter((key) => !expected.has(key))
   if (extra.length) throw new Error(`存在未识别的字段：${extra.join("、")}`)
-  return Object.fromEntries(quantities.map((quantity) => {
-    const readings = object[quantity.id]
-    if (readings === undefined && quantity.optionalCount !== undefined) return [quantity.id, Array<string>(quantity.optionalCount).fill("")]
-    if (!Array.isArray(readings) || readings.length === 0 || readings.length > MAX_IMPORT_VALUES) {
-      throw new Error(`${quantity.showName}必须是包含 1 至 ${MAX_IMPORT_VALUES} 个读数的数组`)
+  const millikan = experiment.id === "millikan"
+  const vibration = experiment.id === "forced-vibration"
+  const data = Object.fromEntries(measurements.map((item) => {
+    const readings = object[item.id]
+    if (!Array.isArray(readings)) throw new Error(`${item.label}必须是读数数组`)
+    const min = millikan ? 12 : vibration ? 1 : item.count
+    const max = vibration ? (item.id === "damped_peak" ? 5000 : 500) : item.count
+    if (readings.length < min || readings.length > max) {
+      throw new Error(`${item.label}需要 ${min === max ? min : `${min} 至 ${max}`} 个读数`)
     }
-    const values = readings.map((reading, index) => {
-      if (typeof reading !== "string" && typeof reading !== "number") {
-        throw new Error(`${quantity.showName}第 ${index + 1} 个读数不是数字`)
-      }
-      const value = String(reading).trim()
-      if (quantity.allowBlank && value === "") return ""
-      const normalized = normalizeImportedReading(value)
-      if (!DECIMAL_NUMBER.test(normalized) || !Number.isFinite(Number(normalized))) {
-        throw new Error(`${quantity.showName}第 ${index + 1} 个读数无效：${value}`)
-      }
-      return normalized
-    })
-    return [quantity.id, values]
+    const values = readings.map((reading, index) => parseImportNumber(reading, `${item.label}第 ${index + 1} 个读数`, millikan))
+    if (millikan) return [item.id, [...values, ...Array<string>(item.count - values.length).fill("")]]
+    return [item.id, values]
   }))
+  const importedParameters = Object.fromEntries(parameters.map((item) => [
+    item.id, soundFrequencyStored(experiment.id, item.id, parseImportNumber(object[item.id], item.label)),
+  ]))
+  return { data, parameters: importedParameters }
 }

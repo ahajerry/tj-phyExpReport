@@ -6,6 +6,7 @@
 | --- | --- |
 | 路由、顶栏、About、报告进度/下载 | `src/App.tsx` |
 | 实验录入、导入和提交 | `src/StructuredExperimentPage.tsx` |
+| JSON 解析和 AI 识别提示词 | `src/lib/experiment-data.ts`，字段契约见 [前端 spec](../specs/frontend.md) |
 | 字段配置 / 导航目录 | `src/structured-experiments.ts` / `src/experiments.ts` |
 | 侧栏 | `src/components/app-sidebar.tsx` |
 | 受迫振动、仪器、透镜表格 | `src/components/` 中对应 readings 组件 |
@@ -14,7 +15,7 @@
 | About 正文、代码卡片、提示、致谢 | `lab-about.tsx`、`code-block.tsx`、`callout.tsx`、`contributor-credits.tsx` |
 | 全局语义主题与字体 | `src/index.css` |
 | 文章内容组件样式 | `src/components/content-blocks.css` |
-| 资料页 / 三级指标内容 | `src/components/lab-materials.tsx` / `src/material-indicators.ts` |
+| 资料页 / 课程指南 / 三级指标内容 | `src/components/lab-materials.tsx` / `src/components/lab-course-guide.tsx` / `src/material-indicators.ts` |
 
 ## 调整组件
 

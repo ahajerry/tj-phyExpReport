@@ -90,13 +90,22 @@ function AboutPage() {
         生成.docx文档时，排版可能会乱掉，并且生成效率较低，占用服务器资源多；当前采用的是Typst生成pdf的方案，编译快。如果需要.docx格式，可以自行转换。
       </Callout>
       <p>网站通过匿名 Cookie 确认身份，无需注册账户。使用同一设备的同一浏览器，可以查看原有数据与报告排队进度。</p>
-      <p>当前版本为 <code>v261030（测试）</code>；测试期间，数据和图片可能保存到服务器，用于调试与后续开发。</p>
+      <p>当前版本为 <code>v261111（测试）</code>；测试期间，数据和图片可能保存到服务器，用于调试与后续开发。</p>
       <p>项目已开源，欢迎查看源码、反馈问题或参与改进。</p>
+      <p>更多开发文档，请参考Github仓库\docs</p>
       <CodeBlock label="本地开发命令" defaultValue="start" items={[
         { value: "download", label: "克隆源码", language: "bash", code: "git clone https://github.com/ahajerry/tj-phyExpReport" },
         { value: "build", label: "本地开发", language: "bash", code: "docker compose up -d --build\npnpm install --frozen-lockfile\npnpm dev" },
       ]} />
       <Button nativeButton={false} render={<a href="https://github.com/ahajerry/tj-phyExpReport" />} variant="outline"><img src="/github.svg" alt="" aria-hidden="true" width="16" height="16" className="size-4 shrink-0 dark:invert" />访问 GitHub 仓库</Button>
+    </section>
+    <section>
+      <h2>DSH Skill</h2>
+      <p>Deepseek harness skill版本正在测试中。skill将会调用网站接口生成实验报告，并本地微调。可以节省ai本地从0生成的时间，保证规范性，同时灵活可调、便于修改。</p>
+      <p>使用指南：</p>
+      <p>1.从QQ群中获取phyexp-report.zip文件，在你的工作文件夹中找到.dsh\skills\（若不存在，则新建），并将.zip解压后获得的文件夹复制进去</p>
+      <p>2.在DSH中选择上一步中的工作文件夹，否则本skill不会起效</p>
+      <p>3.提示ai生成实验报告，并附上原始数据和个人信息（学生姓名、学号、组号、实验日期）。首次启动时，会自查并配置MCP服务。</p>
     </section>
     <section>
       <h2>茶话会</h2>

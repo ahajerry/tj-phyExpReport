@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ForcedVibrationReadings } from "@/components/forced-vibration-readings"
 import { LensReadings } from "@/components/lens-readings"
 import { MillikanReadings, TorsionReadings } from "@/components/instrument-readings"
-import { buildImportPrompt, parseImportedMeasurements } from "@/lib/experiment-data"
+import { buildImportPrompt, parseExperimentImport } from "@/lib/experiment-data"
 import { experimentStorageKey, readSavedExperimentValues, REPORT_INFO_FIELDS } from "@/lib/structured-experiment-storage"
 import type { StructuredExperiment } from "@/structured-experiments"
 
@@ -61,22 +61,16 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     if (readings.damped_peak?.length !== readings.damped_time_10.length * 10) throw new Error("每次阻尼测量需要 10 个峰值和一次计时")
   }
 
-  function importReadings() {
+  function importExperimentData() {
     try {
-      const parsed = parseImportedMeasurements(importText, experiment.measurements.map((item) => ({
-        id: item.id, showName: item.label, unit: item.unit, allowBlank: experiment.id === "millikan" || item.optional,
-      })))
-      for (const item of experiment.measurements) {
-        if (experiment.id === "millikan" && parsed[item.id].length >= 12 && parsed[item.id].length <= item.count) {
-          parsed[item.id] = [...parsed[item.id], ...Array<string>(item.count - parsed[item.id].length).fill("")]
-        }
-        if (!isForcedVibration && parsed[item.id].length !== item.count) throw new Error(`${item.label}需要 ${item.count} 个读数`)
-      }
-      validateCounts(parsed)
-      setData(parsed)
-      setMessage("原始读数已导入。")
+      const parsed = parseExperimentImport(importText, experiment)
+      validateCounts(parsed.data)
+      setData((current) => ({ ...current, ...parsed.data }))
+      setParameters((current) => ({ ...current, ...parsed.parameters }))
+      setMessage("计算所需的实验数据已导入。")
       setError("")
     } catch (reason) {
+      setMessage("")
       setError(reason instanceof Error ? reason.message : "导入失败")
     }
   }
@@ -171,9 +165,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
     }
   }
 
-  const prompt = buildImportPrompt(experiment.title, experiment.measurements.map((item) => ({
-    id: item.id, showName: `${item.label}（${isForcedVibration ? "按实际测量数量" : `${item.count} 个`}${item.rowLabels ? `，顺序：${item.rowLabels.join("、")}` : ""}）`, unit: item.unit,
-  }))) + (experiment.id === "millikan" ? "\n每颗油滴对应连续四行，各字段按相同的行顺序排列。选填项与未使用油滴的空白读数用空字符串表示。" : "")
+  const prompt = buildImportPrompt(experiment)
 
   function readingCell(key: string, index: number) {
     const item = experiment.measurements.find((item) => item.id === key)!
@@ -190,7 +182,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
   }
 
   function calculatedReading(keys: string[], index: number, calculate: (...values: number[]) => number) {
-    const raw = keys.map((key) => key === "probe_factor" ? parameters[key] : data[key][index])
+    const raw = keys.map((key) => data[key][index])
     if (raw.some((value) => !value?.trim() || !Number.isFinite(Number(value)) || Number(value) <= 0)) return "—"
     const value = calculate(...raw.map(Number))
     return Number.isFinite(value) ? Number(value.toPrecision(6)).toString() : "—"
@@ -230,7 +222,7 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
               <th className="whitespace-nowrap p-2 font-normal">{name}</th>
               <td className="p-2">{readingCell("voltage_scale", index)}</td>
               <td className="p-2">{readingCell("voltage_divisions", index)}</td>
-              <td className="p-2">{calculatedReading(["voltage_scale", "voltage_divisions", "probe_factor"], index, (scale, divisions, probe) => scale * divisions * probe)}</td>
+              <td className="p-2">{calculatedReading(["voltage_scale", "voltage_divisions"], index, (scale, divisions) => scale * divisions)}</td>
               <td className="p-2">{readingCell("time_scale", index)}</td>
               <td className="p-2">{readingCell("period_divisions", index)}</td>
               <td className="p-2">{calculatedReading(["time_scale", "period_divisions"], index, (scale, divisions) => scale * divisions)}</td>
@@ -318,11 +310,11 @@ export function StructuredExperimentPage({ experiment }: { experiment: Structure
           }} />
       </section>
       <section className="rounded-xl border bg-white p-4">
-        <h2 className="mb-2 font-semibold">从 JSON 导入读数</h2>
+        <h2 className="mb-2 font-semibold">从 JSON 导入实验数据</h2>
         <details className="mb-2 text-sm"><summary className="cursor-pointer text-blue-700">查看识别提示词</summary>
           <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-slate-50 p-3">{prompt}</pre></details>
         <Textarea aria-label="实验数据 JSON" rows={5} value={importText} onChange={(event) => setImportText(event.target.value)} />
-        <Button className="mt-2" variant="outline" onClick={importReadings} disabled={!importText.trim()}>导入读数</Button>
+        <Button className="mt-2" variant="outline" onClick={importExperimentData} disabled={!importText.trim()}>导入数据</Button>
         {message && <p role="status" className="mt-2 text-sm text-green-700">{message}</p>}
       </section>
       <section className="rounded-xl border bg-white p-4">

@@ -11,11 +11,25 @@ func sound(f map[string]string, p domain.Payload) {
 		fail("data 必须包含 resonance 和 phase")
 	}
 	legacy := p.Parameters == nil
-	if !legacy && len(p.Parameters) != 9 {
-		fail("声速参数不完整")
+	roomTemperature, sharedRoom := p.Parameters["room_temperature"]
+	temperature := func(raw domain.Scalar) D {
+		value := number(raw)
+		if value.LessThanOrEqual(n(-273)) {
+			fail("温度低于绝对零度")
+		}
+		return value
 	}
 	cal := dec(".02")
+	room := zero
 	if !legacy {
+		want := 9
+		if sharedRoom {
+			want = 6
+			room = temperature(roomTemperature)
+		}
+		if len(p.Parameters) != want {
+			fail("声速参数不完整")
+		}
 		cal = pos(number(p.Parameters["caliper_error"]), "卡尺误差")
 	}
 	f["caliper_error"] = cal.String()
@@ -55,23 +69,22 @@ func sound(f map[string]string, p domain.Payload) {
 		if legacy {
 			continue
 		}
-		get := func(k string) D {
+		get := func(k string) domain.Scalar {
 			raw, ok := p.Parameters[prefix+"_"+k]
 			if !ok {
 				fail("缺少声速参数")
 			}
-			return number(raw)
+			return raw
 		}
-		t0, t1 := get("t_start"), get("t_end")
-		if t0.LessThanOrEqual(n(-273)) || t1.LessThanOrEqual(n(-273)) {
-			fail("温度低于绝对零度")
+		temp := room
+		roomText := strings.TrimSpace(string(roomTemperature))
+		if !sharedRoom {
+			temp = div(temperature(get("t_start")).Add(temperature(get("t_end"))), n(2))
+			roomText = fixed(temp, 2)
 		}
-		temp := div(t0.Add(t1), n(2))
-		f[prefix+"_t_start"] = string(p.Parameters[prefix+"_t_start"])
-		f[prefix+"_t_end"] = string(p.Parameters[prefix+"_t_end"])
-		f[prefix+"_t_avg"] = fixed(temp, 2)
-		freq := pos(get("frequency"), "频率")
-		ferr := nonneg(get("frequency_error"), "频率误差")
+		f[prefix+"_temperature"] = roomText
+		freq := pos(number(get("frequency")), "频率")
+		ferr := nonneg(number(get("frequency_error")), "频率误差")
 		f[prefix+"_frequency_error"] = ferr.Mul(n(1000)).String()
 		uf := div(ferr, sqrt(n(3)))
 		urf := div(uf, freq)

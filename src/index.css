@@ -211,6 +211,7 @@ input[type="number"], input[inputmode="decimal"] {
 .about-prose h1 { font-size: clamp(30px, 4vw, 42px); font-weight: 700; line-height: 1.35; margin: 12px 0 20px; }
 .about-prose h2 { font-size: 27px; font-weight: 700; line-height: 1.4; margin: 48px 0 22px; scroll-margin-top: 24px; }
 .about-prose h3 { font-size: 21px; font-weight: 700; line-height: 1.5; margin: 28px 0 12px; }
+.about-prose .materials-heading { scroll-margin-top: 88px; }
 .about-prose p, .about-prose ul, .about-prose ol { margin-block: 20px; }
 .about-prose .about-kicker { font-size: 12px; color: var(--muted-foreground); margin: 0; }
 .about-prose .about-lead { color: var(--muted-foreground); font-size: 20px; margin-bottom: 32px; }

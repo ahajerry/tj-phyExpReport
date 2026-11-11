@@ -59,12 +59,16 @@ func main() {
 		log.Fatal(e)
 	}
 	defer q.Close()
-	q.Start()
 	secureDefault := "0"
 	if *environment == "production" {
 		secureDefault = "1"
 	}
-	handler := httpapi.New(q, env("REPORT_REVISION", revision), env("REPORT_STATIC_DIR", ""), env("REPORT_COOKIE_SECURE", secureDefault) == "1")
+	web := httpapi.New(q, env("REPORT_REVISION", revision), env("REPORT_STATIC_DIR", ""), env("REPORT_COOKIE_SECURE", secureDefault) == "1")
+	handler, e := web.WithMCP(os.Getenv("REPORT_MCP_CREDENTIALS"), os.Getenv("REPORT_MCP_GUESTS") == "1")
+	if e != nil {
+		log.Fatal(e)
+	}
+	q.Start()
 	srv := &http.Server{Addr: host + ":" + port, Handler: handler, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 60 * time.Second, WriteTimeout: 120 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 32 << 10}
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()

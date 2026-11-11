@@ -18,6 +18,8 @@
 
 提交通过校验后持久化；worker 调用 Go 计算，生成 JSON 和图片，再由 Typst 排版。PDF 和实际编译输入的 ZIP 一起交给队列归档。物理计算不依赖 HTTP、数据库或排版引擎；Typst 只显示结果和绘制图形。具体边界见 [报告契约](reports.md) 与 [ADR 0002](../adrs/0002-typst-rendering.md)。
 
+启用 MCP 时，同一个 Go 进程提供 [MCP 和文件传输入口](mcp.md)，共用报告校验、队列与渲染。
+
 ## 调度与恢复
 
 每个数据目录只运行一个服务实例和一个 worker。SQLite 使用 WAL、单连接；额度检查与任务创建在同一事务中完成。启动时取得 `server.lock` 的排他文件锁，拒绝第二个实例。
@@ -37,6 +39,8 @@
 | `REPORT_STATIC_DIR` | 空 | `/app/web`；空值不托管前端 |
 | `REPORT_COOKIE_SECURE` | production 为 `1`，否则 `0` | Compose 本地 HTTP 为 `0` |
 | `REPORT_REVISION` | 编译标识或 development | 覆盖健康响应的版本标识 |
+| `REPORT_MCP_CREDENTIALS` | 空 | 管理员发放的 MCP 凭据摘要文件路径 |
+| `REPORT_MCP_GUESTS` | `0` | `1` 启用匿名自动开通，可单独启用 MCP |
 
 Go 不读取 `.env`。Compose 的 `REPORT_BIND`、`REPORT_PUBLIC_PORT` 仅控制宿主端口，默认 `127.0.0.1:8080`；后端平台目标为 Linux/Unix，使用进程组和文件锁系统调用。
 

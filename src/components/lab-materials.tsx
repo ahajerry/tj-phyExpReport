@@ -4,6 +4,7 @@ import { useLocation } from "react-router"
 import { experimentItems } from "@/experiments"
 import { materialIndicators } from "@/material-indicators"
 import { LabAbout } from "@/components/lab-about"
+import { LabCourseGuide } from "@/components/lab-course-guide"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
@@ -41,24 +42,24 @@ function CopyIndicators({ title, text }: { title: string; text: string }) {
 export function LabMaterials() {
   const { hash, key } = useLocation()
   useEffect(() => {
-    const experiment = experimentItems.find((item) => hash === `#materials-${item.id}`)
-    if (!experiment) {
+    const heading = hash.startsWith("#materials-") ? document.getElementById(hash.slice(1)) : null
+    if (!heading?.classList.contains("materials-heading")) {
       window.scrollTo(0, 0)
       return
     }
-    const heading = document.getElementById(`materials-${experiment.id}`)
-    heading?.scrollIntoView({ block: "start" })
-    heading?.focus({ preventScroll: true })
+    heading.scrollIntoView({ block: "start" })
+    heading.focus({ preventScroll: true })
   }, [hash, key])
   return (
     <LabAbout>
       <h1>资料</h1>
-      <p className="about-lead">各实验的三级指标，供实验准备与报告检查时查阅。</p>
+      <LabCourseGuide />
+      <h2 id="materials-indicators" tabIndex={-1} className="materials-heading">各实验三级指标</h2>
       {experimentItems.map((experiment) => {
         const indicators = materialIndicators[experiment.id]
         return (
           <section key={experiment.id} aria-labelledby={`materials-${experiment.id}`}>
-            <h2 id={`materials-${experiment.id}`} tabIndex={-1} style={{ scrollMarginTop: "88px" }}>{experiment.title}</h2>
+            <h3 id={`materials-${experiment.id}`} tabIndex={-1} className="materials-heading">{experiment.title}</h3>
             <div className="mb-4">
               <CopyIndicators title={experiment.title} text={indicators?.map((item) => item.indicator).join("\n") ?? ""} />
             </div>

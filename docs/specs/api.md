@@ -62,7 +62,7 @@ Cookie `report_user` 是 64 位小写十六进制随机 token，HttpOnly、SameS
 
 ## 持久化
 
-SQLite 表 `jobs` 的列为 `seq,id,user_id,day,payload,status,progress,stage,error,created_at`。本次无表结构变更。数据目录包含：
+SQLite 表 `jobs` 的列为 `seq,id,user_id,day,payload,status,progress,stage,error,created_at`。MCP 幂等记录、访客摘要与开通计数分别存入 `mcp_requests`、`mcp_guests` 和 `mcp_guest_issuance`，见 [MCP 契约](mcp.md)。数据目录包含：
 
 - `reports.sqlite3` 及 WAL/SHM、`server.lock`；
 - `reports/{id}.pdf` 与 `reports/{id}.typ.zip`；

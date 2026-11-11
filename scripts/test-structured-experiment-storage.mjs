@@ -30,23 +30,31 @@ const positions = Array.from({ length: 21 }, (_, index) => `${30 + index}.40`)
 saveMeasurements(sound.id, 'resonance', [...positions.slice(0, 2), '', ...positions.slice(2)])
 saveMeasurements(sound.id, 'phase', positions)
 saveMeasurements(sound.id, 'field_res_frequency', ['35.0'])
+saveMeasurements(sound.id, 'field_res_t_start', ['20'])
+saveMeasurements(sound.id, 'field_res_t_end', ['21'])
 saveMeasurements(sound.id, 'field_student', ['张三'])
 
 const migrated = readSavedExperimentValues(sound)
 assert.deepEqual(migrated.data.resonance, positions.slice(0, 20))
 assert.deepEqual(migrated.data.phase, positions.slice(0, 20))
 assert.equal(migrated.parameters.res_frequency, '35.0')
+assert.equal(migrated.parameters.room_temperature, '20.5')
 assert.equal(migrated.parameters.caliper_error, '0.02')
 assert.equal(migrated.reportInfo.student, '张三')
 
 saved.set(`phyexp_report_${sound.id}`, JSON.stringify({
   data: { resonance: ['99.99'] },
-  parameters: { res_frequency: '40.0' },
+  parameters: { res_frequency: '40.0', res_t_start: '20', res_t_end: '21', phase_t_start: '22', phase_t_end: '23' },
 }))
 const restored = readSavedExperimentValues(sound)
 assert.equal(restored.data.resonance[0], '99.99')
 assert.equal(restored.parameters.res_frequency, '40.0')
+assert.equal(restored.parameters.room_temperature, '21.5')
+assert.equal(restored.parameters.res_t_start, undefined)
 assert.equal(restored.reportInfo.student, '张三')
+restored.parameters.room_temperature = '23.0'
+saved.set(`phyexp_report_${sound.id}`, JSON.stringify(restored))
+assert.deepEqual(readSavedExperimentValues(sound), restored)
 console.log('声速旧 Cookie 迁移与本地数据优先级测试通过')
 
 const scope = structuredExperimentById.get('oscilloscope')
@@ -59,7 +67,7 @@ const migratedScope = readSavedExperimentValues(scope)
 for (const key of ['voltage_scale', 'voltage_divisions', 'time_scale', 'period_divisions']) {
   assert.deepEqual(migratedScope.data[key], ['square', 'sine', 'triangle', 'half'])
 }
-assert.deepEqual(migratedScope.parameters, { probe_factor: '10' })
+assert.deepEqual(migratedScope.parameters, {})
 saved.set('phyexp_report_oscilloscope', JSON.stringify(migratedScope))
 assert.deepEqual(readSavedExperimentValues(scope), migratedScope)
 console.log('示波器旧版波形顺序迁移与重复读取测试通过')

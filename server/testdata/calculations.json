@@ -47,9 +47,7 @@
           "2"
         ]
       },
-      "parameters": {
-        "probe_factor": "1"
-      }
+      "parameters": {}
     },
     "fields": {
       "voltage_scale_01": "0.5",
@@ -80,7 +78,6 @@
       "ny_02": "1",
       "ny_03": "1",
       "ny_04": "2",
-      "probe_factor": "1",
       "voltage_pp_01": "2.75",
       "period_ms_01": "0.580",
       "frequency_hz_01": "1724.14",
@@ -159,21 +156,15 @@
       },
       "parameters": {
         "caliper_error": "0.02",
-        "res_t_start": "20",
-        "res_t_end": "21",
+        "room_temperature": "20.5",
         "res_frequency": "40",
         "res_frequency_error": "0.01",
-        "phase_t_start": "20",
-        "phase_t_end": "21",
         "phase_frequency": "40",
         "phase_frequency_error": "0.01"
       }
     },
     "fields": {
       "caliper_error": "0.02",
-      "res_t_start": "20",
-      "res_t_end": "21",
-      "res_t_avg": "20.50",
       "res_frequency": "40000",
       "res_frequency_error": "10",
       "res_l01": "20",
@@ -221,9 +212,6 @@
       "res_u_r_v_percent": "0.14",
       "res_speed_theory": "343.2",
       "res_error_percent": "0.23",
-      "phase_t_start": "20",
-      "phase_t_end": "21",
-      "phase_t_avg": "20.50",
       "phase_frequency": "40000",
       "phase_frequency_error": "10",
       "phase_l01": "20",
@@ -273,7 +261,9 @@
       "phase_error_percent": "0.23",
       "method_difference": "0.0",
       "closer_method": "两种方法",
-      "final_speed": "344.0"
+      "final_speed": "344.0",
+      "res_temperature": "20.5",
+      "phase_temperature": "20.5"
     }
   },
   {
@@ -7405,9 +7395,6 @@
           "1",
           "2"
         ]
-      },
-      "parameters": {
-        "probe_factor": "1"
       }
     },
     "fields": {
@@ -7439,7 +7426,6 @@
       "ny_02": "1",
       "ny_03": "1",
       "ny_04": "2",
-      "probe_factor": "1",
       "voltage_pp_01": "2.75",
       "period_ms_01": "0.580",
       "frequency_hz_01": "1724.14",
@@ -7547,7 +7533,6 @@
       "ny_02": "3",
       "ny_03": "3",
       "ny_04": "3",
-      "probe_factor": "1",
       "voltage_pp_01": "2.75",
       "period_ms_01": "0.580",
       "frequency_hz_01": "1724.14",
@@ -7655,7 +7640,6 @@
       "ny_02": "3",
       "ny_03": "6",
       "ny_04": "5",
-      "probe_factor": "1",
       "voltage_pp_01": "2.75",
       "period_ms_01": "0.580",
       "frequency_hz_01": "1724.14",
@@ -7763,17 +7747,16 @@
       "ny_02": "1",
       "ny_03": "1",
       "ny_04": "2",
-      "probe_factor": "10",
-      "voltage_pp_01": "30.000",
+      "voltage_pp_01": "3",
       "period_ms_01": "0.580",
       "frequency_hz_01": "1724.14",
-      "voltage_pp_02": "10.80",
+      "voltage_pp_02": "1.08",
       "period_ms_02": "0.062",
       "frequency_hz_02": "16129.0",
-      "voltage_pp_03": "13.20",
+      "voltage_pp_03": "1.32",
       "period_ms_03": "0.072",
       "frequency_hz_03": "13888.9",
-      "voltage_pp_04": "7.20",
+      "voltage_pp_04": "0.72",
       "period_ms_04": "0.520",
       "frequency_hz_04": "1923.08",
       "lissajous_frequency_01": "16.232",
@@ -7865,9 +7848,6 @@
       "student_id": "20260001",
       "group": "1",
       "date": "2026-09-30",
-      "res_t_start": "20.0",
-      "res_t_end": "22.0",
-      "res_t_avg": "21.00",
       "res_frequency": "35000",
       "res_frequency_error": "100",
       "res_l01": "0",
@@ -7915,9 +7895,6 @@
       "res_u_r_v_percent": "0.20",
       "res_speed_theory": "343.5",
       "res_error_percent": "1.89",
-      "phase_t_start": "20.0",
-      "phase_t_end": "20.0",
-      "phase_t_avg": "20.00",
       "phase_frequency": "34000",
       "phase_frequency_error": "100",
       "phase_l01": "0",
@@ -7967,7 +7944,9 @@
       "phase_error_percent": "0.85",
       "method_difference": "10.0",
       "closer_method": "相位比较法",
-      "final_speed": "345.0"
+      "final_speed": "345.0",
+      "res_temperature": "21.00",
+      "phase_temperature": "20.00"
     }
   },
   {
@@ -11096,9 +11075,6 @@
     },
     "fields": {
       "caliper_error": "0.02",
-      "res_t_start": "20",
-      "res_t_end": "21",
-      "res_t_avg": "20.50",
       "res_frequency": "40000",
       "res_frequency_error": "10",
       "res_l01": "20",
@@ -11146,9 +11122,6 @@
       "res_u_r_v_percent": "0.14",
       "res_speed_theory": "343.2",
       "res_error_percent": "0.23",
-      "phase_t_start": "20",
-      "phase_t_end": "21",
-      "phase_t_avg": "20.50",
       "phase_frequency": "40000",
       "phase_frequency_error": "10",
       "phase_l01": "20",
@@ -11198,7 +11171,9 @@
       "phase_error_percent": "0.23",
       "method_difference": "0.0",
       "closer_method": "两种方法",
-      "final_speed": "344.0"
+      "final_speed": "344.0",
+      "res_temperature": "20.50",
+      "phase_temperature": "20.50"
     }
   },
   {

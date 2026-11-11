@@ -45,9 +45,7 @@
         "2"
       ]
     },
-    "parameters": {
-      "probe_factor": "1"
-    }
+    "parameters": {}
   },
   "speed-of-sound": {
     "experimentId": "speed-of-sound",
@@ -99,12 +97,9 @@
     },
     "parameters": {
       "caliper_error": "0.02",
-      "res_t_start": "20",
-      "res_t_end": "21",
+      "room_temperature": "20.5",
       "res_frequency": "40",
       "res_frequency_error": "0.01",
-      "phase_t_start": "20",
-      "phase_t_end": "21",
       "phase_frequency": "40",
       "phase_frequency_error": "0.01"
     }

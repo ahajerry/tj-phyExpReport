@@ -1,5 +1,5 @@
 export type MeasurementSpec = { id: string; label: string; unit: string; count: number; rowLabels?: string[]; optional?: boolean }
-export type ParameterSpec = { id: string; label: string; unit: string; initial?: string; min?: number; minExclusive?: number }
+export type ParameterSpec = { id: string; label: string; unit: string; initial?: string; min?: number; minExclusive?: number; calculation?: false }
 export type StructuredExperiment = {
   id: string
   title: string
@@ -25,9 +25,7 @@ export const structuredExperiments: StructuredExperiment[] = [
       { id: "ny", label: "垂直线切点数 ny", unit: "个", count: 4 },
       { id: "nx", label: "水平线切点数 nx", unit: "个", count: 4 },
     ],
-    parameters: [
-      { id: "probe_factor", label: "波形测量的探头倍数 K（直连取 1）", unit: "倍", initial: "1", minExclusive: 0 },
-    ],
+    parameters: [],
   },
   {
     id: "speed-of-sound", title: "声速测定",
@@ -39,14 +37,11 @@ export const structuredExperiments: StructuredExperiment[] = [
     ],
     parameters: [
       { id: "caliper_error", label: "游标卡尺仪器误差 Δl", unit: "mm", initial: "0.02", minExclusive: 0 },
-      { id: "res_t_start", label: "共振干涉法开始室温", unit: "°C", minExclusive: -273 },
-      { id: "res_t_end", label: "共振干涉法结束室温", unit: "°C", minExclusive: -273 },
+      { id: "room_temperature", label: "室温", unit: "°C", minExclusive: -273 },
       { id: "res_frequency", label: "共振干涉法信号频率", unit: "Hz", minExclusive: 0 },
-      { id: "res_frequency_error", label: "共振干涉法频率误差 Δf", unit: "Hz", min: 0 },
-      { id: "phase_t_start", label: "相位比较法开始室温", unit: "°C", minExclusive: -273 },
-      { id: "phase_t_end", label: "相位比较法结束室温", unit: "°C", minExclusive: -273 },
+      { id: "res_frequency_error", label: "共振干涉法频率误差 Δf", unit: "Hz", min: 0 ,initial: "0.1"},
       { id: "phase_frequency", label: "相位比较法信号频率", unit: "Hz", minExclusive: 0 },
-      { id: "phase_frequency_error", label: "相位比较法频率误差 Δf", unit: "Hz", min: 0 },
+      { id: "phase_frequency_error", label: "相位比较法频率误差 Δf", unit: "Hz", min: 0 ,initial:"0.1"},
     ],
   },
   {
@@ -59,11 +54,11 @@ export const structuredExperiments: StructuredExperiment[] = [
     ],
     parameters: [
       { id: "mass_g", label: "小球质量", unit: "g" },
-      { id: "volume_l", label: "储气瓶容积", unit: "L", initial: "2.650" },
+      { id: "volume_l", label: "储气瓶容积", unit: "L", initial: "2.250" },
       { id: "pressure_start_kpa", label: "起始大气压", unit: "kPa" },
       { id: "pressure_end_kpa", label: "终止大气压", unit: "kPa" },
-      { id: "mass_error_g", label: "质量仪器误差", unit: "g" },
-      { id: "pressure_error_kpa", label: "气压仪器误差", unit: "kPa" },
+      { id: "mass_error_g", label: "质量仪器误差", unit: "g" ,initial:"0,01"},
+      { id: "pressure_error_kpa", label: "气压仪器误差", unit: "kPa" ,initial:"0.01"},
     ],
   },
   {
@@ -108,14 +103,14 @@ export const structuredExperiments: StructuredExperiment[] = [
     ],
     parameters: [
       { id: "mass_step_kg", label: "每级质量增量", unit: "kg", initial: "0.500" },
-      { id: "preload_kg", label: "预载质量", unit: "kg", initial: "0" },
+      { id: "preload_kg", label: "预载质量", unit: "kg", initial: "3.00", calculation: false },
       { id: "wire_length_cm", label: "金属丝长度 L", unit: "cm" },
       { id: "mirror_distance_cm", label: "镜尺距离 D", unit: "cm" },
       { id: "lever_arm_cm", label: "光杠杆臂长 K", unit: "cm" },
       { id: "gravity_ms2", label: "当地重力加速度", unit: "m/s²", initial: "9.794" },
       { id: "reference_modulus_pa", label: "参考杨氏模量", unit: "Pa", initial: "1.85e11" },
-      { id: "diameter_error_mm", label: "测微计仪器误差 Δ仪", unit: "mm", initial: "0.004" },
-      { id: "scale_error_cm", label: "逐差位移仪器误差 Δ仪", unit: "cm", initial: "0.05" },
+      { id: "diameter_error_mm", label: "测微计仪器误差 Δ", unit: "mm", initial: "0.001" },
+      { id: "scale_error_cm", label: "逐差位移仪器误差 Δ", unit: "cm", initial: "0.01" },
     ],
   },
   {
@@ -129,7 +124,7 @@ export const structuredExperiments: StructuredExperiment[] = [
       { id: "drive_time_10", label: "强迫力矩周期 10T", unit: "s", count: 15 },
       { id: "amplitude", label: "稳定振幅", unit: "°", count: 15 },
       { id: "phase", label: "相位滞后角读数 α", unit: "°", count: 15 },
-    ], parameters: [{ id: "damping_setting", label: "阻尼档位", unit: "档" }],
+    ], parameters: [{ id: "damping_setting", label: "阻尼档位", unit: "档", calculation: false }],
   },
   {
     id: "focal-length", title: "透镜焦距的测量",
@@ -144,7 +139,7 @@ export const structuredExperiments: StructuredExperiment[] = [
       { id: "bessel_lens_small", label: "共轭法成小像时透镜位置", unit: "mm", count: 3 },
       { id: "auto_object", label: "自准直法物屏位置", unit: "mm", count: 3 },
       { id: "auto_lens", label: "自准直法透镜位置", unit: "mm", count: 3 },
-    ], parameters: [{ id: "position_direction", label: "物屏位置方向", unit: "", initial: "1" }],
+    ], parameters: [{ id: "position_direction", label: "物屏位置方向", unit: "", initial: "1", calculation: false }],
   },
 ]
 

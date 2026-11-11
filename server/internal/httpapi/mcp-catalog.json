@@ -1,0 +1,586 @@
+[
+  {
+    "id": "oscilloscope",
+    "title": "阴极射线示波器",
+    "note": "按原始记录表输入方波、正弦波、三角波、半波四种波形的电压档位、纵向跨度、时基档位和周期跨度；峰峰值（V）、周期（ms）和频率（kHz）自动计算。李萨如法输入四组 fx（kHz）、ny、nx，按 fy = nx/ny × fx 计算。四组与正弦波周期测量应使用频率不变的同一待测信号。可附最多两张原始记录图片。",
+    "measurements": [
+      {
+        "id": "voltage_scale",
+        "label": "波形电压档位 Sy",
+        "unit": "V/div",
+        "count": 4,
+        "rowLabels": [
+          "方波",
+          "正弦波",
+          "三角波",
+          "半波"
+        ]
+      },
+      {
+        "id": "voltage_divisions",
+        "label": "峰峰值纵向跨度 NU",
+        "unit": "div",
+        "count": 4,
+        "rowLabels": [
+          "方波",
+          "正弦波",
+          "三角波",
+          "半波"
+        ]
+      },
+      {
+        "id": "time_scale",
+        "label": "波形时基档位 Sx",
+        "unit": "ms/div",
+        "count": 4,
+        "rowLabels": [
+          "方波",
+          "正弦波",
+          "三角波",
+          "半波"
+        ]
+      },
+      {
+        "id": "period_divisions",
+        "label": "单周期横向跨度 NT",
+        "unit": "div",
+        "count": 4,
+        "rowLabels": [
+          "方波",
+          "正弦波",
+          "三角波",
+          "半波"
+        ]
+      },
+      {
+        "id": "reference_frequency",
+        "label": "李萨如法 X 参考频率 fx",
+        "unit": "kHz",
+        "count": 4
+      },
+      {
+        "id": "ny",
+        "label": "垂直线切点数 ny",
+        "unit": "个",
+        "count": 4
+      },
+      {
+        "id": "nx",
+        "label": "水平线切点数 nx",
+        "unit": "个",
+        "count": 4
+      }
+    ],
+    "parameters": [],
+    "ocrPrompt": "请识别随附图片中的「阴极射线示波器」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- voltage_scale（波形电压档位 Sy，V/div，4 个，依次为方波、正弦波、三角波、半波）使用数组\n- voltage_divisions（峰峰值纵向跨度 NU，div，4 个，依次为方波、正弦波、三角波、半波）使用数组\n- time_scale（波形时基档位 Sx，ms/div，4 个，依次为方波、正弦波、三角波、半波）使用数组\n- period_divisions（单周期横向跨度 NT，div，4 个，依次为方波、正弦波、三角波、半波）使用数组\n- reference_frequency（李萨如法 X 参考频率 fx，kHz，4 个）使用数组\n- ny（垂直线切点数 ny，个，4 个）使用数组\n- nx（水平线切点数 nx，个，4 个）使用数组\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"voltage_scale\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"voltage_divisions\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_scale\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"period_divisions\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"reference_frequency\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"ny\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"nx\": [\n    \"1.00\",\n    \"2.00\"\n  ]\n}"
+  },
+  {
+    "id": "speed-of-sound",
+    "title": "声速测定",
+    "note": "共振干涉法与相位比较法各输入 20 个位置读数；频率及误差按 Hz、位置及游标卡尺误差按 mm 输入。报告计算逐差波长、声速、不确定度、理论声速和百分差。",
+    "legacyCookieData": true,
+    "measurements": [
+      {
+        "id": "resonance",
+        "label": "共振干涉法位置",
+        "unit": "mm",
+        "count": 20
+      },
+      {
+        "id": "phase",
+        "label": "相位比较法位置",
+        "unit": "mm",
+        "count": 20
+      }
+    ],
+    "parameters": [
+      {
+        "id": "caliper_error",
+        "label": "游标卡尺仪器误差 Δl",
+        "unit": "mm",
+        "initial": "0.02",
+        "minExclusive": 0
+      },
+      {
+        "id": "room_temperature",
+        "label": "室温",
+        "unit": "°C",
+        "minExclusive": -273
+      },
+      {
+        "id": "res_frequency",
+        "label": "共振干涉法信号频率",
+        "unit": "Hz",
+        "minExclusive": 0
+      },
+      {
+        "id": "res_frequency_error",
+        "label": "共振干涉法频率误差 Δf",
+        "unit": "Hz",
+        "min": 0,
+        "initial": "0.1"
+      },
+      {
+        "id": "phase_frequency",
+        "label": "相位比较法信号频率",
+        "unit": "Hz",
+        "minExclusive": 0
+      },
+      {
+        "id": "phase_frequency_error",
+        "label": "相位比较法频率误差 Δf",
+        "unit": "Hz",
+        "min": 0,
+        "initial": "0.1"
+      }
+    ],
+    "ocrPrompt": "请识别随附图片中的「声速测定」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- resonance（共振干涉法位置，mm，20 个）使用数组\n- phase（相位比较法位置，mm，20 个）使用数组\n- caliper_error（游标卡尺仪器误差 Δl，mm）使用单个数值字符串\n- room_temperature（室温，°C）使用单个数值字符串\n- res_frequency（共振干涉法信号频率，Hz）使用单个数值字符串\n- res_frequency_error（共振干涉法频率误差 Δf，Hz）使用单个数值字符串\n- phase_frequency（相位比较法信号频率，Hz）使用单个数值字符串\n- phase_frequency_error（相位比较法频率误差 Δf，Hz）使用单个数值字符串\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"resonance\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"phase\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"caliper_error\": \"1.00\",\n  \"room_temperature\": \"1.00\",\n  \"res_frequency\": \"1.00\",\n  \"res_frequency_error\": \"1.00\",\n  \"phase_frequency\": \"1.00\",\n  \"phase_frequency_error\": \"1.00\"\n}"
+  },
+  {
+    "id": "heat-capacity-ratio",
+    "title": "空气比热容比的测定",
+    "note": "按官方资料使用振动法；直径和周期各测量五次。压强用 kPa、容积用 L 输入。",
+    "measurements": [
+      {
+        "id": "diameter_initial",
+        "label": "直径初读数",
+        "unit": "mm",
+        "count": 5
+      },
+      {
+        "id": "diameter_final",
+        "label": "直径末读数",
+        "unit": "mm",
+        "count": 5
+      },
+      {
+        "id": "time_100",
+        "label": "100T 总时长",
+        "unit": "s / 100 周期",
+        "count": 5
+      }
+    ],
+    "parameters": [
+      {
+        "id": "mass_g",
+        "label": "小球质量",
+        "unit": "g"
+      },
+      {
+        "id": "volume_l",
+        "label": "储气瓶容积",
+        "unit": "L",
+        "initial": "2.250"
+      },
+      {
+        "id": "pressure_start_kpa",
+        "label": "起始大气压",
+        "unit": "kPa"
+      },
+      {
+        "id": "pressure_end_kpa",
+        "label": "终止大气压",
+        "unit": "kPa"
+      },
+      {
+        "id": "mass_error_g",
+        "label": "质量仪器误差",
+        "unit": "g",
+        "initial": "0,01"
+      },
+      {
+        "id": "pressure_error_kpa",
+        "label": "气压仪器误差",
+        "unit": "kPa",
+        "initial": "0.01"
+      }
+    ],
+    "ocrPrompt": "请识别随附图片中的「空气比热容比的测定」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- diameter_initial（直径初读数，mm，5 个）使用数组\n- diameter_final（直径末读数，mm，5 个）使用数组\n- time_100（100T 总时长，s / 100 周期，5 个）使用数组\n- mass_g（小球质量，g）使用单个数值字符串\n- volume_l（储气瓶容积，L）使用单个数值字符串\n- pressure_start_kpa（起始大气压，kPa）使用单个数值字符串\n- pressure_end_kpa（终止大气压，kPa）使用单个数值字符串\n- mass_error_g（质量仪器误差，g）使用单个数值字符串\n- pressure_error_kpa（气压仪器误差，kPa）使用单个数值字符串\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"diameter_initial\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"diameter_final\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_100\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"mass_g\": \"1.00\",\n  \"volume_l\": \"1.00\",\n  \"pressure_start_kpa\": \"1.00\",\n  \"pressure_end_kpa\": \"1.00\",\n  \"mass_error_g\": \"1.00\",\n  \"pressure_error_kpa\": \"1.00\"\n}"
+  },
+  {
+    "id": "millikan",
+    "title": "密立根油滴实验",
+    "note": "按 CSV 数据文件逐行填写当前电压、平衡电压、下降时间及仪器电荷量，每颗油滴四行，共 3 至 8 颗。上传文件可自动填入下方表格，所有记录均可修改；计算使用每颗油滴四次平衡电压的平均值。",
+    "measurements": [
+      {
+        "id": "current_voltage",
+        "label": "当前电压",
+        "unit": "V",
+        "count": 32,
+        "optional": true
+      },
+      {
+        "id": "balance_voltage",
+        "label": "平衡电压",
+        "unit": "V",
+        "count": 32
+      },
+      {
+        "id": "fall_time",
+        "label": "下降时间",
+        "unit": "s",
+        "count": 32
+      },
+      {
+        "id": "instrument_charge",
+        "label": "仪器电荷量",
+        "unit": "C",
+        "count": 32,
+        "optional": true
+      }
+    ],
+    "parameters": [],
+    "ocrPrompt": "请识别随附图片中的「密立根油滴实验」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- balance_voltage（平衡电压，V，按已测油滴填写，共 12 至 32 个）使用数组\n- fall_time（下降时间，s，按已测油滴填写，共 12 至 32 个）使用数组\n每颗油滴连续四行，只填写完整测量的油滴，各数组行顺序一致。\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"balance_voltage\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"fall_time\": [\n    \"1.00\",\n    \"2.00\"\n  ]\n}"
+  },
+  {
+    "id": "moment-of-inertia",
+    "title": "用扭摆法测定物体转动惯量",
+    "note": "按 XLSX 数据文件填写质量（kg）、三次尺寸（cm）、三次计时（s）、两个滑块质量及两滑块自身惯量。上传文件可自动填入全部记录并继续修改。空盘计时 20 周期，其他物体 10 周期，滑块 5 周期；平均尺寸和单位换算由系统完成。",
+    "measurements": [
+      {
+        "id": "size_cylinder_cm",
+        "label": "圆柱直径",
+        "unit": "cm",
+        "count": 3
+      },
+      {
+        "id": "size_tube_inner_cm",
+        "label": "圆筒内径",
+        "unit": "cm",
+        "count": 3
+      },
+      {
+        "id": "size_tube_outer_cm",
+        "label": "圆筒外径",
+        "unit": "cm",
+        "count": 3
+      },
+      {
+        "id": "size_ball_cm",
+        "label": "圆球直径",
+        "unit": "cm",
+        "count": 3
+      },
+      {
+        "id": "size_rod_cm",
+        "label": "细杆长度",
+        "unit": "cm",
+        "count": 3
+      },
+      {
+        "id": "time_disk",
+        "label": "载物圆盘",
+        "unit": "s / 20 周期",
+        "count": 3
+      },
+      {
+        "id": "time_cylinder",
+        "label": "实心圆柱",
+        "unit": "s / 10 周期",
+        "count": 3
+      },
+      {
+        "id": "time_tube",
+        "label": "空心圆筒",
+        "unit": "s / 10 周期",
+        "count": 3
+      },
+      {
+        "id": "time_ball",
+        "label": "木球",
+        "unit": "s / 10 周期",
+        "count": 3
+      },
+      {
+        "id": "time_rod",
+        "label": "金属细杆",
+        "unit": "s / 10 周期",
+        "count": 3
+      },
+      {
+        "id": "slider_time_5",
+        "label": "滑块距轴 5 cm",
+        "unit": "s / 5 周期",
+        "count": 3
+      },
+      {
+        "id": "slider_time_10",
+        "label": "滑块距轴 10 cm",
+        "unit": "s / 5 周期",
+        "count": 3
+      },
+      {
+        "id": "slider_time_15",
+        "label": "滑块距轴 15 cm",
+        "unit": "s / 5 周期",
+        "count": 3
+      },
+      {
+        "id": "slider_time_20",
+        "label": "滑块距轴 20 cm",
+        "unit": "s / 5 周期",
+        "count": 3
+      }
+    ],
+    "parameters": [
+      {
+        "id": "mass_cylinder_kg",
+        "label": "圆柱质量",
+        "unit": "kg",
+        "minExclusive": 0
+      },
+      {
+        "id": "mass_tube_kg",
+        "label": "圆筒质量",
+        "unit": "kg",
+        "minExclusive": 0
+      },
+      {
+        "id": "mass_ball_kg",
+        "label": "圆球质量",
+        "unit": "kg",
+        "minExclusive": 0
+      },
+      {
+        "id": "mass_rod_kg",
+        "label": "细杆质量",
+        "unit": "kg",
+        "minExclusive": 0
+      },
+      {
+        "id": "slider_mass_1_kg",
+        "label": "滑块1质量",
+        "unit": "kg",
+        "minExclusive": 0
+      },
+      {
+        "id": "slider_mass_2_kg",
+        "label": "滑块2质量",
+        "unit": "kg",
+        "minExclusive": 0
+      },
+      {
+        "id": "slider_pair_inertia_scaled",
+        "label": "两滑块绕质心转轴的转动惯量（装置给定值，必填）",
+        "unit": "×10⁻⁴ kg·m²",
+        "minExclusive": 0
+      }
+    ],
+    "ocrPrompt": "请识别随附图片中的「用扭摆法测定物体转动惯量」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- size_cylinder_cm（圆柱直径，cm，3 个）使用数组\n- size_tube_inner_cm（圆筒内径，cm，3 个）使用数组\n- size_tube_outer_cm（圆筒外径，cm，3 个）使用数组\n- size_ball_cm（圆球直径，cm，3 个）使用数组\n- size_rod_cm（细杆长度，cm，3 个）使用数组\n- time_disk（载物圆盘，s / 20 周期，3 个）使用数组\n- time_cylinder（实心圆柱，s / 10 周期，3 个）使用数组\n- time_tube（空心圆筒，s / 10 周期，3 个）使用数组\n- time_ball（木球，s / 10 周期，3 个）使用数组\n- time_rod（金属细杆，s / 10 周期，3 个）使用数组\n- slider_time_5（滑块距轴 5 cm，s / 5 周期，3 个）使用数组\n- slider_time_10（滑块距轴 10 cm，s / 5 周期，3 个）使用数组\n- slider_time_15（滑块距轴 15 cm，s / 5 周期，3 个）使用数组\n- slider_time_20（滑块距轴 20 cm，s / 5 周期，3 个）使用数组\n- mass_cylinder_kg（圆柱质量，kg）使用单个数值字符串\n- mass_tube_kg（圆筒质量，kg）使用单个数值字符串\n- mass_ball_kg（圆球质量，kg）使用单个数值字符串\n- mass_rod_kg（细杆质量，kg）使用单个数值字符串\n- slider_mass_1_kg（滑块1质量，kg）使用单个数值字符串\n- slider_mass_2_kg（滑块2质量，kg）使用单个数值字符串\n- slider_pair_inertia_scaled（两滑块绕质心转轴的转动惯量（装置给定值，必填），×10⁻⁴ kg·m²）使用单个数值字符串\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"size_cylinder_cm\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"size_tube_inner_cm\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"size_tube_outer_cm\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"size_ball_cm\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"size_rod_cm\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_disk\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_cylinder\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_tube\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_ball\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"time_rod\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"slider_time_5\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"slider_time_10\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"slider_time_15\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"slider_time_20\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"mass_cylinder_kg\": \"1.00\",\n  \"mass_tube_kg\": \"1.00\",\n  \"mass_ball_kg\": \"1.00\",\n  \"mass_rod_kg\": \"1.00\",\n  \"slider_mass_1_kg\": \"1.00\",\n  \"slider_mass_2_kg\": \"1.00\",\n  \"slider_pair_inertia_scaled\": \"1.00\"\n}"
+  },
+  {
+    "id": "young-modulus",
+    "title": "金属丝杨氏模量的测定",
+    "note": "按新模板记录加卸载各十级和五组直径初、末读数，计算逐差法与图解法。预载不计入作用质量；L、D、K 的误差按模板为 0.1、0.2、0.02 cm。",
+    "measurements": [
+      {
+        "id": "load_up",
+        "label": "加载标尺像位置",
+        "unit": "cm",
+        "count": 10
+      },
+      {
+        "id": "load_down",
+        "label": "卸载标尺像位置",
+        "unit": "cm",
+        "count": 10
+      },
+      {
+        "id": "diameter_initial",
+        "label": "直径初读数",
+        "unit": "mm",
+        "count": 5
+      },
+      {
+        "id": "diameter_final",
+        "label": "直径末读数",
+        "unit": "mm",
+        "count": 5
+      }
+    ],
+    "parameters": [
+      {
+        "id": "mass_step_kg",
+        "label": "每级质量增量",
+        "unit": "kg",
+        "initial": "0.500"
+      },
+      {
+        "id": "preload_kg",
+        "label": "预载质量",
+        "unit": "kg",
+        "initial": "3.00",
+        "calculation": false
+      },
+      {
+        "id": "wire_length_cm",
+        "label": "金属丝长度 L",
+        "unit": "cm"
+      },
+      {
+        "id": "mirror_distance_cm",
+        "label": "镜尺距离 D",
+        "unit": "cm"
+      },
+      {
+        "id": "lever_arm_cm",
+        "label": "光杠杆臂长 K",
+        "unit": "cm"
+      },
+      {
+        "id": "gravity_ms2",
+        "label": "当地重力加速度",
+        "unit": "m/s²",
+        "initial": "9.794"
+      },
+      {
+        "id": "reference_modulus_pa",
+        "label": "参考杨氏模量",
+        "unit": "Pa",
+        "initial": "1.85e11"
+      },
+      {
+        "id": "diameter_error_mm",
+        "label": "测微计仪器误差 Δ",
+        "unit": "mm",
+        "initial": "0.001"
+      },
+      {
+        "id": "scale_error_cm",
+        "label": "逐差位移仪器误差 Δ",
+        "unit": "cm",
+        "initial": "0.01"
+      }
+    ],
+    "ocrPrompt": "请识别随附图片中的「金属丝杨氏模量的测定」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- load_up（加载标尺像位置，cm，10 个）使用数组\n- load_down（卸载标尺像位置，cm，10 个）使用数组\n- diameter_initial（直径初读数，mm，5 个）使用数组\n- diameter_final（直径末读数，mm，5 个）使用数组\n- mass_step_kg（每级质量增量，kg）使用单个数值字符串\n- wire_length_cm（金属丝长度 L，cm）使用单个数值字符串\n- mirror_distance_cm（镜尺距离 D，cm）使用单个数值字符串\n- lever_arm_cm（光杠杆臂长 K，cm）使用单个数值字符串\n- gravity_ms2（当地重力加速度，m/s²）使用单个数值字符串\n- reference_modulus_pa（参考杨氏模量，Pa）使用单个数值字符串\n- diameter_error_mm（测微计仪器误差 Δ，mm）使用单个数值字符串\n- scale_error_cm（逐差位移仪器误差 Δ，cm）使用单个数值字符串\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"load_up\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"load_down\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"diameter_initial\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"diameter_final\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"mass_step_kg\": \"1.00\",\n  \"wire_length_cm\": \"1.00\",\n  \"mirror_distance_cm\": \"1.00\",\n  \"lever_arm_cm\": \"1.00\",\n  \"gravity_ms2\": \"1.00\",\n  \"reference_modulus_pa\": \"1.00\",\n  \"diameter_error_mm\": \"1.00\",\n  \"scale_error_cm\": \"1.00\"\n}"
+  },
+  {
+    "id": "forced-vibration",
+    "title": "用波尔共振仪研究物体受迫振动",
+    "note": "按表 3.4.1–3.4.3 记录自由振动、阻尼振动和受迫振动数据。阻尼与强迫力矩计时均填写 10T；报告计算逐差法与半峰宽作图法的阻尼系数，并按振幅查表校正理论相位。可上传 XLSX 后继续修改。",
+    "measurements": [
+      {
+        "id": "free_angle",
+        "label": "自由振动振幅",
+        "unit": "°",
+        "count": 10
+      },
+      {
+        "id": "free_period",
+        "label": "自由振动周期",
+        "unit": "s",
+        "count": 10
+      },
+      {
+        "id": "damped_peak",
+        "label": "阻尼振动峰值",
+        "unit": "°",
+        "count": 10
+      },
+      {
+        "id": "damped_time_10",
+        "label": "阻尼振动 10T 计时",
+        "unit": "s",
+        "count": 1
+      },
+      {
+        "id": "drive_time_10",
+        "label": "强迫力矩周期 10T",
+        "unit": "s",
+        "count": 15
+      },
+      {
+        "id": "amplitude",
+        "label": "稳定振幅",
+        "unit": "°",
+        "count": 15
+      },
+      {
+        "id": "phase",
+        "label": "相位滞后角读数 α",
+        "unit": "°",
+        "count": 15
+      }
+    ],
+    "parameters": [
+      {
+        "id": "damping_setting",
+        "label": "阻尼档位",
+        "unit": "档",
+        "calculation": false
+      }
+    ],
+    "ocrPrompt": "请识别随附图片中的「用波尔共振仪研究物体受迫振动」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- free_angle（自由振动振幅，°，按实际测量数量）使用数组\n- free_period（自由振动周期，s，按实际测量数量）使用数组\n- damped_peak（阻尼振动峰值，°，按实际测量数量）使用数组\n- damped_time_10（阻尼振动 10T 计时，s，按实际测量数量）使用数组\n- drive_time_10（强迫力矩周期 10T，s，按实际测量数量）使用数组\n- amplitude（稳定振幅，°，按实际测量数量）使用数组\n- phase（相位滞后角读数 α，°，按实际测量数量）使用数组\n自由振动各列至少 2 项，受迫振动各列至少 3 项，同组各列等长。每组阻尼计时对应 10 个峰值。\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"free_angle\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"free_period\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"damped_peak\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"damped_time_10\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"drive_time_10\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"amplitude\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"phase\": [\n    \"1.00\",\n    \"2.00\"\n  ]\n}"
+  },
+  {
+    "id": "focal-length",
+    "title": "透镜焦距的测量",
+    "note": "按原始记录单填写三种方法的位置读数，各三组，单位 mm；距离和焦距自动计算。物距像距法前两次成放大像，第三次成缩小像。",
+    "measurements": [
+      {
+        "id": "single_object",
+        "label": "物距像距法物屏位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "single_lens",
+        "label": "物距像距法透镜位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "single_image",
+        "label": "物距像距法像屏位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "bessel_object",
+        "label": "共轭法物屏位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "bessel_image",
+        "label": "共轭法像屏位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "bessel_lens_large",
+        "label": "共轭法成大像时透镜位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "bessel_lens_small",
+        "label": "共轭法成小像时透镜位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "auto_object",
+        "label": "自准直法物屏位置",
+        "unit": "mm",
+        "count": 3
+      },
+      {
+        "id": "auto_lens",
+        "label": "自准直法透镜位置",
+        "unit": "mm",
+        "count": 3
+      }
+    ],
+    "parameters": [
+      {
+        "id": "position_direction",
+        "label": "物屏位置方向",
+        "unit": "",
+        "initial": "1",
+        "calculation": false
+      }
+    ],
+    "ocrPrompt": "请识别随附图片中的「透镜焦距的测量」原始实验数据。只输出下列计算所需字段，所有字段放在同一个 JSON 对象中。\n- single_object（物距像距法物屏位置，mm，3 个）使用数组\n- single_lens（物距像距法透镜位置，mm，3 个）使用数组\n- single_image（物距像距法像屏位置，mm，3 个）使用数组\n- bessel_object（共轭法物屏位置，mm，3 个）使用数组\n- bessel_image（共轭法像屏位置，mm，3 个）使用数组\n- bessel_lens_large（共轭法成大像时透镜位置，mm，3 个）使用数组\n- bessel_lens_small（共轭法成小像时透镜位置，mm，3 个）使用数组\n- auto_object（自准直法物屏位置，mm，3 个）使用数组\n- auto_lens（自准直法透镜位置，mm，3 个）使用数组\n读数按测量顺序排列。数值写成字符串，按列出的单位填写，保留原始精度和末尾零。只做必要的单位换算，禁止推算、猜测或补造数值。图中缺失的值留空，导入前由用户补齐。只返回 JSON。\n按下面的格式输出。数组长度以上述说明为准，示例数值须替换。\n{\n  \"single_object\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"single_lens\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"single_image\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"bessel_object\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"bessel_image\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"bessel_lens_large\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"bessel_lens_small\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"auto_object\": [\n    \"1.00\",\n    \"2.00\"\n  ],\n  \"auto_lens\": [\n    \"1.00\",\n    \"2.00\"\n  ]\n}"
+  }
+]

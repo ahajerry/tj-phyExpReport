@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"phyexp/server/internal/domain"
 	"phyexp/server/internal/experiments"
-	"phyexp/server/internal/render"
 	"phyexp/server/internal/storage"
 	"regexp"
 	"strings"
@@ -142,10 +141,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			jsonResponse(w, 200, map[string]any{"data": editable.Data, "parameters": editable.Parameters, "reportInfo": editable.ReportInfo})
 			return
 		}
-		_, normalized, e := experiments.Calculate(p)
-		if e == nil {
-			e = render.ValidateTables(normalized.SourceTables)
-		}
+		e = validateReport(p)
 		if e != nil {
 			apiError(w, 400, e)
 			return
@@ -237,12 +233,8 @@ func (s *Server) submission(w http.ResponseWriter, r *http.Request) (domain.Payl
 			if len(images) >= 5 {
 				return p, nil, fmt.Errorf("最多五张图片")
 			}
-			ext := render.ImageExtension(content)
-			if ext == "" {
-				return p, nil, fmt.Errorf("不支持的图片格式")
-			}
-			im := domain.Image{Name: fmt.Sprintf("%02d_image.%s", len(images)+1, ext), Content: content}
-			if e = render.ValidateImage(r.Context(), im); e != nil {
+			im, e := reportImage(r.Context(), content, len(images)+1)
+			if e != nil {
 				return p, nil, e
 			}
 			images = append(images, im)
@@ -256,19 +248,10 @@ func (s *Server) submission(w http.ResponseWriter, r *http.Request) (domain.Payl
 		return p, nil, e
 	}
 	if table != nil {
-		imported, e := experiments.Import(p.ExperimentID, tableName, table)
+		p, e = importReport(p.ExperimentID, tableName, table, p.ReportInfo)
 		if e != nil {
 			return p, nil, e
 		}
-		if imported.ReportInfo == nil {
-			imported.ReportInfo = map[string]string{}
-		}
-		for k, v := range p.ReportInfo {
-			if v != "" {
-				imported.ReportInfo[k] = v
-			}
-		}
-		p = imported
 	}
 	if p.ExperimentID == "oscilloscope" && len(images) > 2 {
 		return p, nil, fmt.Errorf("示波器报告最多附两张原始记录图片")

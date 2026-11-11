@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"phyexp/server/internal/domain"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -21,6 +22,7 @@ import (
 
 var ErrQuota = errors.New("今天的报告生成次数已用完，请明天再试")
 var ErrNotFound = errors.New("任务不存在")
+var ErrRequestConflict = errors.New("同一请求编号已用于不同的报告数据")
 
 type RenderFunc func(context.Context, domain.Payload, string, func(int, string)) (domain.ReportArtifacts, error)
 type Queue struct {
@@ -78,6 +80,11 @@ func Open(dir string, render RenderFunc) (q *Queue, err error) {
 	_, err = db.Exec(`PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS jobs(seq INTEGER PRIMARY KEY AUTOINCREMENT,id TEXT NOT NULL UNIQUE,user_id TEXT NOT NULL,day TEXT NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL,progress INTEGER NOT NULL DEFAULT 0,stage TEXT NOT NULL,error TEXT,created_at TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS jobs_user_day ON jobs(user_id,day);
+CREATE TABLE IF NOT EXISTS mcp_requests(user_id TEXT NOT NULL, request_id TEXT NOT NULL, fingerprint TEXT NOT NULL, job_id TEXT NOT NULL, PRIMARY KEY(user_id,request_id));
+CREATE TABLE IF NOT EXISTS mcp_guests(digest BLOB PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS mcp_guest_issuance(window INTEGER NOT NULL, source TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY(window,source));
+CREATE INDEX IF NOT EXISTS jobs_guest_day ON jobs(day) WHERE user_id GLOB 'guest:*';
+CREATE INDEX IF NOT EXISTS jobs_guest_pending ON jobs(status) WHERE user_id GLOB 'guest:*';
 UPDATE jobs SET status='queued',progress=0,stage='等待重新编译' WHERE status='running';`)
 	if err != nil {
 		return nil, err
@@ -99,7 +106,39 @@ func (q *Queue) Close() error {
 	q.lock.Close()
 	return e
 }
-func (q *Queue) Create(ctx context.Context, user string, p domain.Payload, images []domain.Image) (job domain.Job, err error) {
+func (q *Queue) Create(ctx context.Context, user string, p domain.Payload, images []domain.Image) (domain.Job, error) {
+	return q.create(ctx, user, "", "", p, images)
+}
+
+type requestLookup interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
+
+func lookupRequest(ctx context.Context, db requestLookup, user, requestID, fingerprint string) (string, error) {
+	var id, saved string
+	err := db.QueryRowContext(ctx, "SELECT job_id,fingerprint FROM mcp_requests WHERE user_id=? AND request_id=?", user, requestID).Scan(&id, &saved)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", nil
+	}
+	if err == nil && saved != fingerprint {
+		return "", ErrRequestConflict
+	}
+	return id, err
+}
+
+func (q *Queue) FindRequest(ctx context.Context, user, requestID, fingerprint string) (domain.Job, error) {
+	id, err := lookupRequest(ctx, q.db, user, requestID, fingerprint)
+	if err != nil || id == "" {
+		return domain.Job{}, err
+	}
+	return q.Job(ctx, id, user)
+}
+
+func (q *Queue) CreateRequest(ctx context.Context, user, requestID, fingerprint string, p domain.Payload, images []domain.Image) (domain.Job, error) {
+	return q.create(ctx, user, requestID, fingerprint, p, images)
+}
+
+func (q *Queue) create(ctx context.Context, user, requestID, fingerprint string, p domain.Payload, images []domain.Image) (job domain.Job, err error) {
 	id := Token(16)
 	payload, err := json.Marshal(p)
 	if err != nil {
@@ -110,16 +149,36 @@ func (q *Queue) Create(ctx context.Context, user string, p domain.Payload, image
 		return job, err
 	}
 	defer tx.Rollback()
-	used := 0
-	if err = tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM jobs WHERE user_id=? AND day=?", user, today()).Scan(&used); err != nil {
+	if requestID != "" {
+		existing, e := lookupRequest(ctx, tx, user, requestID, fingerprint)
+		if e != nil {
+			return job, e
+		}
+		if existing != "" {
+			if e = tx.Rollback(); e != nil {
+				return job, e
+			}
+			return q.Job(ctx, existing, user)
+		}
+	}
+	day := today()
+	used, limit := 0, 50
+	if strings.HasPrefix(user, guestPrefix) {
+		limit = 10
+		if err = checkGuestQueue(ctx, tx, day); err != nil {
+			return job, err
+		}
+	}
+	if err = tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM jobs WHERE user_id=? AND day=?", user, day).Scan(&used); err != nil {
 		return job, err
 	}
-	if used >= 50 {
+	if used >= limit {
 		return job, ErrQuota
 	}
 	archive := filepath.Join(q.dir, "original-images", id)
+	committed := false
 	defer func() {
-		if err != nil {
+		if !committed && len(images) > 0 {
 			os.RemoveAll(archive)
 		}
 	}()
@@ -136,13 +195,19 @@ func (q *Queue) Create(ctx context.Context, user string, p domain.Payload, image
 			}
 		}
 	}
-	_, err = tx.ExecContext(ctx, "INSERT INTO jobs(id,user_id,day,payload,status,stage,created_at) VALUES(?,?,?,?,?,?,?)", id, user, today(), string(payload), "queued", "正在排队", time.Now().Format(time.RFC3339Nano))
+	_, err = tx.ExecContext(ctx, "INSERT INTO jobs(id,user_id,day,payload,status,stage,created_at) VALUES(?,?,?,?,?,?,?)", id, user, day, string(payload), "queued", "正在排队", time.Now().Format(time.RFC3339Nano))
 	if err != nil {
 		return job, err
+	}
+	if requestID != "" {
+		if _, err = tx.ExecContext(ctx, "INSERT INTO mcp_requests(user_id,request_id,fingerprint,job_id) VALUES(?,?,?,?)", user, requestID, fingerprint, id); err != nil {
+			return job, err
+		}
 	}
 	if err = tx.Commit(); err != nil {
 		return job, err
 	}
+	committed = true
 	select {
 	case q.wake <- struct{}{}:
 	default:

@@ -10,5 +10,7 @@ ADR 解释背景与取舍；当前契约见 [specs](../README.md)，实施进度
 | [0004](0004-documentation-layout.md) | 当前事实、操作、决策和计划分离 | 已接受 |
 | [0005](0005-pinned-pnpm.md) | 固定 pnpm 与唯一锁文件 | 已接受，追认 |
 | [0006](0006-latex-layout-parity.md) | 固定原字体并对齐 LaTeX 版式 | 已接受 |
+| [0007](0007-remote-report-mcp.md) | 远程 MCP 复用报告队列并隔离调用者 | 已接受 |
+| [0008](0008-anonymous-mcp-enrollment.md) | MCP 访客自助开通与独立队列额度 | 已接受 |
 
 编号递增；后续替代使用新 ADR 并互链，不改写历史决定。

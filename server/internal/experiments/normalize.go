@@ -14,6 +14,11 @@ var oilHeaders = []string{"当前电压Uc(V)", "平衡电压U(V)", "时间t(s)",
 func scalar(v D) domain.Scalar { return domain.Scalar(v.String()) }
 func normalize(p *domain.Payload) {
 	switch p.ExperimentID {
+	case "oscilloscope":
+		if p.Parameters == nil {
+			p.Parameters = map[string]domain.Scalar{}
+		}
+		delete(p.Parameters, "probe_factor")
 	case "focal-length":
 		if p.Parameters == nil {
 			p.Parameters = map[string]domain.Scalar{}

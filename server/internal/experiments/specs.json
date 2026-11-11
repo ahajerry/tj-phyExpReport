@@ -114,8 +114,6 @@
       "nx": 4,
       "ny": 4
     },
-    "parameters": [
-      "probe_factor"
-    ]
+    "parameters": []
   }
 }

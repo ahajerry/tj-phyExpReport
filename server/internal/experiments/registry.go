@@ -176,7 +176,7 @@ func Calculate(input domain.Payload) (fields map[string]string, normalized domai
 	}
 	switch p.ExperimentID {
 	case "oscilloscope":
-		oscilloscope(f, d, params)
+		oscilloscope(f, d)
 	case "heat-capacity-ratio":
 		heat(f, d, params)
 	case "focal-length":

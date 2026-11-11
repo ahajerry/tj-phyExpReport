@@ -37,7 +37,7 @@ $ v = f lambda . $
 
 $ lambda _(i) = frac(l _(i + 10) - l _(i), 5) , quad quad i = 1 , dots.h , 10. $
 
-以平均室温 $overline(t)$（摄氏度）估算干燥空气中的理论声速：$v _(upright("th")) = 331 sqrt(1 + overline(t) slash 273) thin upright(m slash s)$。
+以室温 $t$（摄氏度）估算干燥空气中的理论声速：$v _(upright("th")) = 331 sqrt(1 + t slash 273) thin upright(m slash s)$。
 
 #section[实验内容]
 
@@ -69,7 +69,7 @@ $ lambda _(i) = frac(l _(i + 10) - l _(i), 5) , quad quad i = 1 , dots.h , 10. $
 
 #subsection[共振干涉法]
 
-开始时室温 $t _(1) = #sound-field("res_t_start", width: 1.2cm) thin degree upright(C)$，结束时室温 $t _(2) = #sound-field("res_t_end", width: 1.2cm) thin degree upright(C)$，平均室温 $overline(t) = #sound-field("res_t_avg", width: 1.2cm) thin degree upright(C)$。
+室温 $t = #sound-field("res_temperature", width: 1.2cm) thin degree upright(C)$。
 
 信号频率 $f = #sound-field("res_frequency", width: 1.5cm) thin upright("Hz")$，频率误差 $Delta _(f) = #sound-field("res_frequency_error", width: 1.4cm) thin upright("Hz")$。
 
@@ -98,7 +98,7 @@ $ E = frac(| v - v _(upright("th")) |, v _(upright("th"))) times 100 "%" = #soun
 
 #subsection[相位比较法]
 
-开始时室温 $t _(1) = #sound-field("phase_t_start", width: 1.2cm) thin degree upright(C)$，结束时室温 $t _(2) = #sound-field("phase_t_end", width: 1.2cm) thin degree upright(C)$，平均室温 $overline(t) = #sound-field("phase_t_avg", width: 1.2cm) thin degree upright(C)$。
+室温 $t = #sound-field("phase_temperature", width: 1.2cm) thin degree upright(C)$。
 
 信号频率 $f = #sound-field("phase_frequency", width: 1.5cm) thin upright("Hz")$，频率误差 $Delta _(f) = #sound-field("phase_frequency_error", width: 1.4cm) thin upright("Hz")$。
 
@@ -145,17 +145,17 @@ $ E = frac(| v - v _(upright("th")) |, v _(upright("th"))) times 100 "%" = #soun
 
 为何在两种方法中均需调节信号频率？使激励频率接近换能器固有频率，接收信号更明显，有利于辨认幅度极大和相位对应位置。
 
-温度为何必须记录？空气中的声速随温度变化；记录起止温度并取平均，才能计算与测量过程对应的理论值，合理比较百分差。
+温度为何必须记录？空气中的声速随温度变化。根据实验室温计算理论声速，再与实测结果比较。
 
 #section[实验结论]
 
 本实验利用共振干涉法和相位比较法测定空气中的声速，并用逐差法处理多组位置数据。
 
 #report-table(columns: (auto, auto, auto, auto, auto, auto, auto,), size: 9*tpt, rules: "booktabs", stretch: 1.2,
-  header: (table.cell(x: 0, y: 0)[方法], table.cell(x: 1, y: 0)[$f slash upright("Hz")$], table.cell(x: 2, y: 0)[$overline(t) slash degree upright(C)$], table.cell(x: 3, y: 0)[$overline(lambda) slash upright("mm")$], table.cell(x: 4, y: 0)[$v slash ( upright(m slash s) )$], table.cell(x: 5, y: 0)[$U _(r v) slash "%"$], table.cell(x: 6, y: 0)[$E slash "%"$],),
+  header: (table.cell(x: 0, y: 0)[方法], table.cell(x: 1, y: 0)[$f slash upright("Hz")$], table.cell(x: 2, y: 0)[$t slash degree upright(C)$], table.cell(x: 3, y: 0)[$overline(lambda) slash upright("mm")$], table.cell(x: 4, y: 0)[$v slash ( upright(m slash s) )$], table.cell(x: 5, y: 0)[$U _(r v) slash "%"$], table.cell(x: 6, y: 0)[$E slash "%"$],),
   rows: (
-    (table.cell(x: 0, y: 1)[共振干涉法], table.cell(x: 1, y: 1)[#sound-field("res_frequency", width: 1.1cm)], table.cell(x: 2, y: 1)[#sound-field("res_t_avg", width: 1.1cm)], table.cell(x: 3, y: 1)[#sound-field("res_lambda_avg", width: 1.1cm)], table.cell(x: 4, y: 1)[#sound-field("res_speed_result", width: 1.1cm)], table.cell(x: 5, y: 1)[#sound-field("res_u_r_v_percent", width: 0.9cm)], table.cell(x: 6, y: 1)[#sound-field("res_error_percent", width: 0.9cm)],),
-    (table.cell(x: 0, y: 2)[相位比较法], table.cell(x: 1, y: 2)[#sound-field("phase_frequency", width: 1.1cm)], table.cell(x: 2, y: 2)[#sound-field("phase_t_avg", width: 1.1cm)], table.cell(x: 3, y: 2)[#sound-field("phase_lambda_avg", width: 1.1cm)], table.cell(x: 4, y: 2)[#sound-field("phase_speed_result", width: 1.1cm)], table.cell(x: 5, y: 2)[#sound-field("phase_u_r_v_percent", width: 0.9cm)], table.cell(x: 6, y: 2)[#sound-field("phase_error_percent", width: 0.9cm)],),
+    (table.cell(x: 0, y: 1)[共振干涉法], table.cell(x: 1, y: 1)[#sound-field("res_frequency", width: 1.1cm)], table.cell(x: 2, y: 1)[#sound-field("res_temperature", width: 1.1cm)], table.cell(x: 3, y: 1)[#sound-field("res_lambda_avg", width: 1.1cm)], table.cell(x: 4, y: 1)[#sound-field("res_speed_result", width: 1.1cm)], table.cell(x: 5, y: 1)[#sound-field("res_u_r_v_percent", width: 0.9cm)], table.cell(x: 6, y: 1)[#sound-field("res_error_percent", width: 0.9cm)],),
+    (table.cell(x: 0, y: 2)[相位比较法], table.cell(x: 1, y: 2)[#sound-field("phase_frequency", width: 1.1cm)], table.cell(x: 2, y: 2)[#sound-field("phase_temperature", width: 1.1cm)], table.cell(x: 3, y: 2)[#sound-field("phase_lambda_avg", width: 1.1cm)], table.cell(x: 4, y: 2)[#sound-field("phase_speed_result", width: 1.1cm)], table.cell(x: 5, y: 2)[#sound-field("phase_u_r_v_percent", width: 0.9cm)], table.cell(x: 6, y: 2)[#sound-field("phase_error_percent", width: 0.9cm)],),
   ))
 
 取两种方法结果的算术平均，本实验测得当前室温下空气中的声速约为 $#sound-field("final_speed", width: 1.5cm) thin upright(m slash s)$。

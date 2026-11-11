@@ -18,6 +18,17 @@ export function experimentStorageKey(id: string) {
   return `phyexp_report_${id}${id === "focal-length" ? "_positions" : ""}`
 }
 
+function restoreRoomTemperature(read: (key: string) => string | undefined) {
+  const current = read("room_temperature")
+  if (current !== undefined) return current
+  const readings = ["res_t_start", "res_t_end", "phase_t_start", "phase_t_end"]
+    .map(read)
+    .filter((value): value is string => Boolean(value?.trim()) && Number.isFinite(Number(value)) && Number(value) > -273)
+  if (readings.length < 2) return readings[0]
+  const average = readings.reduce((sum, value) => sum + Number(value) / readings.length, 0)
+  return String(Number(average.toPrecision(15)))
+}
+
 export function readSavedExperimentValues(experiment: StructuredExperiment): SavedExperimentValues {
   const legacyReadings = Object.fromEntries(experiment.measurements.map((item) => [
     item.id, experiment.legacyCookieData ? readMeasurements(experiment.id, item.id)?.filter((value) => value.trim()) : null,
@@ -31,11 +42,18 @@ export function readSavedExperimentValues(experiment: StructuredExperiment): Sav
     parameters: Object.fromEntries(experiment.parameters.map((item) => [item.id, legacyValue(`field_${item.id}`) ?? item.initial ?? ""])),
     reportInfo: Object.fromEntries(REPORT_INFO_FIELDS.map((item) => [item.id, legacyValue(`field_${item.id}`) ?? ""])),
   }
+  if (experiment.id === "speed-of-sound") {
+    fallback.parameters.room_temperature = restoreRoomTemperature((key) => legacyValue(`field_${key}`)) ?? ""
+  }
 
   try {
     const raw = localStorage.getItem(experimentStorageKey(experiment.id))
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SavedExperimentValues>
+      if (experiment.id === "speed-of-sound" && parsed.parameters) {
+        parsed.parameters.room_temperature = restoreRoomTemperature((key) => parsed.parameters?.[key])
+          ?? fallback.parameters.room_temperature
+      }
       if (experiment.id === "heat-capacity-ratio" && parsed.data?.diameter && !parsed.data.diameter_final) {
         // Legacy net diameters cannot recover the original micrometer readings.
         const previous = parsed.data

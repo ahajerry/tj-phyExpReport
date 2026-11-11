@@ -15,6 +15,8 @@ curl http://127.0.0.1:8080/api/health
 
 访问 `http://localhost:8080`，用合成数据生成报告并下载两种文件。健康响应只代表服务存活。更完整的隔离验收：`pnpm test:docker`，步骤见 [开发指南](development.md)。构建需要联网，生成报告及源码重编译不需要在线包。
 
+为 DSH 用户启用远程报告功能时，按 [DSH 接入指南](dsh-mcp.md) 配置 HTTPS 和凭据。
+
 没有 Compose 时：
 
 ```bash

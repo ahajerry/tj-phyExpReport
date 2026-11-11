@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func oscilloscope(f map[string]string, d map[string][]D, p map[string]D) {
+func oscilloscope(f map[string]string, d map[string][]D) {
 	for k, a := range d {
 		for _, x := range a {
 			pos(x, k)
@@ -13,12 +13,11 @@ func oscilloscope(f map[string]string, d map[string][]D, p map[string]D) {
 			}
 		}
 	}
-	pos(p["probe_factor"], "探头倍率")
 	frequencies := []D{}
 	wave := []D{}
 	for i := 0; i < 4; i++ {
 		suffix := fmt.Sprintf("_%02d", i+1)
-		v := d["voltage_scale"][i].Mul(d["voltage_divisions"][i]).Mul(p["probe_factor"])
+		v := d["voltage_scale"][i].Mul(d["voltage_divisions"][i])
 		t := d["time_scale"][i].Mul(d["period_divisions"][i])
 		freq := div(one, t)
 		wave = append(wave, freq)
