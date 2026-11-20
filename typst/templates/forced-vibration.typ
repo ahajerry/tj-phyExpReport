@@ -254,7 +254,7 @@ $ beta _("图") = frac(omega _(2) - omega _(1), 2) . $
 本次 $omega _(1) = #f("half_power_omega_1") thin upright("rad" slash s)$，$omega _(2) = #f("half_power_omega_2") thin upright("rad" slash s)$，$beta _("图") = #f("graph_beta_s_inv") thin upright(s ^(- 1))$。以逐差法结果为参照，两法相对差异为 $#f("graph_beta_difference_percent") "%"$。#f("graph_beta_note")
 
 #pagebreak()
-#section[实验曲线]
+#subsection[实验曲线]
 
 幅频曲线的虚线为半峰高 $( theta slash theta _(r) ) ^(2) = 1 slash 2$。相频曲线采用滞后相位的负值，与表 3.4.3 一致；两图均按频率从小到大连接测量点。
 
@@ -275,6 +275,14 @@ $ beta _("图") = frac(omega _(2) - omega _(1), 2) . $
 $ phi = tan ^(- 1)   [ frac(- beta T _(0) ^(2) T, pi ( T ^(2) - T _(0) ^(2) ))  ] $
 
 中 $T _(0)$ 采用对应于某个振幅的数值代入（可查看自由振动实验中作出 $theta$ 与 $T _(0)$ 的对应表，找出该振幅在自由振动实验时对应的摆轮固有周期。若此 $theta$ 值在表中查不到，则可根据对应表中摆轮的运动趋势，用内查法，估计一个 $T _(0)$ 值），这样可使系统误差明显减小。振幅与共振频率 $omega _(0)$ 相对应值可按照“实验内容与步骤”2 的方法来确定。
+
+#subsection[共振条件、方法比较与拓展]
+
+在线性黏性阻尼模型中，位移振幅的峰值频率为 $omega_r = sqrt(omega_0^2 - 2 beta^2)$（存在峰值时），而滞后相位为 90° 对应 $omega = omega_0$；只有弱阻尼时两者才近似重合。相频图采用负的滞后相位。测量时保持阻尼档位不变，待振幅与相位稳定后读数，共振附近加密采样，避免频闪光干扰观察。
+
+对数递减法利用自由衰减，半功率带宽法利用稳态幅频曲线。两法偏差需结合稳定时间、振幅依赖、读角和半功率交点插值分析；若半功率两侧未测全，应补测，不能外推伪造交点。可改变阻尼档位重复实验，比较峰值、带宽和相位变化，探索振动隔离与共振控制的应用。
+
+#reflection()
 
 #section[实验结论]
 

@@ -110,6 +110,18 @@
 // heading's own position would move that position and make layout oscillate.
 #let section(body) = heading(level: 1, body)
 #let subsection(body) = heading(level: 2, body)
+#let reflection() = {
+  subsection[实际观察与个人反思（据实补充）]
+  [请根据本次操作填写，未测项目注明未测；模板说明不能替代实际记录。]
+  parbreak()
+  [仪器型号、分辨力或误差限及检查结果：#underline(h(3cm))]
+  parbreak()
+  [异常现象、操作难点及其对结果的影响：#underline(h(3cm))]
+  parbreak()
+  [改进措施、替代方案及预期效果：#underline(h(3cm))]
+  parbreak()
+  [实验收获与仍需验证的问题：#underline(h(3cm))]
+}
 #let report-table(columns: auto, header: (), rows: (), size: 9*tpt, stretch: 1.35, baseline: 11*tpt, inset: 6*tpt, rules: "grid", cell-align: center + horizon, breakable: auto, width: auto) = {
   set text(size: size, font: ("Latin Modern Roman 9", "FandolSong"))
   // LaTeX small is 9/11 pt. Its strut is 0.7/0.3 of the stretched baseline.

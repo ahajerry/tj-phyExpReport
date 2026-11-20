@@ -5,11 +5,7 @@
 
 #cover()
 
-#section[1. 引言]
-
-在物体的弹性限度内，当物体受外力作用时，均会发生弹性形变；发生弹性形变时，物体内部产生恢复原状的内应力。弹性模量是反映材料抵抗形变能力的物理量，在工程上作为选择材料的依据之一。
-
-#section[2. 实验目的]
+#section[实验目的]
 
 1\.#h(1em) 用拉伸法测定金属丝的杨氏弹性模量。
 
@@ -19,7 +15,13 @@
 
 4\.#h(1em) 学习处理数据的两种方法：图解法、逐差法。
 
-#section[3. 实验原理]
+#section[实验原理]
+
+#subsection[实验背景]
+
+在物体的弹性限度内，当物体受外力作用时，均会发生弹性形变；发生弹性形变时，物体内部产生恢复原状的内应力。弹性模量是反映材料抵抗形变能力的物理量，在工程上作为选择材料的依据之一。
+
+
 
 基于胡克定律，固体在外力作用下将发生形变，如果外力撤去之后其形变消失，这种形变称之为弹性形变。如果外力后仍有残余形变，这种形变称为塑性形变。
 
@@ -33,7 +35,7 @@
 
 其中，$F$ 表示材料所受拉（压）力，$S$ 表示材料的截面积，$L$ 表示材料的原长度，$Delta L$ 表示材料的长度延长（缩短）量。
 
-#section[4. 实验仪器]
+#section[实验仪器]
 
 杨氏模量测定仪如图 3.3.1 所示，包括：拉伸仪、光杠杆、望远镜、标尺和支架等。
 
@@ -55,7 +57,7 @@
 
 #illustration(image("figures/young-reticles-reference.png", width: 85.0%, fit: "contain"))[ 图 3.3.2 十字分划板　　 图 3.3.3 分划板与标尺读数]
 
-#section[5. 实验方法——光杠杆镜尺法测量微小长度的变化]
+#subsection[光杠杆镜尺法测量微小长度的变化]
 
 在（3.3.1）式中，在外力 $F$ 的拉伸下，钢丝的伸长量 $Delta L$ 是很小的量。用一般的长度测量仪器无法测量。在本实验中采用光杠杆镜尺法，原理图如图 3.3.4 所示。
 
@@ -81,7 +83,7 @@
 
 #math.equation(block: true, numbering: n => "(3.3.5)", $Y = frac(m g, S) dot.op frac(L, Delta L) = frac(2 L D F, S K l) = frac(8 L D g, pi d ^(2) K) frac(m, l)$)
 
-#section[6. 实验内容]
+#section[实验内容]
 
 #subsection[6.1 仪器调节]
 
@@ -101,7 +103,7 @@
 
 8\.#h(1em) 继续调节望远镜的物镜调焦旋钮和仰角螺丝等，直至在望远镜中能看清标尺中部读数。
 
-#section[6.2 数据测量]
+#subsection[6.2 数据测量]
 
 1\.#h(1em) 在金属丝下端先挂若干砝码（如 2 kg），使金属丝完全伸直（此砝码不计入所加作用力 $m g$ 之内）。
 
@@ -109,7 +111,7 @@
 
 3\.#h(1em) 用钢尺测量光杠杆镜面到标尺距离 $D$。用米尺测量金属丝上下两夹头间金属丝长度 $L$。用螺旋测微计测量金属丝直径 $d$，测量 10 次取平均值。用游标卡尺测量光杠杆前尖脚到两后尖脚的连线的垂直长度 $K$。
 
-#section[7. 数据处理]
+#section[数据记录与处理]
 
 #subsection[7.1 逐差法]
 
@@ -154,7 +156,7 @@ $  L & = ( #mf("length_result_cm") plus.minus 0.1 ) thin upright("cm") ; & U _(r
 $  u _(d A) & = 1.14 sqrt(frac(sum v _(i) ^(2), n ( n - 1 ))) = #mf("diameter_u_a") thin upright("mm") , \  u _(d B) & = frac(Delta _("仪" , d), sqrt(3)) = frac(#mf("diameter_error_mm"), sqrt(3)) = #mf("diameter_u_b") thin upright("mm") , \  U _(d) & = sqrt(u _(d A) ^(2) + u _(d B) ^(2)) = #mf("diameter_mean_u_mm") thin upright("mm") , \  U _(r d) & = frac(U _(d), overline(d)) times 100 "%" = #mf("diameter_relative_percent") "%" , \  U _(l A) & = 1.14 sqrt(frac(sum v _(i) ^(2), n ( n - 1 ))) = #mf("difference_u_a") thin upright("cm") , \  U _(l B) & = frac(Delta _("仪" , l), sqrt(3)) = frac(#mf("scale_error_cm"), sqrt(3)) = #mf("difference_u_b") thin upright("cm") , \  U _(l) & = sqrt(U _(l A) ^(2) + U _(l B) ^(2)) = #mf("difference_mean_u_cm") thin upright("cm") , \  U _(r l) & = frac(U _(l), overline(l _(i + 5) - l _(i))) times 100 "%" = #mf("difference_relative_percent") "%" .  $
 
 #block(width: 100%, breakable: false, above: 0pt, below: 0pt)[
-#section[7.2 图解法]
+#subsection[7.2 图解法]
 
 在以下毫米方格纸内绘制 $m$-$l$ 关系曲线，用图解法求出比值 $m slash l$。
 
@@ -181,7 +183,7 @@ $ Y _(1) = frac(8 L D g, pi d ^(2) K) dot.op frac(m, l) = #mf("young_graph_modul
 
 $ E _(0) = frac(| Y _(1) - Y ' |, Y ') times 100 "%" = #mf("young_graph_error_percent") "%" . $
 
-#section[2. 用逐差法处理实验数据]
+#subsection[7.3 用逐差法处理实验数据]
 
 $ frac(m, l) = frac(5 delta m, overline(l _(i + 5) - l _(i))) = frac(#mf("difference_mass_kg"), #mf("difference_mean_cm")) = #mf("difference_slope_kg_cm") thin upright("kg" slash "cm") . $
 
@@ -192,7 +194,7 @@ $ Y _(2) = frac(8 L D g, pi d ^(2) K) dot.op frac(m, l) = #mf("young_modulus_pa"
 $ E _(0) = frac(| Y _(2) - Y ' |, Y ') times 100 "%" = #mf("young_error_percent") "%" . $
 
 #block(width: 100%, breakable: false, above: 0pt, below: 0pt)[
-#section[3. 不确定度估算]
+#subsection[7.4 不确定度估算]
 
 $ U _(r Y _(2)) = frac(U _(Y _(2)), Y _(2)) = sqrt(U _(r L) ^(2) + U _(r D) ^(2) + U _(r K) ^(2) + 4 U _(r d) ^(2) + U _(r l) ^(2)) = #mf("young_relative_percent") "%" . $
 
@@ -204,12 +206,28 @@ $ Y _(2) plus.minus U _(Y _(2)) = ( #mf("young_modulus_pa") plus.minus #mf("youn
 
 ]
 
-#section[8. 注意事项]
+#subsection[注意事项]
 
 1\.#h(1em) 光杠杆与望远镜的目镜和物镜属光学器件，禁止用手触摸。光杠杆必须放置稳妥，以防掉落，打碎镜子；
 
 2\.#h(1em) 调节望远镜时，要注意消除视差，即要求做到眼睛上下移动时，标尺读数相对十字叉丝无相对位移；
 
 3\.#h(1em) 在加减砝码时要格外小心，做到轻拿轻放，避免震动产生较大的实验误差。光杠杆与望远镜调整好之后，实验过程中两者位置不能有任何移动。
+
+#section[讨论与分析]
+
+#subsection[模型、方法与误差分配]
+
+杨氏模量受材料成分、热处理与温度等因素影响，测量须在弹性限度内进行。预加载用于拉直金属丝、消除松弛；加卸载读数取平均可减弱回程差，但不能消除塑性形变。保持底座气泡居中、消除望远镜视差，光杠杆后支脚按装置要求放在随金属丝伸长而移动的支承面上。
+
+在小角度近似下，标尺位移随镜尺距离增大而增大，光杠杆放大倍数约为 $2 D slash K$；增大 $D$ 可提高读数灵敏度，但需兼顾稳定性和量程。逐差法利用跨多个加载间隔的读数差减小相对随机误差，图解法则可检验线性并发现异常点，两者应结合百分差比较。
+
+误差等分配应比较各量经灵敏度系数加权后的相对贡献，而非要求仪器绝对误差相同。由 $Y prop L D slash (d^2 K)$ 可知直径相对误差的权重为 2，应多位置测量并记录测微计零点。上式不确定度包括长度、镜尺距离、足距、直径与读数差；未计入的质量或模型误差应在评价中说明。
+
+#reflection()
+
+#section[实验结论]
+
+逐差法得到 $Y = ( #mf("young_modulus_pa") plus.minus #mf("young_uncertainty_pa") ) thin upright("Pa")$；图解法得到 $Y_1 = #mf("young_graph_modulus_pa") thin upright("Pa")$。应结合图中 A、B 两点、拟合线与加载卸载差异判断一致性，并据实补充实验收获。
 
 #records()
